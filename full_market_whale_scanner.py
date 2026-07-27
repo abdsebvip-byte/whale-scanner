@@ -1,10 +1,10 @@
-# full_market_whale_scanner.py - OPTIMIZED VERSION
-# Uses TradingView for bulk screening (instant), yfinance only for detailed analysis
+# full_market_whale_scanner.py - v2.0
+# Sessions: Pre-market (2:30-9:30 PM Saudi) | Regular (9:30 PM-4:00 AM) | After-hours (4:00-8:00 AM)
 import requests
 import yfinance as yf
 import pandas as pd
 import numpy as np
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import time
 import sys
 import io
@@ -12,6 +12,122 @@ import json
 
 if sys.platform == 'win32':
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+
+EDT = timezone(timedelta(hours=-4))
+EST = timezone(timedelta(hours=-5))
+
+def get_current_session():
+    now_utc = datetime.now(timezone.utc)
+    now_et = now_utc.astimezone(EDT)
+    h, m = now_et.hour, now_et.minute
+    t = h * 60 + m
+    if 390 <= t < 570:
+        return "premarket"
+    elif 570 <= t < 960:
+        return "regular"
+    elif 960 <= t < 1200:
+        return "afterhours"
+    else:
+        return "closed"
+
+SESSION_NAMES = {
+    "premarket": "جلسة ماقبل التداول (Pre-Market)",
+    "regular": "الجلسة الرسمية (Regular)",
+    "afterhours": "الجلسة المسائية (After-Hours)",
+    "closed": "السوق مغلق",
+}
+
+SESSION_TIMES_UTC = {
+    "premarket": "6:30 AM - 9:30 AM UTC",
+    "regular": "9:30 AM - 4:00 PM UTC",
+    "afterhours": "4:00 PM - 8:00 PM UTC",
+}
+
+def classify_session():
+    now_utc = datetime.now(timezone.utc)
+    t = now_utc.hour * 60 + now_utc.minute
+    if 390 <= t < 570:
+        return "premarket"
+    elif 570 <= t < 960:
+        return "regular"
+    elif 960 <= t < 1200:
+        return "afterhours"
+    else:
+        return "closed"
+
+
+def calc_strategy_score(sig):
+    score = 0
+    reasons = []
+    sig_type = sig.get('type', '')
+    price = sig.get('price', 0)
+    s_score = sig.get('score', 0)
+
+    if sig_type == 'SHORT_SQUEEZE':
+        sp = sig.get('short_percent', 0)
+        if sp > 0.25:
+            score += 35; reasons.append("شورت عالي جداً")
+        elif sp > 0.15:
+            score += 25; reasons.append("شورت مرتفع")
+        if s_score >= 70:
+            score += 30; reasons.append("سكвиз قوي")
+        elif s_score >= 50:
+            score += 15; reasons.append("سكвиз متوسط")
+
+    elif sig_type == 'WHALE_ACCUMULATION':
+        z = sig.get('zscore', 0)
+        if z > 3.5:
+            score += 35; reasons.append("تجميع حيتان قوي")
+        elif z > 2.5:
+            score += 20; reasons.append("تجميع حيتان")
+        if s_score >= 35:
+            score += 20
+
+    elif sig_type == 'VOLUME_SPIKE':
+        z = sig.get('zscore', 0)
+        rvol = sig.get('rvol', 1)
+        if z > 4:
+            score += 30; reasons.append("ارتفاع حجم كبير جداً")
+        elif z > 3:
+            score += 15; reasons.append("ارتفاع حجم")
+        if rvol > 5:
+            score += 20
+
+    elif sig_type == 'PRICE_SPIKE':
+        if s_score >= 15:
+            score += 25; reasons.append("اندفاع سعري")
+        if price < 20:
+            score += 15; reasons.append("سهم صغير - حركة أكبر")
+
+    elif sig_type == 'PRICE_CRASH':
+        if s_score >= 10:
+            score += 10; reasons.append("انخفاض كبير")
+
+    elif sig_type == 'INSIDER_CLUSTER':
+        score += 30; reasons.append("شراء مسؤولين داخلي")
+
+    if 1 < price < 10:
+        score += 5; reasons.append("سهم صغير")
+    elif 10 <= price < 30:
+        score += 3
+
+    score = min(score, 100)
+
+    if score >= 70:
+        action = "شراء فوري"
+    elif score >= 50:
+        action = "شراء بمراقبة"
+    elif score >= 30:
+        action = "انتظار"
+    else:
+        action = "لا تشتري"
+
+    return {
+        'strategy_score': score,
+        'strategy_action': action,
+        'strategy_reasons': reasons,
+    }
+
 
 class FullMarketWhaleScanner:
     def __init__(self):
@@ -59,19 +175,15 @@ class FullMarketWhaleScanner:
                         float_shares = float(d[4] or 0) if len(d) > 4 and d[4] else 0
 
                         if price > 0.1 and volume > 10000:
-                            # Skip invalid symbols (preferred stocks, unit shares)
                             if '/' in sym or '.U' in sym or '.W' in sym or '.R' in sym:
                                 continue
-                            # Calculate RVOL proxy from TradingView data
-                            # Use volume vs a rough average (we'll use 2x as baseline)
-                            rvol_proxy = 1.0  # Will be refined in Phase 3
                             symbols.append({
                                 'symbol': sym,
                                 'price': price,
                                 'volume': volume,
                                 'change': change,
                                 'float': float_shares,
-                                'rvol': rvol_proxy,
+                                'rvol': 1.0,
                             })
                 self.all_symbols = symbols
                 print(f"[+] TradingView: {len(symbols)} active US stocks loaded")
@@ -125,7 +237,7 @@ class FullMarketWhaleScanner:
                         'symbol': sym,
                         'type': 'INSIDER_CLUSTER',
                         'score': 40,
-                        'detail': f"{len(purchases)} purchases by {len(unique)} insiders (${total:,.0f})",
+                        'detail': f"{len(purchases)} مشتريات من {len(unique)} مسؤولين (${total:,.0f})",
                         'purchases': purchases,
                     })
             except Exception:
@@ -168,13 +280,13 @@ class FullMarketWhaleScanner:
                 if z > 2.0 and change_5d < -3.0:
                     results.append({
                         'symbol': sym, 'type': 'WHALE_ACCUMULATION', 'score': 35,
-                        'detail': f"Z={z:.1f} + price dropping ({change_5d:+.1f}%)",
+                        'detail': f"Z={z:.1f} + السعر ينخفض ({change_5d:+.1f}%)",
                         'price': price_now, 'zscore': z, 'rvol': rvol,
                     })
                 elif z > 2.5:
                     results.append({
                         'symbol': sym, 'type': 'VOLUME_SPIKE', 'score': 20,
-                        'detail': f"Volume spike (Z={z:.1f}, RVOL={rvol:.1f}x)",
+                        'detail': f"ارتفاع حجم (Z={z:.1f}، الحجم النسبي={rvol:.1f}x)",
                         'price': price_now, 'zscore': z, 'rvol': rvol,
                     })
             except Exception:
@@ -182,140 +294,126 @@ class FullMarketWhaleScanner:
         return results
 
     def full_market_scan(self, include_insider=False):
+        session = classify_session()
+        session_name = SESSION_NAMES.get(session, "غير معروف")
+
         print("=" * 60)
-        print(" WHALE SCANNER - Full US Market Scan (Optimized)")
+        print(f"  ماسح الحيتان - فحص السوق الأمريكي")
+        print(f"  الجلسة الحالية: {session_name}")
         print("=" * 60)
 
-        # Phase 1: Get all stocks + screening data from TradingView (instant)
-        print("\n[Phase 1] Fetching stock list from TradingView...")
+        print("\n[1/5] جاري جلب قائمة الأسهم من TradingView...")
         all_symbols = self.fetch_all_market_symbols()
         if not all_symbols:
             return []
-        print(f"[+] {len(all_symbols)} stocks loaded")
+        print(f"[+] {len(symbols)} سهم تم تحميله")
 
         all_signals = []
 
-        # Phase 2: Screen using TradingView data
-        # Select a MIX of stocks for volume analysis: top vol + random small/mid caps
-        print("\n[Phase 2] Selecting candidates for deep analysis...")
-        
-        # Top 200 by volume (big caps with unusual activity)
-        sorted_by_vol = sorted(all_symbols, key=lambda x: x['volume'], reverse=True)
-        vol_candidates_big = sorted_by_vol[:200]
-        
-        # Random 300 from middle of list (mid/small caps more likely to spike)
-        vol_candidates_small = all_symbols[500:2000:5]  # Every 5th stock = 300
-        
-        vol_candidates = vol_candidates_big + vol_candidates_small
-
-        all_signals = []
+        print("\n[2/5] فحص ارتفاع السعر...")
         for s in all_symbols:
             sym = s['symbol']
             change = s.get('change', 0)
             price = s['price']
 
-            # Price spike signals (from TradingView, instant)
             if change > 15:
                 all_signals.append({
                     'symbol': sym, 'type': 'PRICE_SPIKE', 'score': 15,
-                    'detail': f"Up {change:+.1f}% today", 'price': price,
+                    'detail': f"ارتفاع {change:+.1f}% اليوم", 'price': price,
+                    'session': session,
                 })
             elif change < -15:
                 all_signals.append({
                     'symbol': sym, 'type': 'PRICE_CRASH', 'score': 10,
-                    'detail': f"Down {change:+.1f}% today", 'price': price,
+                    'detail': f"انخفاض {change:+.1f}% اليوم", 'price': price,
+                    'session': session,
                 })
 
-        # Small caps for squeeze
-        squeeze_candidates = [s for s in all_symbols if 0 < s['price'] <= 20][:300]
+        print(f"[+] {len([s for s in all_signals if s['type'] == 'PRICE_SPIKE'])} إشارات ارتفاع")
+        print(f"[+] {len([s for s in all_signals if s['type'] == 'PRICE_CRASH'])} إشارات انهيار")
 
-        print(f"[+] {len(vol_candidates)} volume candidates for deep analysis")
-        print(f"[+] {len(squeeze_candidates)} small cap candidates")
-        print(f"[+] {len([s for s in all_signals if s['type'] == 'PRICE_SPIKE'])} price spike signals")
-        print(f"[+] {len([s for s in all_signals if s['type'] == 'PRICE_CRASH'])} price crash signals")
-
-        # Phase 3: Deep volume analysis on candidates only (yfinance)
-        print(f"\n[Phase 3] Deep volume analysis on {len(vol_candidates)} candidates...")
+        print("\n[3/5] فحص الحجم المتداولة على 500 سهم...")
+        sorted_by_vol = sorted(all_symbols, key=lambda x: x['volume'], reverse=True)
+        vol_candidates = sorted_by_vol[:200] + all_symbols[500:2000:5]
         vol_signals = self.scan_volume_anomaly_detail([s['symbol'] for s in vol_candidates])
+        for sig in vol_signals:
+            sig['session'] = session
         all_signals.extend(vol_signals)
-        print(f"[+] Volume signals confirmed: {len(vol_signals)}")
+        print(f"[+] {len(vol_signals)} إشارات حجم تم تأكيدها")
 
-        # Phase 4: Short squeeze analysis on candidates
-        squeeze_candidates = squeeze_candidates[:200]  # Cap at 200
-        print(f"\n[Phase 4] Short squeeze analysis on {len(squeeze_candidates)} small caps...")
+        print("\n[4/5] فحص السكвиз على 200 سهم صغير...")
+        squeeze_candidates = [s for s in all_symbols if 0 < s['price'] <= 20][:200]
         squeeze_signals = []
-        batch_size = 20
-        for i in range(0, len(squeeze_candidates), batch_size):
-            batch = squeeze_candidates[i:i+batch_size]
-            if (i // batch_size + 1) % 5 == 0:
-                print(f"  ... scanned {i}/{len(squeeze_candidates)}")
-            for s in batch:
-                sym = s['symbol']
-                price = s['price']
-                try:
-                    ticker = yf.Ticker(sym)
-                    info = ticker.info
-                    short_pct = info.get('shortPercentOfFloat', 0) or 0
-                    short_ratio = info.get('shortRatio', 0) or 0
-                    float_shares = info.get('floatShares', 0) or 0
+        for s in squeeze_candidates:
+            sym = s['symbol']
+            price = s['price']
+            try:
+                ticker = yf.Ticker(sym)
+                info = ticker.info
+                short_pct = info.get('shortPercentOfFloat', 0) or 0
+                short_ratio = info.get('shortRatio', 0) or 0
+                float_shares = info.get('floatShares', 0) or 0
 
-                    score = 0
-                    if short_pct > 0.20: score += 40
-                    elif short_pct > 0.15: score += 30
-                    elif short_pct > 0.10: score += 20
-                    if short_ratio > 5: score += 30
-                    elif short_ratio > 3: score += 20
-                    if float_shares < 20000000: score += 20
+                score = 0
+                if short_pct > 0.20: score += 40
+                elif short_pct > 0.15: score += 30
+                elif short_pct > 0.10: score += 20
+                if short_ratio > 5: score += 30
+                elif short_ratio > 3: score += 20
+                if float_shares < 20000000: score += 20
 
-                    if score >= 50:
-                        squeeze_signals.append({
-                            'symbol': sym, 'type': 'SHORT_SQUEEZE', 'score': score,
-                            'detail': f"Short: {short_pct*100:.1f}% | Days Cover: {short_ratio:.1f} | Float: {float_shares/1e6:.1f}M",
-                            'price': price, 'short_percent': short_pct,
-                        })
-                except Exception:
-                    continue
-
+                if score >= 50:
+                    squeeze_signals.append({
+                        'symbol': sym, 'type': 'SHORT_SQUEEZE', 'score': score,
+                        'detail': f"شورت: {short_pct*100:.1f}% | أيام التغطية: {short_ratio:.1f} | العوامة: {float_shares/1e6:.1f}M",
+                        'price': price, 'short_percent': short_pct,
+                        'short_ratio': short_ratio, 'float_shares': float_shares,
+                        'session': session,
+                    })
+            except Exception:
+                continue
         all_signals.extend(squeeze_signals)
-        print(f"[+] Squeeze signals: {len(squeeze_signals)}")
+        print(f"[+] {len(squeeze_signals)} إشارات سكвиз")
 
-        # Phase 5: Insider buying (optional, on flagged stocks only)
-        insider_signals = []
         if include_insider:
-            flagged = set(s['symbol'] for s in all_signals)
-            flagged_list = list(flagged)[:30]
-            print(f"\n[Phase 5] Insider buying on {len(flagged_list)} flagged stocks...")
-            for sym in flagged_list:
+            flagged = set(s['symbol'] for s in all_signals)[:30]
+            print(f"\n[5/5] فحص شراء المسؤولين على {len(flagged)} أسهم...")
+            for sym in flagged:
                 try:
                     sigs = self.scan_insider_buying_batch([sym])
-                    insider_signals.extend(sigs)
+                    for sig in sigs:
+                        sig['session'] = session
+                    all_signals.extend(sigs)
                     time.sleep(0.5)
                 except Exception:
                     continue
 
-        all_signals.extend(insider_signals)
-        print(f"[+] Insider signals: {len(insider_signals)}")
+        for sig in all_signals:
+            strat = calc_strategy_score(sig)
+            sig.update(strat)
 
-        # Sort and display
-        all_signals.sort(key=lambda x: x['score'], reverse=True)
+        all_signals.sort(key=lambda x: x.get('strategy_score', 0), reverse=True)
 
         print("\n" + "=" * 60)
-        print(f" RESULTS: {len(all_signals)} signals from {len(all_symbols)} stocks")
+        print(f"  النتائج: {len(all_signals)} إشارة من {len(all_symbols)} سهم")
         print("=" * 60)
 
-        for i, sig in enumerate(all_signals[:30], 1):
-            icon = {
-                'INSIDER_CLUSTER': '[INSIDER]',
-                'WHALE_ACCUMULATION': '[WHALE]',
-                'VOLUME_SPIKE': '[VOL+]',
-                'SHORT_SQUEEZE': '[SQUEEZE]',
-                'PRICE_SPIKE': '[SPIKE+]',
-                'PRICE_CRASH': '[SPIKE-]',
-            }.get(sig['type'], '[?]')
+        type_icons = {
+            'INSIDER_CLUSTER': '👤',
+            'WHALE_ACCUMULATION': '🐋',
+            'VOLUME_SPIKE': '📊',
+            'SHORT_SQUEEZE': '🔥',
+            'PRICE_SPIKE': '🚀',
+            'PRICE_CRASH': '📉',
+        }
 
-            print(f"\n{i}. {icon} {sig['symbol']} -- Score: {sig['score']}")
-            print(f"   Price: ${sig.get('price', 0):.2f}")
-            print(f"   Detail: {sig['detail']}")
+        for i, sig in enumerate(all_signals[:30], 1):
+            icon = type_icons.get(sig['type'], '?')
+            action = sig.get('strategy_action', '?')
+            strat_score = sig.get('strategy_score', 0)
+            print(f"\n{i}. {icon} {sig['symbol']} | {action} | نقاط الاستراتيجية: {strat_score}")
+            print(f"   السعر: ${sig.get('price', 0):.2f}")
+            print(f"   {sig['detail']}")
 
         return all_signals
 
@@ -324,12 +422,14 @@ if __name__ == "__main__":
     scanner = FullMarketWhaleScanner()
     signals = scanner.full_market_scan(include_insider=False)
 
-    # Save results
+    session = classify_session()
     output = {
         'scan_time': datetime.now().isoformat(),
+        'session': session,
+        'session_name': SESSION_NAMES.get(session, "غير معروف"),
         'total_signals': len(signals),
         'signals': [{k: v for k, v in sig.items() if k != 'purchases'} for sig in signals]
     }
     with open('scan_results.json', 'w', encoding='utf-8') as f:
         json.dump(output, f, indent=2, ensure_ascii=False, default=str)
-    print(f"\n[+] Results saved to scan_results.json")
+    print(f"\n[+] النتائج محفوظة في scan_results.json")
