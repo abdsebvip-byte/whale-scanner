@@ -13,6 +13,4 @@ output = {
 with open('scan_results.json', 'w', encoding='utf-8') as f:
     json.dump(output, f, indent=2, ensure_ascii=False, default=str)
 
-print(f"\n{'='*60}")
-print(f" SCAN COMPLETE: {len(signals)} signals")
-print(f"{'='*60}")
+print(f"DONE: {len(signals)} signals")
