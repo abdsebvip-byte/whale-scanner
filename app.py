@@ -25,17 +25,26 @@ st.markdown("""
 
 @st.cache_data(ttl=60)
 def load_results():
-    try:
-        import os
-        path = os.path.join(os.path.dirname(__file__), 'scan_results.json')
-        with open(path, 'r', encoding='utf-8') as f:
-            return json.load(f)
-    except Exception:
+    import os, urllib.request
+    # 1) Try local file (works locally & on Streamlit Cloud if file is in repo)
+    for candidate in [
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), 'scan_results.json'),
+        'scan_results.json',
+    ]:
         try:
-            with open('scan_results.json', 'r', encoding='utf-8') as f:
-                return json.load(f)
+            with open(candidate, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                if data and data.get('signals'):
+                    return data
         except Exception:
-            return None
+            pass
+    # 2) Fallback: fetch from GitHub raw
+    try:
+        url = "https://raw.githubusercontent.com/abdsebvip-byte/whale-scanner/main/scan_results.json"
+        with urllib.request.urlopen(url, timeout=10) as resp:
+            return json.loads(resp.read().decode('utf-8'))
+    except Exception:
+        return None
 
 @st.cache_data(ttl=300)
 def get_stock_chart(symbol, period="1mo"):
