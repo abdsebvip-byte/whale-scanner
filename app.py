@@ -23,13 +23,19 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-@st.cache_data
+@st.cache_data(ttl=60)
 def load_results():
     try:
-        with open('scan_results.json', 'r', encoding='utf-8') as f:
+        import os
+        path = os.path.join(os.path.dirname(__file__), 'scan_results.json')
+        with open(path, 'r', encoding='utf-8') as f:
             return json.load(f)
-    except FileNotFoundError:
-        return None
+    except Exception:
+        try:
+            with open('scan_results.json', 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except Exception:
+            return None
 
 @st.cache_data(ttl=300)
 def get_stock_chart(symbol, period="1mo"):
