@@ -1,0 +1,5 @@
+edgartools
+yfinance
+pandas
+numpy
+requests
