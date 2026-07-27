@@ -2,35 +2,42 @@ name: Whale Scanner - Full US Market Scan
 
 on:
   schedule:
-    # Run every 4 hours during market hours (EST)
-    # 13:00, 17:00, 21:00, 01:00, 05:00, 09:00, 13:00 UTC
     - cron: '0 13,17,21,1,5,9 * * 1-5'
-  workflow_dispatch:  # Manual trigger
+  workflow_dispatch:
 
 jobs:
   scan:
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    
+    permissions:
+      contents: write
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      
+
       - name: Install dependencies
-        run: |
-          pip install -r requirements.txt
-      
+        run: pip install -r requirements.txt
+
       - name: Run Whale Scanner
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python run_scan.py
-      
+
+      - name: Commit results
+        run: |
+          git config user.name "whale-scanner"
+          git config user.email "scanner@github-actions"
+          git add scan_results.json
+          git diff --staged --quiet || git commit -m "Scan results $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git push
+
       - name: Upload results
         uses: actions/upload-artifact@v4
         with:
