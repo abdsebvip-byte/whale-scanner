@@ -8,7 +8,14 @@
       "score": 80,
       "detail": "Short: 22.2% | Days Cover: 3.3 | Float: 17.1M",
       "price": 2.18,
-      "short_percent": 0.2216
+      "short_percent": 0.2216,
+      "session": "afterhours",
+      "strategy_score": 55,
+      "strategy_action": "شراء بمراقبة",
+      "strategy_reasons": [
+        "شورت مرتفع",
+        "سكвиз قوي"
+      ]
     },
     {
       "symbol": "MPLT",
@@ -16,7 +23,14 @@
       "score": 80,
       "detail": "Short: 16.3% | Days Cover: 6.2 | Float: 13.2M",
       "price": 9.905,
-      "short_percent": 0.16299999
+      "short_percent": 0.16299999,
+      "session": "afterhours",
+      "strategy_score": 55,
+      "strategy_action": "شراء بمراقبة",
+      "strategy_reasons": [
+        "شورت مرتفع",
+        "سكвиз قوي"
+      ]
     },
     {
       "symbol": "LVWR",
@@ -24,7 +38,13 @@
       "score": 70,
       "detail": "Short: 13.8% | Days Cover: 7.3 | Float: 12.6M",
       "price": 2.43,
-      "short_percent": 0.138
+      "short_percent": 0.138,
+      "session": "afterhours",
+      "strategy_score": 30,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "سكвиз قوي"
+      ]
     },
     {
       "symbol": "RIG",
@@ -32,7 +52,14 @@
       "score": 70,
       "detail": "Short: 24.1% | Days Cover: 6.2 | Float: 916.7M",
       "price": 5.28,
-      "short_percent": 0.2409
+      "short_percent": 0.2409,
+      "session": "afterhours",
+      "strategy_score": 55,
+      "strategy_action": "شراء بمراقبة",
+      "strategy_reasons": [
+        "شورت مرتفع",
+        "سكвиз قوي"
+      ]
     },
     {
       "symbol": "PLUG",
@@ -40,7 +67,14 @@
       "score": 70,
       "detail": "Short: 26.7% | Days Cover: 6.3 | Float: 1330.3M",
       "price": 2.06,
-      "short_percent": 0.2666
+      "short_percent": 0.2666,
+      "session": "afterhours",
+      "strategy_score": 65,
+      "strategy_action": "شراء بمراقبة",
+      "strategy_reasons": [
+        "شورت عالي جداً",
+        "سكвиз قوي"
+      ]
     },
     {
       "symbol": "SOUN",
@@ -48,7 +82,14 @@
       "score": 70,
       "detail": "Short: 42.3% | Days Cover: 6.2 | Float: 393.2M",
       "price": 6.41,
-      "short_percent": 0.42349997
+      "short_percent": 0.42349997,
+      "session": "afterhours",
+      "strategy_score": 65,
+      "strategy_action": "شراء بمراقبة",
+      "strategy_reasons": [
+        "شورت عالي جداً",
+        "سكвиз قوي"
+      ]
     },
     {
       "symbol": "CAPR",
@@ -56,7 +97,14 @@
       "score": 70,
       "detail": "Short: 29.7% | Days Cover: 9.1 | Float: 48.5M",
       "price": 6.995,
-      "short_percent": 0.29709998
+      "short_percent": 0.29709998,
+      "session": "afterhours",
+      "strategy_score": 65,
+      "strategy_action": "شراء بمراقبة",
+      "strategy_reasons": [
+        "شورت عالي جداً",
+        "سكвиз قوي"
+      ]
     },
     {
       "symbol": "BBAI",
@@ -64,7 +112,14 @@
       "score": 70,
       "detail": "Short: 30.6% | Days Cover: 5.1 | Float: 474.7M",
       "price": 2.83,
-      "short_percent": 0.3062
+      "short_percent": 0.3062,
+      "session": "afterhours",
+      "strategy_score": 65,
+      "strategy_action": "شراء بمراقبة",
+      "strategy_reasons": [
+        "شورت عالي جداً",
+        "سكвиз قوي"
+      ]
     },
     {
       "symbol": "RXRX",
@@ -72,7 +127,14 @@
       "score": 70,
       "detail": "Short: 36.1% | Days Cover: 7.7 | Float: 513.0M",
       "price": 3.01,
-      "short_percent": 0.36099997
+      "short_percent": 0.36099997,
+      "session": "afterhours",
+      "strategy_score": 65,
+      "strategy_action": "شراء بمراقبة",
+      "strategy_reasons": [
+        "شورت عالي جداً",
+        "سكвиз قوي"
+      ]
     },
     {
       "symbol": "LYFT",
@@ -80,7 +142,14 @@
       "score": 70,
       "detail": "Short: 23.8% | Days Cover: 7.0 | Float: 341.4M",
       "price": 15.09,
-      "short_percent": 0.23809999
+      "short_percent": 0.23809999,
+      "session": "afterhours",
+      "strategy_score": 55,
+      "strategy_action": "شراء بمراقبة",
+      "strategy_reasons": [
+        "شورت مرتفع",
+        "سكвиз قوي"
+      ]
     },
     {
       "symbol": "OWL",
@@ -88,7 +157,14 @@
       "score": 70,
       "detail": "Short: 22.1% | Days Cover: 6.2 | Float: 640.5M",
       "price": 9.68,
-      "short_percent": 0.2207
+      "short_percent": 0.2207,
+      "session": "afterhours",
+      "strategy_score": 55,
+      "strategy_action": "شراء بمراقبة",
+      "strategy_reasons": [
+        "شورت مرتفع",
+        "سكвиз قوي"
+      ]
     },
     {
       "symbol": "IOVA",
@@ -96,7 +172,14 @@
       "score": 70,
       "detail": "Short: 23.9% | Days Cover: 6.4 | Float: 387.9M",
       "price": 4.9,
-      "short_percent": 0.2395
+      "short_percent": 0.2395,
+      "session": "afterhours",
+      "strategy_score": 55,
+      "strategy_action": "شراء بمراقبة",
+      "strategy_reasons": [
+        "شورت مرتفع",
+        "سكвиз قوي"
+      ]
     },
     {
       "symbol": "RUN",
@@ -104,7 +187,14 @@
       "score": 70,
       "detail": "Short: 33.2% | Days Cover: 5.4 | Float: 220.0M",
       "price": 9.98,
-      "short_percent": 0.33169997
+      "short_percent": 0.33169997,
+      "session": "afterhours",
+      "strategy_score": 65,
+      "strategy_action": "شراء بمراقبة",
+      "strategy_reasons": [
+        "شورت عالي جداً",
+        "سكвиз قوي"
+      ]
     },
     {
       "symbol": "IBRX",
@@ -112,7 +202,14 @@
       "score": 70,
       "detail": "Short: 34.6% | Days Cover: 10.2 | Float: 394.2M",
       "price": 6.99,
-      "short_percent": 0.346
+      "short_percent": 0.346,
+      "session": "afterhours",
+      "strategy_score": 65,
+      "strategy_action": "شراء بمراقبة",
+      "strategy_reasons": [
+        "شورت عالي جداً",
+        "سكвиз قوي"
+      ]
     },
     {
       "symbol": "ASAN",
@@ -120,7 +217,14 @@
       "score": 70,
       "detail": "Short: 38.8% | Days Cover: 6.4 | Float: 92.1M",
       "price": 7.75,
-      "short_percent": 0.38810003
+      "short_percent": 0.38810003,
+      "session": "afterhours",
+      "strategy_score": 65,
+      "strategy_action": "شراء بمراقبة",
+      "strategy_reasons": [
+        "شورت عالي جداً",
+        "سكвиз قوي"
+      ]
     },
     {
       "symbol": "REPL",
@@ -128,7 +232,14 @@
       "score": 70,
       "detail": "Short: 49.9% | Days Cover: 7.6 | Float: 59.7M",
       "price": 8.63,
-      "short_percent": 0.4986
+      "short_percent": 0.4986,
+      "session": "afterhours",
+      "strategy_score": 65,
+      "strategy_action": "شراء بمراقبة",
+      "strategy_reasons": [
+        "شورت عالي جداً",
+        "سكвиз قوي"
+      ]
     },
     {
       "symbol": "UAA",
@@ -136,7 +247,14 @@
       "score": 70,
       "detail": "Short: 37.6% | Days Cover: 5.8 | Float: 302.0M",
       "price": 7.08,
-      "short_percent": 0.3759
+      "short_percent": 0.3759,
+      "session": "afterhours",
+      "strategy_score": 65,
+      "strategy_action": "شراء بمراقبة",
+      "strategy_reasons": [
+        "شورت عالي جداً",
+        "سكвиз قوي"
+      ]
     },
     {
       "symbol": "RR",
@@ -144,7 +262,14 @@
       "score": 70,
       "detail": "Short: 29.8% | Days Cover: 6.1 | Float: 143.5M",
       "price": 1.5,
-      "short_percent": 0.2981
+      "short_percent": 0.2981,
+      "session": "afterhours",
+      "strategy_score": 65,
+      "strategy_action": "شراء بمراقبة",
+      "strategy_reasons": [
+        "شورت عالي جداً",
+        "سكвиз قوي"
+      ]
     },
     {
       "symbol": "AI",
@@ -152,7 +277,14 @@
       "score": 70,
       "detail": "Short: 31.1% | Days Cover: 7.6 | Float: 139.1M",
       "price": 8.82,
-      "short_percent": 0.31059998
+      "short_percent": 0.31059998,
+      "session": "afterhours",
+      "strategy_score": 65,
+      "strategy_action": "شراء بمراقبة",
+      "strategy_reasons": [
+        "شورت عالي جداً",
+        "سكвиз قوي"
+      ]
     },
     {
       "symbol": "BTDR",
@@ -160,7 +292,14 @@
       "score": 70,
       "detail": "Short: 36.8% | Days Cover: 5.9 | Float: 126.5M",
       "price": 11.35,
-      "short_percent": 0.3678
+      "short_percent": 0.3678,
+      "session": "afterhours",
+      "strategy_score": 65,
+      "strategy_action": "شراء بمراقبة",
+      "strategy_reasons": [
+        "شورت عالي جداً",
+        "سكвиз قوي"
+      ]
     },
     {
       "symbol": "WU",
@@ -168,7 +307,14 @@
       "score": 70,
       "detail": "Short: 20.8% | Days Cover: 7.5 | Float: 310.3M",
       "price": 8.17,
-      "short_percent": 0.2075
+      "short_percent": 0.2075,
+      "session": "afterhours",
+      "strategy_score": 55,
+      "strategy_action": "شراء بمراقبة",
+      "strategy_reasons": [
+        "شورت مرتفع",
+        "سكвиз قوي"
+      ]
     },
     {
       "symbol": "NUVB",
@@ -176,7 +322,14 @@
       "score": 70,
       "detail": "Short: 26.5% | Days Cover: 6.1 | Float: 254.6M",
       "price": 6.66,
-      "short_percent": 0.2647
+      "short_percent": 0.2647,
+      "session": "afterhours",
+      "strategy_score": 65,
+      "strategy_action": "شراء بمراقبة",
+      "strategy_reasons": [
+        "شورت عالي جداً",
+        "سكвиз قوي"
+      ]
     },
     {
       "symbol": "ENVX",
@@ -184,7 +337,14 @@
       "score": 70,
       "detail": "Short: 27.0% | Days Cover: 9.6 | Float: 188.4M",
       "price": 4.23,
-      "short_percent": 0.27
+      "short_percent": 0.27,
+      "session": "afterhours",
+      "strategy_score": 65,
+      "strategy_action": "شراء بمراقبة",
+      "strategy_reasons": [
+        "شورت عالي جداً",
+        "سكвиз قوي"
+      ]
     },
     {
       "symbol": "EVGO",
@@ -192,7 +352,14 @@
       "score": 70,
       "detail": "Short: 31.3% | Days Cover: 11.7 | Float: 133.2M",
       "price": 1.56,
-      "short_percent": 0.3134
+      "short_percent": 0.3134,
+      "session": "afterhours",
+      "strategy_score": 65,
+      "strategy_action": "شراء بمراقبة",
+      "strategy_reasons": [
+        "شورت عالي جداً",
+        "سكвиз قوي"
+      ]
     },
     {
       "symbol": "MPT",
@@ -200,7 +367,14 @@
       "score": 70,
       "detail": "Short: 30.9% | Days Cover: 19.4 | Float: 490.6M",
       "price": 4.79,
-      "short_percent": 0.3092
+      "short_percent": 0.3092,
+      "session": "afterhours",
+      "strategy_score": 65,
+      "strategy_action": "شراء بمراقبة",
+      "strategy_reasons": [
+        "شورت عالي جداً",
+        "سكвиз قوي"
+      ]
     },
     {
       "symbol": "PGEN",
@@ -208,7 +382,14 @@
       "score": 70,
       "detail": "Short: 21.2% | Days Cover: 7.9 | Float: 189.7M",
       "price": 5.42,
-      "short_percent": 0.21180001
+      "short_percent": 0.21180001,
+      "session": "afterhours",
+      "strategy_score": 55,
+      "strategy_action": "شراء بمراقبة",
+      "strategy_reasons": [
+        "شورت مرتفع",
+        "سكвиз قوي"
+      ]
     },
     {
       "symbol": "AESI",
@@ -216,7 +397,14 @@
       "score": 70,
       "detail": "Short: 25.6% | Days Cover: 8.6 | Float: 85.6M",
       "price": 11.44,
-      "short_percent": 0.256
+      "short_percent": 0.256,
+      "session": "afterhours",
+      "strategy_score": 65,
+      "strategy_action": "شراء بمراقبة",
+      "strategy_reasons": [
+        "شورت عالي جداً",
+        "سكвиз قوي"
+      ]
     },
     {
       "symbol": "OCGN",
@@ -224,7 +412,14 @@
       "score": 70,
       "detail": "Short: 29.9% | Days Cover: 10.1 | Float: 316.8M",
       "price": 1.26,
-      "short_percent": 0.2987
+      "short_percent": 0.2987,
+      "session": "afterhours",
+      "strategy_score": 65,
+      "strategy_action": "شراء بمراقبة",
+      "strategy_reasons": [
+        "شورت عالي جداً",
+        "سكвиз قوي"
+      ]
     },
     {
       "symbol": "INDI",
@@ -232,7 +427,14 @@
       "score": 70,
       "detail": "Short: 33.1% | Days Cover: 10.9 | Float: 208.2M",
       "price": 3.44,
-      "short_percent": 0.3305
+      "short_percent": 0.3305,
+      "session": "afterhours",
+      "strategy_score": 65,
+      "strategy_action": "شراء بمراقبة",
+      "strategy_reasons": [
+        "شورت عالي جداً",
+        "سكвиз قوي"
+      ]
     },
     {
       "symbol": "ONDS",
@@ -240,7 +442,14 @@
       "score": 60,
       "detail": "Short: 40.5% | Days Cover: 3.0 | Float: 463.5M",
       "price": 8.02,
-      "short_percent": 0.4053
+      "short_percent": 0.4053,
+      "session": "afterhours",
+      "strategy_score": 50,
+      "strategy_action": "شراء بمراقبة",
+      "strategy_reasons": [
+        "شورت عالي جداً",
+        "سكвиз متوسط"
+      ]
     },
     {
       "symbol": "QS",
@@ -248,7 +457,14 @@
       "score": 60,
       "detail": "Short: 20.7% | Days Cover: 4.1 | Float: 510.6M",
       "price": 5.18,
-      "short_percent": 0.2067
+      "short_percent": 0.2067,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "شورت مرتفع",
+        "سكвиз متوسط"
+      ]
     },
     {
       "symbol": "AUR",
@@ -256,7 +472,14 @@
       "score": 60,
       "detail": "Short: 16.7% | Days Cover: 6.8 | Float: 1318.8M",
       "price": 6.21,
-      "short_percent": 0.1674
+      "short_percent": 0.1674,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "شورت مرتفع",
+        "سكвиз متوسط"
+      ]
     },
     {
       "symbol": "EOSE",
@@ -264,7 +487,14 @@
       "score": 60,
       "detail": "Short: 30.1% | Days Cover: 4.0 | Float: 333.1M",
       "price": 3.61,
-      "short_percent": 0.3015
+      "short_percent": 0.3015,
+      "session": "afterhours",
+      "strategy_score": 50,
+      "strategy_action": "شراء بمراقبة",
+      "strategy_reasons": [
+        "شورت عالي جداً",
+        "سكвиз متوسط"
+      ]
     },
     {
       "symbol": "PSKY",
@@ -272,7 +502,14 @@
       "score": 60,
       "detail": "Short: 15.5% | Days Cover: 8.8 | Float: 534.3M",
       "price": 8.03,
-      "short_percent": 0.1548
+      "short_percent": 0.1548,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "شورت مرتفع",
+        "سكвиз متوسط"
+      ]
     },
     {
       "symbol": "HTZ",
@@ -280,7 +517,14 @@
       "score": 60,
       "detail": "Short: 73.9% | Days Cover: 3.3 | Float: 129.3M",
       "price": 2.0,
-      "short_percent": 0.7385
+      "short_percent": 0.7385,
+      "session": "afterhours",
+      "strategy_score": 50,
+      "strategy_action": "شراء بمراقبة",
+      "strategy_reasons": [
+        "شورت عالي جداً",
+        "سكвиз متوسط"
+      ]
     },
     {
       "symbol": "BYND",
@@ -288,7 +532,14 @@
       "score": 60,
       "detail": "Short: 25.7% | Days Cover: 4.1 | Float: 499.4M",
       "price": 0.5484,
-      "short_percent": 0.2571
+      "short_percent": 0.2571,
+      "session": "afterhours",
+      "strategy_score": 50,
+      "strategy_action": "شراء بمراقبة",
+      "strategy_reasons": [
+        "شورت عالي جداً",
+        "سكвиз متوسط"
+      ]
     },
     {
       "symbol": "CLSK",
@@ -296,7 +547,14 @@
       "score": 60,
       "detail": "Short: 42.5% | Days Cover: 3.5 | Float: 247.7M",
       "price": 14.025,
-      "short_percent": 0.42540002
+      "short_percent": 0.42540002,
+      "session": "afterhours",
+      "strategy_score": 50,
+      "strategy_action": "شراء بمراقبة",
+      "strategy_reasons": [
+        "شورت عالي جداً",
+        "سكвиз متوسط"
+      ]
     },
     {
       "symbol": "ACI",
@@ -304,7 +562,14 @@
       "score": 60,
       "detail": "Short: 15.3% | Days Cover: 6.0 | Float: 333.2M",
       "price": 11.37,
-      "short_percent": 0.1526
+      "short_percent": 0.1526,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "شورت مرتفع",
+        "سكвиз متوسط"
+      ]
     },
     {
       "symbol": "STAK",
@@ -312,7 +577,14 @@
       "score": 60,
       "detail": "Short: 57.1% | Days Cover: 1.3 | Float: 6.9M",
       "price": 2.52,
-      "short_percent": 0.57060003
+      "short_percent": 0.57060003,
+      "session": "afterhours",
+      "strategy_score": 50,
+      "strategy_action": "شراء بمراقبة",
+      "strategy_reasons": [
+        "شورت عالي جداً",
+        "سكвиз متوسط"
+      ]
     },
     {
       "symbol": "TTD",
@@ -320,7 +592,14 @@
       "score": 60,
       "detail": "Short: 20.2% | Days Cover: 4.1 | Float: 418.0M",
       "price": 17.88,
-      "short_percent": 0.2025
+      "short_percent": 0.2025,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "شورت مرتفع",
+        "سكвиз متوسط"
+      ]
     },
     {
       "symbol": "UWMC",
@@ -328,7 +607,14 @@
       "score": 60,
       "detail": "Short: 22.1% | Days Cover: 3.0 | Float: 294.4M",
       "price": 1.84,
-      "short_percent": 0.2212
+      "short_percent": 0.2212,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "شورت مرتفع",
+        "سكвиз متوسط"
+      ]
     },
     {
       "symbol": "QUBT",
@@ -336,7 +622,14 @@
       "score": 60,
       "detail": "Short: 32.4% | Days Cover: 4.7 | Float: 200.4M",
       "price": 7.96,
-      "short_percent": 0.3243
+      "short_percent": 0.3243,
+      "session": "afterhours",
+      "strategy_score": 50,
+      "strategy_action": "شراء بمراقبة",
+      "strategy_reasons": [
+        "شورت عالي جداً",
+        "سكвиз متوسط"
+      ]
     },
     {
       "symbol": "SLS",
@@ -344,7 +637,14 @@
       "score": 60,
       "detail": "Short: 28.2% | Days Cover: 5.0 | Float: 185.3M",
       "price": 10.835,
-      "short_percent": 0.2823
+      "short_percent": 0.2823,
+      "session": "afterhours",
+      "strategy_score": 50,
+      "strategy_action": "شراء بمراقبة",
+      "strategy_reasons": [
+        "شورت عالي جداً",
+        "سكвиз متوسط"
+      ]
     },
     {
       "symbol": "BATL",
@@ -352,7 +652,14 @@
       "score": 60,
       "detail": "Short: 131.8% | Days Cover: 0.3 | Float: 16.2M",
       "price": 1.46,
-      "short_percent": 1.3182001
+      "short_percent": 1.3182001,
+      "session": "afterhours",
+      "strategy_score": 50,
+      "strategy_action": "شراء بمراقبة",
+      "strategy_reasons": [
+        "شورت عالي جداً",
+        "سكвиз متوسط"
+      ]
     },
     {
       "symbol": "BKD",
@@ -360,7 +667,14 @@
       "score": 60,
       "detail": "Short: 15.8% | Days Cover: 6.9 | Float: 235.5M",
       "price": 15.47,
-      "short_percent": 0.1582
+      "short_percent": 0.1582,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "شورت مرتفع",
+        "سكвиз متوسط"
+      ]
     },
     {
       "symbol": "LUNR",
@@ -368,7 +682,14 @@
       "score": 60,
       "detail": "Short: 28.8% | Days Cover: 3.2 | Float: 130.3M",
       "price": 13.31,
-      "short_percent": 0.288
+      "short_percent": 0.288,
+      "session": "afterhours",
+      "strategy_score": 50,
+      "strategy_action": "شراء بمراقبة",
+      "strategy_reasons": [
+        "شورت عالي جداً",
+        "سكвиз متوسط"
+      ]
     },
     {
       "symbol": "ALLO",
@@ -376,7 +697,14 @@
       "score": 60,
       "detail": "Short: 19.1% | Days Cover: 5.6 | Float: 270.6M",
       "price": 1.75,
-      "short_percent": 0.1915
+      "short_percent": 0.1915,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "شورت مرتفع",
+        "سكвиз متوسط"
+      ]
     },
     {
       "symbol": "PACB",
@@ -384,7 +712,14 @@
       "score": 60,
       "detail": "Short: 17.1% | Days Cover: 7.7 | Float: 303.8M",
       "price": 1.36,
-      "short_percent": 0.1711
+      "short_percent": 0.1711,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "شورت مرتفع",
+        "سكвиз متوسط"
+      ]
     },
     {
       "symbol": "CLBK",
@@ -392,7 +727,14 @@
       "score": 60,
       "detail": "Short: 16.9% | Days Cover: 9.3 | Float: 74.9M",
       "price": 10.85,
-      "short_percent": 0.1691
+      "short_percent": 0.1691,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "شورت مرتفع",
+        "سكвиз متوسط"
+      ]
     },
     {
       "symbol": "RCAT",
@@ -400,7 +742,14 @@
       "score": 60,
       "detail": "Short: 23.6% | Days Cover: 3.0 | Float: 111.6M",
       "price": 7.79,
-      "short_percent": 0.2358
+      "short_percent": 0.2358,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "شورت مرتفع",
+        "سكвиз متوسط"
+      ]
     },
     {
       "symbol": "NWL",
@@ -408,7 +757,14 @@
       "score": 60,
       "detail": "Short: 22.7% | Days Cover: 4.2 | Float: 391.1M",
       "price": 5.18,
-      "short_percent": 0.22690001
+      "short_percent": 0.22690001,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "شورت مرتفع",
+        "سكвиз متوسط"
+      ]
     },
     {
       "symbol": "AMPX",
@@ -416,7 +772,14 @@
       "score": 60,
       "detail": "Short: 20.1% | Days Cover: 3.8 | Float: 137.8M",
       "price": 9.71,
-      "short_percent": 0.201
+      "short_percent": 0.201,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "شورت مرتفع",
+        "سكвиз متوسط"
+      ]
     },
     {
       "symbol": "CRML",
@@ -424,7 +787,14 @@
       "score": 60,
       "detail": "Short: 23.7% | Days Cover: 3.4 | Float: 68.2M",
       "price": 6.04,
-      "short_percent": 0.2368
+      "short_percent": 0.2368,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "شورت مرتفع",
+        "سكвиз متوسط"
+      ]
     },
     {
       "symbol": "GOSS",
@@ -432,7 +802,14 @@
       "score": 50,
       "detail": "Short: 15.2% | Days Cover: 4.0 | Float: 150.3M",
       "price": 0.1994,
-      "short_percent": 0.1518
+      "short_percent": 0.1518,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "شورت مرتفع",
+        "سكвиз متوسط"
+      ]
     },
     {
       "symbol": "VTAK",
@@ -440,7 +817,14 @@
       "score": 50,
       "detail": "Short: 16.5% | Days Cover: 0.0 | Float: 2.3M",
       "price": 0.29,
-      "short_percent": 0.16459998
+      "short_percent": 0.16459998,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "شورت مرتفع",
+        "سكвиз متوسط"
+      ]
     },
     {
       "symbol": "MBLY",
@@ -448,7 +832,14 @@
       "score": 50,
       "detail": "Short: 18.8% | Days Cover: 4.6 | Float: 176.3M",
       "price": 8.01,
-      "short_percent": 0.1884
+      "short_percent": 0.1884,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "شورت مرتفع",
+        "سكвиз متوسط"
+      ]
     },
     {
       "symbol": "GENI",
@@ -456,7 +847,13 @@
       "score": 50,
       "detail": "Short: 13.5% | Days Cover: 5.8 | Float: 207.7M",
       "price": 7.27,
-      "short_percent": 0.13520001
+      "short_percent": 0.13520001,
+      "session": "afterhours",
+      "strategy_score": 15,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "سكвиз متوسط"
+      ]
     },
     {
       "symbol": "SBET",
@@ -464,7 +861,14 @@
       "score": 50,
       "detail": "Short: 18.6% | Days Cover: 3.4 | Float: 184.6M",
       "price": 6.38,
-      "short_percent": 0.18620001
+      "short_percent": 0.18620001,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "شورت مرتفع",
+        "سكвиз متوسط"
+      ]
     },
     {
       "symbol": "GERN",
@@ -472,7 +876,13 @@
       "score": 50,
       "detail": "Short: 10.9% | Days Cover: 5.2 | Float: 535.7M",
       "price": 1.48,
-      "short_percent": 0.1091
+      "short_percent": 0.1091,
+      "session": "afterhours",
+      "strategy_score": 15,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "سكвиз متوسط"
+      ]
     },
     {
       "symbol": "DVLT",
@@ -480,7 +890,14 @@
       "score": 50,
       "detail": "Short: 15.8% | Days Cover: 4.4 | Float: 536.5M",
       "price": 0.3557,
-      "short_percent": 0.158
+      "short_percent": 0.158,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "شورت مرتفع",
+        "سكвиз متوسط"
+      ]
     },
     {
       "symbol": "PUMP",
@@ -488,7 +905,14 @@
       "score": 50,
       "detail": "Short: 16.4% | Days Cover: 3.8 | Float: 106.0M",
       "price": 10.79,
-      "short_percent": 0.16430001
+      "short_percent": 0.16430001,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "شورت مرتفع",
+        "سكвиз متوسط"
+      ]
     },
     {
       "symbol": "VLY",
@@ -496,7 +920,13 @@
       "score": 50,
       "detail": "Short: 10.5% | Days Cover: 6.3 | Float: 545.4M",
       "price": 14.35,
-      "short_percent": 0.105399996
+      "short_percent": 0.105399996,
+      "session": "afterhours",
+      "strategy_score": 15,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "سكвиз متوسط"
+      ]
     },
     {
       "symbol": "CLDI",
@@ -504,7 +934,14 @@
       "score": 50,
       "detail": "Short: 18.0% | Days Cover: 0.8 | Float: 19.0M",
       "price": 0.1095,
-      "short_percent": 0.18020001
+      "short_percent": 0.18020001,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "شورت مرتفع",
+        "سكвиз متوسط"
+      ]
     },
     {
       "symbol": "GTM",
@@ -512,7 +949,14 @@
       "score": 50,
       "detail": "Short: 17.9% | Days Cover: 3.4 | Float: 215.5M",
       "price": 3.08,
-      "short_percent": 0.17860001
+      "short_percent": 0.17860001,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "شورت مرتفع",
+        "سكвиз متوسط"
+      ]
     },
     {
       "symbol": "UEC",
@@ -520,7 +964,13 @@
       "score": 50,
       "detail": "Short: 14.1% | Days Cover: 6.3 | Float: 486.2M",
       "price": 9.91,
-      "short_percent": 0.14140001
+      "short_percent": 0.14140001,
+      "session": "afterhours",
+      "strategy_score": 15,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "سكвиз متوسط"
+      ]
     },
     {
       "symbol": "CRGY",
@@ -528,7 +978,13 @@
       "score": 50,
       "detail": "Short: 14.8% | Days Cover: 6.5 | Float: 295.4M",
       "price": 10.48,
-      "short_percent": 0.1475
+      "short_percent": 0.1475,
+      "session": "afterhours",
+      "strategy_score": 15,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "سكвиз متوسط"
+      ]
     },
     {
       "symbol": "GT",
@@ -536,7 +992,14 @@
       "score": 50,
       "detail": "Short: 17.3% | Days Cover: 3.3 | Float: 256.3M",
       "price": 7.11,
-      "short_percent": 0.173
+      "short_percent": 0.173,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "شورت مرتفع",
+        "سكвиз متوسط"
+      ]
     },
     {
       "symbol": "GAP",
@@ -544,7 +1007,14 @@
       "score": 50,
       "detail": "Short: 15.3% | Days Cover: 3.6 | Float: 184.3M",
       "price": 19.64,
-      "short_percent": 0.1532
+      "short_percent": 0.1532,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "شورت مرتفع",
+        "سكвиз متوسط"
+      ]
     },
     {
       "symbol": "EVH",
@@ -552,7 +1022,13 @@
       "score": 50,
       "detail": "Short: 13.2% | Days Cover: 6.0 | Float: 93.6M",
       "price": 3.81,
-      "short_percent": 0.1321
+      "short_percent": 0.1321,
+      "session": "afterhours",
+      "strategy_score": 15,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "سكвиз متوسط"
+      ]
     },
     {
       "symbol": "PTON",
@@ -560,7 +1036,13 @@
       "score": 50,
       "detail": "Short: 15.0% | Days Cover: 6.8 | Float: 406.7M",
       "price": 6.26,
-      "short_percent": 0.15
+      "short_percent": 0.15,
+      "session": "afterhours",
+      "strategy_score": 15,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "سكвиз متوسط"
+      ]
     },
     {
       "symbol": "NEXT",
@@ -568,7 +1050,13 @@
       "score": 50,
       "detail": "Short: 13.1% | Days Cover: 6.4 | Float: 129.2M",
       "price": 6.435,
-      "short_percent": 0.1309
+      "short_percent": 0.1309,
+      "session": "afterhours",
+      "strategy_score": 15,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "سكвиз متوسط"
+      ]
     },
     {
       "symbol": "VZLA",
@@ -576,7 +1064,13 @@
       "score": 50,
       "detail": "Short: 10.9% | Days Cover: 6.9 | Float: 334.7M",
       "price": 3.32,
-      "short_percent": 0.1086
+      "short_percent": 0.1086,
+      "session": "afterhours",
+      "strategy_score": 15,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "سكвиз متوسط"
+      ]
     },
     {
       "symbol": "ARCC",
@@ -584,7 +1078,13 @@
       "score": 50,
       "detail": "Short: 6.3% | Days Cover: 8.5 | Float: 0.0M",
       "price": 18.89,
-      "short_percent": 0.0634
+      "short_percent": 0.0634,
+      "session": "afterhours",
+      "strategy_score": 15,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "سكвиз متوسط"
+      ]
     },
     {
       "symbol": "ACRS",
@@ -592,7 +1092,13 @@
       "score": 50,
       "detail": "Short: 10.9% | Days Cover: 5.8 | Float: 113.1M",
       "price": 5.37,
-      "short_percent": 0.1093
+      "short_percent": 0.1093,
+      "session": "afterhours",
+      "strategy_score": 15,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "سكвиз متوسط"
+      ]
     },
     {
       "symbol": "GPK",
@@ -600,7 +1106,13 @@
       "score": 50,
       "detail": "Short: 10.9% | Days Cover: 5.4 | Float: 290.8M",
       "price": 11.15,
-      "short_percent": 0.1086
+      "short_percent": 0.1086,
+      "session": "afterhours",
+      "strategy_score": 15,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "سكвиз متوسط"
+      ]
     },
     {
       "symbol": "KD",
@@ -608,980 +1120,1904 @@
       "score": 50,
       "detail": "Short: 14.9% | Days Cover: 7.2 | Float: 204.2M",
       "price": 12.76,
-      "short_percent": 0.1489
+      "short_percent": 0.1489,
+      "session": "afterhours",
+      "strategy_score": 15,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "سكвиз متوسط"
+      ]
     },
     {
       "symbol": "GOSS",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +46.6% today",
-      "price": 0.1994
+      "price": 0.1994,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "KIDZ",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +43.6% today",
-      "price": 0.602
+      "price": 0.602,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "MTNB",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +37.5% today",
-      "price": 0.332
+      "price": 0.332,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "BIYA",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +116.1% today",
-      "price": 4.17
+      "price": 4.17,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "ENTX",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +91.2% today",
-      "price": 3.92
+      "price": 3.92,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "DFNS",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +201.1% today",
-      "price": 13.1
+      "price": 13.1,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "LVWR",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +66.4% today",
-      "price": 2.43
+      "price": 2.43,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "GMEX",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +22.4% today",
-      "price": 1.8
+      "price": 1.8,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "FBRX",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +39.6% today",
-      "price": 76.5
+      "price": 76.5,
+      "session": "afterhours",
+      "strategy_score": 25,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "اندفاع سعري"
+      ]
     },
     {
       "symbol": "AMZE",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +232.0% today",
-      "price": 0.3068
+      "price": 0.3068,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "AEHL",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +20.9% today",
-      "price": 0.6491
+      "price": 0.6491,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "VEEE",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +21.6% today",
-      "price": 15.77
+      "price": 15.77,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "OMER",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +15.8% today",
-      "price": 11.34
+      "price": 11.34,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "IMMR",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +18.6% today",
-      "price": 7.735
+      "price": 7.735,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "TRAX",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +18.3% today",
-      "price": 42.03
+      "price": 42.03,
+      "session": "afterhours",
+      "strategy_score": 25,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "اندفاع سعري"
+      ]
     },
     {
       "symbol": "BYRN",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +16.7% today",
-      "price": 4.13
+      "price": 4.13,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "NXTC",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +20.8% today",
-      "price": 5.12
+      "price": 5.12,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "CNET",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +26.1% today",
-      "price": 1.0
+      "price": 1.0,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "REBN",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +25.1% today",
-      "price": 1.25
+      "price": 1.25,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "GRSD",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +17.5% today",
-      "price": 1.95
+      "price": 1.95,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "YSXT",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +19.9% today",
-      "price": 1.03
+      "price": 1.03,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "LUCY",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +18.9% today",
-      "price": 0.774
+      "price": 0.774,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "CCHH",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +15.3% today",
-      "price": 1.58
+      "price": 1.58,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "SLVMF",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +19.9% today",
-      "price": 0.11
+      "price": 0.11,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "ZNB",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +20.1% today",
-      "price": 2.69
+      "price": 2.69,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "MF",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +18.4% today",
-      "price": 6.19
+      "price": 6.19,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "RACC",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +20.5% today",
-      "price": 13.275
+      "price": 13.275,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "SGRP",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +23.7% today",
-      "price": 0.47
+      "price": 0.47,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "BSXGF",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +24.1% today",
-      "price": 0.8097
+      "price": 0.8097,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "PN",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +27.1% today",
-      "price": 10.14
+      "price": 10.14,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "ICON",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +22.3% today",
-      "price": 1.15
+      "price": 1.15,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "RNGE",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +21.4% today",
-      "price": 0.842958
+      "price": 0.842958,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "VGAS",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +22.8% today",
-      "price": 1.16
+      "price": 1.16,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "FATN",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +15.5% today",
-      "price": 5.21
+      "price": 5.21,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "BETRF",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +15.3% today",
-      "price": 0.17
+      "price": 0.17,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "ANICF",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +37.6% today",
-      "price": 0.12725
+      "price": 0.12725,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "SOCLF",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +17.4% today",
-      "price": 0.3845
+      "price": 0.3845,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "OBIIF",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +19.9% today",
-      "price": 25.32
+      "price": 25.32,
+      "session": "afterhours",
+      "strategy_score": 25,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "اندفاع سعري"
+      ]
     },
     {
       "symbol": "TLGRF",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +18.0% today",
-      "price": 0.2143
+      "price": 0.2143,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "FRECF",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +17.4% today",
-      "price": 0.1878
+      "price": 0.1878,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "EDHL",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +15.8% today",
-      "price": 4.17
+      "price": 4.17,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "DAJL",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +41.1% today",
-      "price": 0.5079
+      "price": 0.5079,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "AGRDF",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +20.0% today",
-      "price": 0.12
+      "price": 0.12,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "TAGP",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +37.0% today",
-      "price": 0.26
+      "price": 0.26,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "WLMIF",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +15.4% today",
-      "price": 3.19
+      "price": 3.19,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "OYCG",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +386.7% today",
-      "price": 0.4867
+      "price": 0.4867,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "OLVI",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +31.4% today",
-      "price": 0.2496
+      "price": 0.2496,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "RYSKF",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +21.2% today",
-      "price": 0.4605
+      "price": 0.4605,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "AREN",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +15.9% today",
-      "price": 0.95
+      "price": 0.95,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "FTURF",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +22.0% today",
-      "price": 0.2159
+      "price": 0.2159,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "AUEEF",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +56.2% today",
-      "price": 0.125
+      "price": 0.125,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "PEIMF",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +41.8% today",
-      "price": 0.1134
+      "price": 0.1134,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "ZAIRF",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +65.3% today",
-      "price": 0.1488
+      "price": 0.1488,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "NVNXF",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +16.7% today",
-      "price": 0.1225
+      "price": 0.1225,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "PEMIF",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +21.0% today",
-      "price": 0.15472
+      "price": 0.15472,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "LINMD",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +31.7% today",
-      "price": 0.1436
+      "price": 0.1436,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "DCX",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +15.4% today",
-      "price": 0.729
+      "price": 0.729,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "GWSO",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +100.0% today",
-      "price": 0.2
+      "price": 0.2,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "KIRGF",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +41.4% today",
-      "price": 0.495
+      "price": 0.495,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "NVLPF",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +18.5% today",
-      "price": 0.308
+      "price": 0.308,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "LSE",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +16.7% today",
-      "price": 5.08
+      "price": 5.08,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "AIOS",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +16.0% today",
-      "price": 12.34
+      "price": 12.34,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "MURMF",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +17.1% today",
-      "price": 0.144
+      "price": 0.144,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "NSFDF",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +22.6% today",
-      "price": 0.2865
+      "price": 0.2865,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "KOGDF",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +36.6% today",
-      "price": 0.1098
+      "price": 0.1098,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "AENRF",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +50.5% today",
-      "price": 0.1144
+      "price": 0.1144,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "VNPKF",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +28.4% today",
-      "price": 0.61492
+      "price": 0.61492,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "ALCE",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +17400.0% today",
-      "price": 0.105
+      "price": 0.105,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "STLNF",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +16.8% today",
-      "price": 0.18
+      "price": 0.18,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "GLGI",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +24.6% today",
-      "price": 0.245
+      "price": 0.245,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "AXTLF",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +15199900.0% today",
-      "price": 0.152
+      "price": 0.152,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "TVGN",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +24.1% today",
-      "price": 5.57
+      "price": 5.57,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "WOSSF",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +37.4% today",
-      "price": 0.17
+      "price": 0.17,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "EBYH",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +21.2% today",
-      "price": 0.2422
+      "price": 0.2422,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "KBRIF",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +52.6% today",
-      "price": 0.25
+      "price": 0.25,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "EUDA",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +26.8% today",
-      "price": 19.0
+      "price": 19.0,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "TERS",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +29.3% today",
-      "price": 0.323168
+      "price": 0.323168,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "SFWL",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +20.1% today",
-      "price": 0.841
+      "price": 0.841,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "MPGPF",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +62.1% today",
-      "price": 2.27
+      "price": 2.27,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "KSMCF",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +21.6% today",
-      "price": 0.1435
+      "price": 0.1435,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "VDOMF",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +16.6% today",
-      "price": 0.1197
+      "price": 0.1197,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "GFLT",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +162.3% today",
-      "price": 2.0
+      "price": 2.0,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "ASPU",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +21.1% today",
-      "price": 0.3195
+      "price": 0.3195,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "BRWC",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +30.4% today",
-      "price": 0.5865
+      "price": 0.5865,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "FRCEF",
       "type": "PRICE_SPIKE",
       "score": 15,
       "detail": "Up +28.8% today",
-      "price": 2.1
+      "price": 2.1,
+      "session": "afterhours",
+      "strategy_score": 40,
+      "strategy_action": "انتظار",
+      "strategy_reasons": [
+        "اندفاع سعري",
+        "سهم صغير"
+      ]
     },
     {
       "symbol": "OMH",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -71.1% today",
-      "price": 0.1454
+      "price": 0.1454,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     },
     {
       "symbol": "CISS",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -80.3% today",
-      "price": 0.1024
+      "price": 0.1024,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     },
     {
       "symbol": "OTLK",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -24.2% today",
-      "price": 1.065
+      "price": 1.065,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     },
     {
       "symbol": "CAPR",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -64.5% today",
-      "price": 6.995
+      "price": 6.995,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     },
     {
       "symbol": "STAK",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -72.8% today",
-      "price": 2.52
+      "price": 2.52,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     },
     {
       "symbol": "VTIX",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -17.4% today",
-      "price": 2.18
+      "price": 2.18,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     },
     {
       "symbol": "MPLT",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -72.9% today",
-      "price": 9.905
+      "price": 9.905,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     },
     {
       "symbol": "PFSA",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -28.7% today",
-      "price": 1.22
+      "price": 1.22,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     },
     {
       "symbol": "VIVK",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -27.8% today",
-      "price": 2.1
+      "price": 2.1,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     },
     {
       "symbol": "SKYQ",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -18.1% today",
-      "price": 3.85
+      "price": 3.85,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     },
     {
       "symbol": "YYAI",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -73.5% today",
-      "price": 3.0
+      "price": 3.0,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     },
     {
       "symbol": "VCIG",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -18.4% today",
-      "price": 0.42
+      "price": 0.42,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     },
     {
       "symbol": "BNRG",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -16.8% today",
-      "price": 0.558
+      "price": 0.558,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     },
     {
       "symbol": "NIXX",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -18.3% today",
-      "price": 0.6924
+      "price": 0.6924,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     },
     {
       "symbol": "FAMI",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -21.7% today",
-      "price": 0.151
+      "price": 0.151,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     },
     {
       "symbol": "CPHI",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -19.1% today",
-      "price": 1.23
+      "price": 1.23,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     },
     {
       "symbol": "DCOY",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -25.8% today",
-      "price": 3.74
+      "price": 3.74,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     },
     {
       "symbol": "NEXR",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -25.0% today",
-      "price": 0.2511
+      "price": 0.2511,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     },
     {
       "symbol": "FFAI",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -21.1% today",
-      "price": 5.12
+      "price": 5.12,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     },
     {
       "symbol": "BIOT",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -82.3% today",
-      "price": 2.74
+      "price": 2.74,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     },
     {
       "symbol": "BXBL",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -19.8% today",
-      "price": 3.94
+      "price": 3.94,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     },
     {
       "symbol": "EGG",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -59.8% today",
-      "price": 2.05
+      "price": 2.05,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     },
     {
       "symbol": "LTSRF",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -61.1% today",
-      "price": 0.185
+      "price": 0.185,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     },
     {
       "symbol": "ADVB",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -24.3% today",
-      "price": 14.36
+      "price": 14.36,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     },
     {
       "symbol": "BCAR",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -24.7% today",
-      "price": 7.79
+      "price": 7.79,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     },
     {
       "symbol": "BYLTF",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -17.2% today",
-      "price": 0.16155
+      "price": 0.16155,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     },
     {
       "symbol": "BAOS",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -39.7% today",
-      "price": 0.706
+      "price": 0.706,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     },
     {
       "symbol": "INDP",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -21.5% today",
-      "price": 2.05
+      "price": 2.05,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     },
     {
       "symbol": "MNDR",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -16.5% today",
-      "price": 1.82
+      "price": 1.82,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     },
     {
       "symbol": "TMDE",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -15.0% today",
-      "price": 0.8
+      "price": 0.8,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     },
     {
       "symbol": "LMEDD",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -22.8% today",
-      "price": 0.5403
+      "price": 0.5403,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     },
     {
       "symbol": "AKAN",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -18.4% today",
-      "price": 6.31
+      "price": 6.31,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     },
     {
       "symbol": "AMSS",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -19.1% today",
-      "price": 0.8576
+      "price": 0.8576,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     },
     {
       "symbol": "NVVE",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -33.1% today",
-      "price": 1.606
+      "price": 1.606,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     },
     {
       "symbol": "CCCFD",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -59.1% today",
-      "price": 0.1113
+      "price": 0.1113,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     },
     {
       "symbol": "FEMY",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -17.5% today",
-      "price": 3.06
+      "price": 3.06,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     },
     {
       "symbol": "MKZR",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -19.9% today",
-      "price": 1.25
+      "price": 1.25,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     },
     {
       "symbol": "NREDF",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -20.5% today",
-      "price": 0.31
+      "price": 0.31,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     },
     {
       "symbol": "EJH",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -28.3% today",
-      "price": 1.385
+      "price": 1.385,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     },
     {
       "symbol": "TCGDF",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -36.4% today",
-      "price": 0.35
+      "price": 0.35,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     },
     {
       "symbol": "TKLS",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -46.9% today",
-      "price": 0.26
+      "price": 0.26,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     },
     {
       "symbol": "RBWRF",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -21.4% today",
-      "price": 0.2202
+      "price": 0.2202,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     },
     {
       "symbol": "REZZF",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -15.1% today",
-      "price": 0.111
+      "price": 0.111,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     },
     {
       "symbol": "AFGYF",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -18.9% today",
-      "price": 0.1051
+      "price": 0.1051,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     },
     {
       "symbol": "SKYI",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -20.0% today",
-      "price": 0.2
+      "price": 0.2,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     },
     {
       "symbol": "DGIPF",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -17.5% today",
-      "price": 0.15605
+      "price": 0.15605,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     },
     {
       "symbol": "PTEAF",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -27.1% today",
-      "price": 1.05
+      "price": 1.05,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     },
     {
       "symbol": "FOXTF",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -17.9% today",
-      "price": 0.115
+      "price": 0.115,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     },
     {
       "symbol": "SCDA",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -17.0% today",
-      "price": 0.3488
+      "price": 0.3488,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     },
     {
       "symbol": "GDSRF",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -19.4% today",
-      "price": 0.25
+      "price": 0.25,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     },
     {
       "symbol": "GALKF",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -24.3% today",
-      "price": 0.2121
+      "price": 0.2121,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     },
     {
       "symbol": "RECT",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -19.9% today",
-      "price": 1.13
+      "price": 1.13,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     },
     {
       "symbol": "APEOD",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -49.7% today",
-      "price": 0.2762
+      "price": 0.2762,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     },
     {
       "symbol": "GRYCF",
       "type": "PRICE_CRASH",
       "score": 10,
       "detail": "Down -17.2% today",
-      "price": 0.2135
+      "price": 0.2135,
+      "session": "afterhours",
+      "strategy_score": 10,
+      "strategy_action": "لا تشتري",
+      "strategy_reasons": [
+        "انخفاض كبير"
+      ]
     }
-  ]
+  ],
+  "session": "afterhours",
+  "session_name": "الجلسة المسائية (After-Hours)"
 }
