@@ -770,7 +770,7 @@ class WhaleScanner:
             if data.get('cmf', 0) > 0.15 and data.get('obv_above_sma'):
                 signals_for_stock.append({
                     'type': 'ACCUMULATION',
-                    'detail': f"CMF={data.get('cmf', 0)} + OBV صاعد",
+                    'detail': f"قوة التجميع={data.get('cmf', 0)} + OBV صاعد",
                 })
 
             if data.get('high_volume_days_5', 0) >= 3:

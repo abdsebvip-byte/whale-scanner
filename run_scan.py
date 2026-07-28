@@ -30,7 +30,7 @@ def generate_excel(signals, session_name):
     ws = wb.active
     ws.title = "الإشارات"
     headers = [
-        "الرمز", "السعر", "Z-Score", "حجم نسبي", "CMF", "OBV",
+        "الرمز", "السعر", "Z-Score", "حجم نسبي", "قوة التجميع", "OBV",
         "RSI", "انكماش Bollinger", "شذوذ AI", "عدد الإشارات", "الإشارات"
     ]
     header_fill = PatternFill(start_color="1a1a2e", end_color="1a1a2e", fill_type="solid")
@@ -163,7 +163,7 @@ def send_telegram(signals, session_name):
             sig_types = [s['type'] for s in sig.get('signals', [])]
             icon = '🔴' if len(sig_types) >= 3 else '🟡' if len(sig_types) >= 2 else '🟢'
             msg += f"{icon} {i}. {sig['symbol']} — ${sig.get('price', 0):.2f}\n"
-            msg += f"   Z={vd.get('z_score', 0)} | حجم={vd.get('relative_volume', 0)}x | CMF={acc.get('cmf', 0)}\n"
+            msg += f"   Z={vd.get('z_score', 0)} | حجم={vd.get('relative_volume', 0)}x | قوة التجميع={acc.get('cmf', 0)}\n"
             msg += f"   {' + '.join(sig_types)}\n\n"
 
     try:

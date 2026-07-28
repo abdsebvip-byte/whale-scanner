@@ -29,9 +29,6 @@ from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.preprocessing import StandardScaler
 import pickle
 
-if sys.platform == 'win32':
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
-
 DB_PATH = "scanner_history.db"
 MODEL_PATH = "explosion_model.pkl"
 PREDICTIONS_PATH = "predictions.json"
@@ -566,7 +563,7 @@ def run_post_session_scan():
         print(f"\n{i}. {icon} {p['symbol']} — ${p['price']}")
         print(f"   احتمال الانفجار: {prob}%")
         print(f"   حجم={p['volume_ratio']}x | Z={p['z_score']} | RSI={p['rsi']}")
-        print(f"   CMF={p['cmf']} | Squeeze={'نعم' if p['bollinger_squeeze'] else 'لا'} | OBV={'صاعد' if p['obv_above_sma'] else 'هابط'}")
+        print(f"   قوة التجميع={p['cmf']} | انكماش={'نعم' if p['bollinger_squeeze'] else 'لا'} | OBV={'صاعد' if p['obv_above_sma'] else 'هابط'}")
 
     conn.close()
     print(f"\n[✓] محفوظ في {PREDICTIONS_PATH}")

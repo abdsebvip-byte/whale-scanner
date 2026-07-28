@@ -667,7 +667,7 @@ def render_scanner(signals):
     with col3:
         max_price = st.number_input("أعلى سعر", value=1000, step=10)
     with col4:
-        sort_by = st.selectbox("ترتيب", ["درجة الحوت", "Z-Score", "CMF", "السعر"])
+        sort_by = st.selectbox("ترتيب", ["درجة الحوت", "Z-Score", "قوة التجميع", "السعر"])
 
     grade_order = {'A+': 6, 'A': 5, 'B+': 4, 'B': 3, 'C': 2, 'D': 1}
     min_grade_val = grade_order.get(min_grade, 1)
@@ -696,7 +696,7 @@ def render_scanner(signals):
         filtered.sort(key=lambda x: x.get('whale_score', 0), reverse=True)
     elif sort_by == "Z-Score":
         filtered.sort(key=lambda x: x.get('volume_data', {}).get('z_score', 0), reverse=True)
-    elif sort_by == "CMF":
+    elif sort_by == "قوة التجميع":
         filtered.sort(key=lambda x: x.get('accumulation', {}).get('cmf', 0), reverse=True)
     elif sort_by == "السعر":
         filtered.sort(key=lambda x: x.get('price', 0))
@@ -712,7 +712,7 @@ def render_scanner(signals):
             export_data.append({
                 'الرمز': s['symbol'], 'السعر': round(s.get('price', 0), 2),
                 'درجة الحوت': s.get('whale_score', 0), 'الدرجة': s.get('grade', '?'),
-                'Z-Score': vd.get('z_score', 0), 'CMF': acc.get('cmf', 0),
+                'Z-Score': vd.get('z_score', 0), 'قوة التجميع': acc.get('cmf', 0),
                 'RSI': s.get('rsi', 50), 'تغيير 5 أيام': f"{s.get('change_5d', 0):+.1f}%",
             })
         csv = pd.DataFrame(export_data).to_csv(index=False, encoding='utf-8-sig')
@@ -731,7 +731,7 @@ def render_scanner(signals):
                 acc = sig.get('accumulation', {})
                 bb = sig.get('bollinger', {})
                 st.markdown(f"**الحجم:** Z={vd.get('z_score', 0)} | نسبي={vd.get('relative_volume', 0)}x | يوم={vd.get('today_volume', 0):,}")
-                st.markdown(f"**المؤشرات:** CMF={acc.get('cmf', 0)} | OBV={acc.get('obv_trend', '')} | RSI={sig.get('rsi', 50)}")
+                st.markdown(f"**المؤشرات:** قوة التجميع={acc.get('cmf', 0)} | OBV={acc.get('obv_trend', '')} | RSI={sig.get('rsi', 50)}")
                 st.markdown(f"**Bollinger:** {'انكماش' if bb.get('squeeze') else 'عادي'} | AI={sig.get('anomaly_score', 0)}")
                 st.markdown(f"**تغيير 5 أيام:** {sig.get('change_5d', 0):+.1f}%")
 
@@ -1051,7 +1051,7 @@ def render_predictions():
                     st.markdown(f"**حجم نسبي:** {p.get('volume_ratio', 0)}x")
                     st.markdown(f"**Z-Score:** {p.get('z_score', 0)}")
                     st.markdown(f"**RSI:** {p.get('rsi', 50)}")
-                    st.markdown(f"**CMF:** {p.get('cmf', 0)}")
+                    st.markdown(f"**قوة التجميع:** {p.get('cmf', 0)}")
                     st.markdown(f"**Bollinger:** {'انكماش' if p.get('bollinger_squeeze') else 'عادي'}")
                     st.markdown(f"**OBV:** {'صاعد' if p.get('obv_above_sma') else 'هابط'}")
                     st.markdown(f"**MACD:** {p.get('macd_diff', 0)}")
