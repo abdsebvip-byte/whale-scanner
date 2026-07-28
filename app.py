@@ -186,7 +186,7 @@ def main():
 
     # ═══════════════════════════════════════════════════════════
     if page == 'home':
-        page_home(signals, scan_time)
+        page_home(signals, scan_time, session_name)
     elif page == 'predict':
         page_predictions(predictions, preds)
     elif page == 'sessions':
@@ -204,7 +204,7 @@ def main():
 # ═══════════════════════════════════════════════════════════════
 #  الرئيسية
 # ═══════════════════════════════════════════════════════════════
-def page_home(signals, scan_time):
+def page_home(signals, scan_time, session_name):
     total = len(signals)
     if total == 0 and not predictions_available():
         st.markdown("""
