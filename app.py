@@ -434,7 +434,7 @@ def page_scanner(preds):
     with c1:
         min_prob = st.slider("Min Probability %", 0, 100, 20, 5)
     with c2:
-        max_price = st.number_input("Max Price $", value=500, step=50)
+        max_price = st.number_input("Max Price $", value=10, step=1)
     with c3:
         sort_by = st.selectbox("Sort By", ["Probability %", "Vol Ratio", "Price", "Z-Score"])
 
