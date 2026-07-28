@@ -903,7 +903,7 @@ def render_history():
                     mem = json.load(f)
                 lessons = mem.get('lessons', [])
                 if lessons:
-                    st.markdown(f"**{len(lesson)} درس مُتعلّم**")
+                    st.markdown(f"**{len(lessons)} درس مُتعلّم**")
                     for l in lessons[-10:]:
                         st.markdown(f"- {l['symbol']}: تغيّر={l.get('actual_change_pct', 0):.1f}% | أسباب={l.get('reason_we_missed', [])}")
                 else:

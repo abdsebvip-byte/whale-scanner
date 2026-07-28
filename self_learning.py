@@ -1,6 +1,7 @@
 import json
 import os
 import pandas as pd
+import requests
 import yfinance as yf
 from datetime import datetime, timedelta
 
@@ -34,7 +35,7 @@ def record_scan_result(memory, signals):
 
 def analyze_misses(memory, top_movers_pct=5.0):
     """
-    After market close, fetch top movers.
+    After market close, fetch top movers using yfinance.
     Compare with what we scanned earlier.
     Identify stocks that moved significantly but were NOT in our signals.
     """
@@ -45,29 +46,34 @@ def analyze_misses(memory, top_movers_pct=5.0):
     last_scan = history[-1]
     scanned_symbols = set(last_scan.get("symbols", []))
 
-    try:
-        screener = yf.Screner()
-        gainers = screener.get_day_gainers()
-        losers = screener.get_day_losers()
-    except Exception:
-        try:
-            url = "https://query1.finance.yahoo.com/v1/finance/screener/predefined/saved?scrIds=day_gainers&count=25"
-            gainers_resp = yf.utils.get_json(url)
-            gainers = []
-        except Exception:
-            return [], []
-
+    # Get top gainers from TradingView (same API the scanner uses)
     big_movers = []
     try:
-        if gainers is not None and hasattr(gainers, 'rows'):
-            for row in gainers.rows[:25]:
-                if hasattr(row, 'symbol') and hasattr(row, 'regular_market_change_percent'):
-                    if abs(row.regular_market_change_percent) > top_movers_pct:
-                        big_movers.append({
-                            "symbol": row.symbol,
-                            "change_pct": row.regular_market_change_percent,
-                            "price": getattr(row, 'regular_market_price', 0),
-                        })
+        url = "https://scanner.tradingview.com/america/scan"
+        payload = {
+            "filter": [
+                {"left": "change", "operation": "greater", "right": top_movers_pct},
+                {"left": "volume", "operation": "greater", "right": 100000}
+            ],
+            "markets": ["america"],
+            "symbols": {"query": {"types": ["stock"]}, "tickers": []},
+            "columns": ["name", "close", "change", "volume"],
+            "sort": {"sortBy": "change", "sortOrder": "desc"},
+            "range": [0, 25]
+        }
+        headers = {"User-Agent": "Mozilla/5.0", "Content-Type": "application/json"}
+        resp = requests.post(url, json=payload, headers=headers, timeout=10)
+        if resp.status_code == 200:
+            data = resp.json()
+            for item in data.get("data", []):
+                sym = item.get("s", "").split(":")[-1]
+                d = item.get("d", [])
+                if sym and len(d) >= 3:
+                    big_movers.append({
+                        "symbol": sym,
+                        "change_pct": float(d[2] or 0),
+                        "price": float(d[1] or 0),
+                    })
     except Exception:
         pass
 
@@ -118,6 +124,8 @@ def analyze_misses(memory, top_movers_pct=5.0):
                 lesson["reason_we_missed"].append("oversold_bounce_missed")
             if rsi > 70:
                 lesson["reason_we_missed"].append("strong_momentum_continued")
+            if not lesson["reason_we_missed"]:
+                lesson["reason_we_missed"].append("unknown_pattern")
 
             lessons.append(lesson)
 
