@@ -1,14 +1,19 @@
-name: Whale Scanner - Full US Market Scan
+name: Whale Scanner — Post-Session Predictions
 
 on:
   schedule:
-    - cron: '0 13,17,21,1,5,9 * * 1-5'
+    # After pre-market ends (6:00 AM ET = 10:00 UTC)
+    - cron: '5 10 * * 1-5'
+    # After regular session ends (4:00 PM ET = 20:00 UTC)
+    - cron: '5 20 * * 1-5'
+    # After after-hours ends (8:00 PM ET = 00:00 UTC+1)
+    - cron: '5 0 * * 2-6'
   workflow_dispatch:
 
 jobs:
-  scan:
+  predict:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     permissions:
       contents: write
 
@@ -24,23 +29,20 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Run Whale Scanner
+      - name: Run Predictive Scanner
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        run: python run_scan.py
+        run: python predictive_scanner.py
+
+      - name: Train Model (weekly)
+        if: github.event.schedule == '0 0 * * 2-6'
+        run: python -c "from predictive_scanner import *; conn=init_db(); train_model(conn); conn.close()"
 
       - name: Commit results
         run: |
           git config user.name "whale-scanner"
           git config user.email "scanner@github-actions"
-          git add scan_results.json scanner_history.db scanner_memory.json
-          git diff --staged --quiet || git commit -m "Scan results $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git add scan_results.json predictions.json explosion_model.pkl scanner_history.db
+          git diff --staged --quiet || git commit -m "Predictions $(date -u '+%Y-%m-%d %H:%M UTC')"
           git push
-
-      - name: Upload results
-        uses: actions/upload-artifact@v4
-        with:
-          name: scan-results
-          path: scan_results.json
-          retention-days: 7
