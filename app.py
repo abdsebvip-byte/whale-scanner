@@ -20,6 +20,12 @@ st.markdown("""
     .block-container {padding-top: 1rem;}
     .info-box {background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 16px; margin-bottom: 12px;}
     .warning-box {background: #3d2d1a; border: 1px solid #ff8c00; border-radius: 8px; padding: 16px; margin-bottom: 12px;}
+    .signal-badge {display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin: 2px;}
+    .badge-volume {background: #1a3d5c; color: #63b3ed;}
+    .badge-squeeze {background: #5c3d1a; color: #ed8936;}
+    .badge-accum {background: #1a5c3d; color: #48bb78;}
+    .badge-options {background: #3d1a5c; color: #9f7aea;}
+    .badge-short {background: #5c1a1a; color: #fc8181;}
 </style>
 """, unsafe_allow_html=True)
 
@@ -59,14 +65,24 @@ def get_stock_chart(symbol, period="1mo"):
         return None
 
 
+SIGNAL_TYPE_LABELS = {
+    'VOLUME_ANOMALY': '📊 حجم غير عادي',
+    'BOLLINGER_SQUEEZE': '🔴 انكماش Bollinger',
+    'ACCUMULATION': '🐋 تجميع أموال',
+    'MULTI_DAY_VOLUME': '📈 حجم عالي متعدد الأيام',
+    'UNUSUAL_OPTIONS': '🔥 خيارات غير عادية',
+    'HIGH_SHORT_INTEREST': '⬆️ بيع عَمَي مرتفع',
+    'ANOMALY_DETECTED': '🤖 شذوذ ذكاء اصطناعي',
+}
+
+
 def main():
     st.title("🐋 ماسح الحيتان — السوق الأمريكي")
 
     st.markdown("""
     <div class="warning-box">
-    <b>تنبيه مهم:</b> هذا الماسح يعرض <b>بيانات حقيقية</b> من البورصة فقط.
-    لا يعطي توصيات شراء أو بيع أو نسب أرباح.
-    أنت تقرر بناءً على المعلومات المعروضة. قراراتك المالية مسؤوليتك.
+    <b>تنبيه:</b> بيانات حقيقية فقط. لا توصيات شراء أو بيع.
+    هذه إشارات إحصائية — ليست تنبؤات. قراراتك المالية مسؤوليتك.
     </div>
     """, unsafe_allow_html=True)
 
@@ -79,32 +95,30 @@ def main():
     scan_time = data.get('scan_time', 'غير معروف')
     scan_session = data.get('session_name', 'غير معروف')
 
-    st.markdown(f"**آخر مسح:** {scan_time}  |  **الجلسة:** {scan_session}  |  **الأسهم المفحوصة:** {len(signals)}")
+    st.markdown(f"**آخر مسح:** {scan_time}  |  **الجلسة:** {scan_session}")
 
     st.divider()
 
-    # Sidebar filters
+    # Sidebar
     st.sidebar.header("🔍 الفلاتر")
 
-    min_zscore = st.sidebar.slider(
-        "Z-Score الأدنى",
-        min_value=0.0, max_value=10.0, value=2.0, step=0.5,
-        help="يقيس كم حجم التداول اليوم غير عادي مقارنة بـ 20 يوم"
-    )
-    min_rvol = st.sidebar.slider(
-        "الحجم النسبي الأدنى",
-        min_value=0.0, max_value=20.0, value=2.0, step=0.5,
-        help="كم مرة الحجم أكبر من المتوسط"
-    )
+    min_zscore = st.sidebar.slider("Z-Score الأدنى", 0.0, 10.0, 2.0, 0.5)
+    min_signals = st.sidebar.slider("الحد الأدنى لعدد الإشارات", 1, 6, 1)
     max_price = st.sidebar.number_input("أعلى سعر ($)", value=1000, step=10)
     min_price = st.sidebar.number_input("أقل سعر ($)", value=0, step=1)
-    show_short = st.sidebar.checkbox("بيع عَمَي مرتفع فقط (>15%)", value=False)
-    show_insider = st.sidebar.checkbox("شراء مسؤولين فقط", value=False)
+
+    signal_filter = st.sidebar.multiselect(
+        "نوع الإشارة",
+        options=list(SIGNAL_TYPE_LABELS.keys()),
+        default=list(SIGNAL_TYPE_LABELS.keys()),
+        format_func=lambda x: SIGNAL_TYPE_LABELS.get(x, x)
+    )
+
     sort_by = st.sidebar.selectbox("ترتيب حسب", [
+        "عدد الإشارات (الأكثر أولاً)",
         "Z-Score (الأعلى أولاً)",
-        "الحجم النسبي (الأعلى أولاً)",
+        "CMF (الأعلى أولاً)",
         "السعر (الأقل أولاً)",
-        "السعر (الأعلى أولاً)",
         "الرمز",
     ])
 
@@ -117,119 +131,97 @@ def main():
         vd = s.get('volume_data', {})
         if vd.get('z_score', 0) < min_zscore:
             continue
-        if vd.get('relative_volume', 0) < min_rvol:
+        sigs = s.get('signals', [])
+        if len(sigs) < min_signals:
             continue
-        if show_short and not s.get('short_data'):
-            continue
-        if show_insider and not s.get('insider_data'):
+        sig_types = [sig['type'] for sig in sigs]
+        if not any(st in signal_filter for st in sig_types):
             continue
         filtered.append(s)
 
     # Sort
-    if sort_by == "Z-Score (الأعلى أولاً)":
+    if sort_by == "عدد الإشارات (الأكثر أولاً)":
+        filtered.sort(key=lambda x: len(x.get('signals', [])), reverse=True)
+    elif sort_by == "Z-Score (الأعلى أولاً)":
         filtered.sort(key=lambda x: x.get('volume_data', {}).get('z_score', 0), reverse=True)
-    elif sort_by == "الحجم النسبي (الأعلى أولاً)":
-        filtered.sort(key=lambda x: x.get('volume_data', {}).get('relative_volume', 0), reverse=True)
+    elif sort_by == "CMF (الأعلى أولاً)":
+        filtered.sort(key=lambda x: x.get('accumulation', {}).get('cmf', 0), reverse=True)
     elif sort_by == "السعر (الأقل أولاً)":
         filtered.sort(key=lambda x: x.get('price', 0))
-    elif sort_by == "السعر (الأعلى أولاً)":
-        filtered.sort(key=lambda x: x.get('price', 0), reverse=True)
     elif sort_by == "الرمز":
         filtered.sort(key=lambda x: x.get('symbol', ''))
 
     # Stats
-    col1, col2, col3, col4 = st.columns(4)
-    col1.metric("📊 حجم غير عادي", len([s for s in filtered if s.get('volume_data', {}).get('z_score', 0) > 2]))
-    col2.metric("🔥 بيع عَمَي", len([s for s in filtered if s.get('short_data')]))
-    col3.metric("👤 مسؤولين", len([s for s in filtered if s.get('insider_data')]))
-    col4.metric("📋 الإجمالي", len(filtered))
+    col1, col2, col3, col4, col5, col6 = st.columns(6)
+    col1.metric("📊 حجم", len([s for s in filtered if any(sig['type'] == 'VOLUME_ANOMALY' for sig in s.get('signals', []))]))
+    col2.metric("🔴 انكماش", len([s for s in filtered if any(sig['type'] == 'BOLLINGER_SQUEEZE' for sig in s.get('signals', []))]))
+    col3.metric("🐋 تجميع", len([s for s in filtered if any(sig['type'] == 'ACCUMULATION' for sig in s.get('signals', []))]))
+    col4.metric("🔥 خيارات", len([s for s in filtered if any(sig['type'] == 'UNUSUAL_OPTIONS' for sig in s.get('signals', []))]))
+    col5.metric("🤖 شذوذ", len([s for s in filtered if any(sig['type'] == 'ANOMALY_DETECTED' for sig in s.get('signals', []))]))
+    col6.metric("📋 الإجمالي", len(filtered))
 
     st.divider()
 
-    # Explanation section
-    st.subheader("📖 شرح البيانات")
+    # Explanation
+    st.subheader("📖 شرح الإشارات")
     st.markdown("""
     <div class="info-box">
-    <b>Z-Score (الانحراف المعياري):</b><br>
-    حساب إحصائي حقيقي يقارن حجم التداول اليوم بـ 20 يوم سابقة.<br>
-    • Z = 2.0 → الحجم مرتفع جداً (يحدث في 5% فقط من الأيام)<br>
-    • Z = 3.0 → الحجم استثنائي (1%)<br>
-    • Z > 4.0 → الحجم نادر جداً — قد يعني تجميع أو خبر قادم<br><br>
-
-    <b>الحجم النسبي (Relative Volume):</b><br>
-    كم مرة حجم اليوم أكبر من المتوسط. 3x = ثلاثة أضعاف العادي.<br><br>
-
-    <b>بيع العَمَي (Short Selling):</b><br>
-    شخص يبيع أسهم لا يملكها بانتظار هبوط السعر.<br>
-    نسبة عالية (>15%) + سعر يصعد = البائعون سيُضطرون للشراء = ضغط شراء إضافي.<br><br>
-
-    <b>شراء المسؤولين الداخليين:</b><br>
-    مدير يشتري أسهم بماله الخاص من SEC filings حكومية.<br>
-    عادة يشترون قبل أخبار جيدة.
+    <b>📊 حجم غير عادي (Z-Score > 2):</b> حجم التداول اليوم أكبر بكثير من المتوسط. قد يشير لتجميع أو خبر قادم.<br><br>
+    <b>🔴 انكماش Bollinger:</b> عرض شريط Bollinger انضغط — السعر يتقلص ويجهز لحركة قوية. "الهدوء قبل العاصفة".<br><br>
+    <b>🐋 تجميع أموال (CMF > 0.15 + OBV صاعد):</b> الأموال الذكية تدخل السهم — السعر ثابت لكن الأموال تزيد.<br><br>
+    <b>📈 حجم عالي متعدد الأيام:</b> 3+ أيام حجم مرتفع — تجميع مستمر وليس حركة عشوائية.<br><br>
+    <b>🔥 خيارات غير عادية:</b> حجم تداول خيارات يتجاوز 3 مرات Open Interest — شخص يعرف شي.<br><br>
+    <b>⬆️ بيع عَمَي مرتفع (>15%):</b> نسبة عالية من الأسهم تباع بيع عَمَي — إذا صعد السعر، البائعون سيُضطرون للشراء.
     </div>
     """, unsafe_allow_html=True)
 
     st.divider()
 
     # Main table
-    st.subheader(f"📋 الأسهم المفحوصة ({len(filtered)} سهم)")
+    st.subheader(f"📋 الأسهم ({len(filtered)} سهم)")
 
     if not filtered:
-        st.warning("لا توجد نتائج تطابق الفلاتر.")
+        st.warning("لا توجد نتائج.")
         return
 
     table_data = []
     for s in filtered:
         vd = s.get('volume_data', {})
-        sd = s.get('short_data', {})
-        idata = s.get('insider_data', {})
+        acc = s.get('accumulation', {})
+        bb = s.get('bollinger', {})
+
+        sigs = s.get('signals', [])
+        sig_names = [SIGNAL_TYPE_LABELS.get(sig['type'], sig['type']) for sig in sigs]
 
         row = {
             'الرمز': s['symbol'],
             'السعر ($)': f"${s.get('price', 0):.2f}",
+            'عدد الإشارات': len(sigs),
+            'الإشارات': ' + '.join(sig_names),
             'Z-Score': vd.get('z_score', '-'),
             'الحجم النسبي': f"{vd.get('relative_volume', 0)}x",
-            'حجم اليوم': f"{vd.get('today_volume', 0):,}",
-            'المتوسط': f"{vd.get('avg_volume_20d', 0):,}",
-            'تغيير 5 أيام': f"{vd.get('change_5d', 0):+.1f}%",
+            'CMF': acc.get('cmf', '-'),
+            'OBV': acc.get('obv_trend', '-'),
+            'RSI': s.get('rsi', '-'),
+            'تغيير 5 أيام': f"{s.get('change_5d', 0):+.1f}%",
         }
 
-        if sd and sd.get('short_percent'):
-            row['بيع عَمَي'] = f"{sd['short_percent']*100:.1f}%"
-            row['أيام التغطية'] = f"{sd.get('days_to_cover', 0)}"
+        # Options data
+        for sig in sigs:
+            if sig['type'] == 'UNUSUAL_OPTIONS':
+                opt = sig.get('options_data', {})
+                row['خيارات'] = f"{opt.get('count', 0)} عقود — {opt.get('bias', '')}"
 
-        if idata:
-            row['مسؤولين'] = f"{idata.get('count', 0)} مشتريات"
-            row['قيمة الشراء'] = f"${idata.get('total_value', 0):,.0f}"
+        # Short data
+        for sig in sigs:
+            if sig['type'] == 'HIGH_SHORT_INTEREST':
+                sd = sig.get('short_data', {})
+                row['بيع عَمَي'] = f"{sd.get('short_percent', 0)*100:.1f}%"
 
         table_data.append(row)
 
     df = pd.DataFrame(table_data)
-    st.dataframe(df, use_container_width=True, height=500)
-
-    st.divider()
-
-    # Charts
-    c1, c2 = st.columns([2, 1])
-    with c1:
-        st.subheader("Z-Score")
-        z_scores = [s.get('volume_data', {}).get('z_score', 0) for s in filtered]
-        if z_scores:
-            fig = px.histogram(x=z_scores, nbins=15, color_discrete_sequence=['#00cc96'])
-            fig.update_layout(height=300, margin=dict(l=0, r=0, t=0, b=0), showlegend=False)
-            fig.update_xaxes(title="Z-Score")
-            fig.update_yaxes(title="عدد")
-            st.plotly_chart(fig, use_container_width=True)
-
-    with c2:
-        st.subheader("الحجم النسبي")
-        rvols = [s.get('volume_data', {}).get('relative_volume', 0) for s in filtered]
-        if rvols:
-            fig2 = px.histogram(x=rvols, nbins=15, color_discrete_sequence=['#636efa'])
-            fig2.update_layout(height=300, margin=dict(l=0, r=0, t=0, b=0), showlegend=False)
-            fig2.update_xaxes(title="x")
-            fig2.update_yaxes(title="عدد")
-            st.plotly_chart(fig2, use_container_width=True)
+    st.dataframe(df, use_container_width=True, height=600)
 
     st.divider()
 
@@ -241,7 +233,8 @@ def main():
             sig = next((s for s in filtered if s['symbol'] == selected), None)
             if sig:
                 vd = sig.get('volume_data', {})
-                sd = sig.get('short_data', {})
+                acc = sig.get('accumulation', {})
+                bb = sig.get('bollinger', {})
 
                 col_a, col_b = st.columns([1, 1])
 
@@ -252,59 +245,94 @@ def main():
                     st.divider()
                     st.markdown("**📊 الحجم:**")
                     z = vd.get('z_score', 0)
-                    rvol = vd.get('relative_volume', 0)
                     level = 'استثنائي' if z > 3 else 'مرتفع جداً' if z > 2 else 'مرتفع'
                     st.markdown(f"- Z-Score: **{z}** ({level})")
-                    st.markdown(f"- الحجم النسبي: **{rvol}x**")
+                    st.markdown(f"- الحجم النسبي: **{vd.get('relative_volume', 0)}x**")
                     st.markdown(f"- حجم اليوم: **{vd.get('today_volume', 0):,}**")
                     st.markdown(f"- المتوسط 20 يوم: **{vd.get('avg_volume_20d', 0):,}**")
-                    st.markdown(f"- تغيّر 5 أيام: **{vd.get('change_5d', 0):+.1f}%**")
+                    st.markdown(f"- أيام حجم عالي: **{vd.get('high_volume_days_5', 0)}/5**")
 
-                    if sd and sd.get('short_percent'):
-                        st.divider()
-                        st.markdown("**🔥 بيع العَمَي:**")
-                        sp = sd['short_percent'] * 100
-                        st.markdown(f"- النسبة: **{sp:.1f}%**")
-                        st.caption("النسبة المئوية من الأسهم المتداولة المباعة بيع عَمَي")
-                        st.markdown(f"- أيام التغطية: **{sd.get('days_to_cover', 0)}**")
-                        st.caption("عدد الأيام لتغطية جميع صفقات بيع العَمَي")
-                        st.markdown(f"- العوامة: **{sd.get('float_shares', 0)/1e6:.1f}M**")
-                        st.caption("الأسهم المتداولة فعلياً")
+                    st.divider()
+                    st.markdown("**📈 المؤشرات:**")
+                    st.markdown(f"- CMF: **{acc.get('cmf', 0)}** — {'تجميع' if acc.get('cmf', 0) > 0.15 else 'محايد' if acc.get('cmf', 0) > 0 else 'توزيع'}")
+                    st.markdown(f"- OBV: **{acc.get('obv_trend', '')}** — {'فوق المتوسط' if acc.get('obv_above_sma') else 'تحت المتوسط'}")
+                    st.markdown(f"- RSI: **{s.get('rsi', 50)}**")
+                    st.markdown(f"- Bollinger: **{'انكماش' if bb.get('squeeze') else 'عادي'}** (عرض={bb.get('width', 0)})")
+                    st.markdown(f"- تغيّر 5 أيام: **{sig.get('change_5d', 0):+.1f}%**")
+                    st.markdown(f"- شذوذ AI: **{sig.get('anomaly_score', 0)}** {'⚠️' if sig.get('is_anomaly') else '✅'}")
 
-                    if sig.get('insider_data'):
-                        idata = sig['insider_data']
+                    # Signals details
+                    for signal in sig.get('signals', []):
                         st.divider()
-                        st.markdown("**👤 شراء مسؤولين:**")
-                        st.markdown(f"- **{idata.get('count', 0)}** مشتريات من **{idata.get('unique_insiders', 0})** مسؤولين")
-                        st.markdown(f"- القيمة الإجمالية: **${idata.get('total_value', 0):,.0f}**")
+                        label = SIGNAL_TYPE_LABELS.get(signal['type'], signal['type'])
+                        st.markdown(f"**{label}:**")
+                        st.markdown(signal['detail'])
+
+                        if signal['type'] == 'UNUSUAL_OPTIONS':
+                            opt = signal.get('options_data', {})
+                            for c in opt.get('contracts', [])[:5]:
+                                st.markdown(f"  - {c['contract']}: حجم={c['volume']}, OI={c['open_interest']}, نسبة={c['ratio']}x")
+
+                        if signal['type'] == 'HIGH_SHORT_INTEREST':
+                            sd = signal.get('short_data', {})
+                            st.markdown(f"  - نسبة بيع العَمَي: {sd.get('short_percent', 0)*100:.1f}%")
+                            st.markdown(f"  - أيام التغطية: {sd.get('days_to_cover', 0)}")
+                            st.markdown(f"  - العوامة: {sd.get('float_shares', 0)/1e6:.1f}M")
 
                     st.divider()
                     st.markdown("""
                     <div class="warning-box">
-                    هذه بيانات فقط — لا توصيات. قراراتك المالية مسؤوليتك.
+                    بيانات فقط — لا توصيات. قراراتك المالية مسؤوليتك.
                     </div>
                     """, unsafe_allow_html=True)
 
                 with col_b:
                     chart_df = get_stock_chart(selected)
                     if chart_df is not None:
-                        fig3 = go.Figure(data=[go.Candlestick(
+                        fig = go.Figure(data=[go.Candlestick(
                             x=chart_df.index,
                             open=chart_df['Open'],
                             high=chart_df['High'],
                             low=chart_df['Low'],
                             close=chart_df['Close'],
                         )])
-                        fig3.update_layout(
+                        fig.update_layout(
                             height=400, margin=dict(l=0, r=0, t=0, b=0),
                             xaxis_rangeslider_visible=False, template="plotly_dark",
                         )
-                        st.plotly_chart(fig3, use_container_width=True)
+                        st.plotly_chart(fig, use_container_width=True)
                     else:
                         st.info("الرسم البياني غير متاح")
 
     st.divider()
-    st.caption(f"ماسح الحيتان v3.0 | بيانات حقيقية فقط | لا توصيات")
+    st.subheader("🧠 التعلم الذاتي")
+    st.markdown("""
+    <div class="info-box">
+    الماسح يتعلم من أخطائه — عندما يفوّت سهم صعد، يحلل السبب ويُحسّن الكشف في المرة القادمة.
+    </div>
+    """, unsafe_allow_html=True)
+
+    import os
+    memory_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "scanner_memory.json")
+    if os.path.exists(memory_path):
+        with open(memory_path, 'r', encoding='utf-8') as f:
+            mem = json.load(f)
+        lessons = mem.get('lessons', [])
+        if lessons:
+            reason_counts = {}
+            for l in lessons:
+                for r in l.get('reason_we_missed', []):
+                    reason_counts[r] = reason_counts.get(r, 0) + 1
+            st.markdown(f"**عدد الدروس المُتعلّمة:** {len(lessons)}")
+            for reason, count in sorted(reason_counts.items(), key=lambda x: -x[1]):
+                st.markdown(f"- {reason}: {count} مرة")
+        else:
+            st.info("لا توجد دروس بعد — الماسح سيبدأ بالتعلم بعد أول جلسة.")
+    else:
+        st.info("الذاكرة غير موجودة — سيُنشأ تلقائياً بعد أول مسح.")
+
+    st.divider()
+    st.caption(f"ماسح الحيتان v4.0 | بيانات حقيقية فقط | لا توصيات")
 
 
 if __name__ == "__main__":
