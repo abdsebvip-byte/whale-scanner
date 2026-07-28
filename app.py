@@ -5,10 +5,9 @@ import plotly.express as px
 import plotly.graph_objects as go
 from datetime import datetime
 import yfinance as yf
-import numpy as np
 
 st.set_page_config(
-    page_title="ماسح الحيتان - السوق الأمريكي",
+    page_title="ماسح الحيتان — السوق الأمريكي",
     page_icon="🐋",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -19,11 +18,8 @@ st.markdown("""
     .stMetric {background: #0e1117; border: 1px solid #262730; border-radius: 8px; padding: 12px;}
     div[data-testid="stMetricValue"] {font-size: 28px;}
     .block-container {padding-top: 1rem;}
-    .buy-now {background: #1a3d1a; border: 2px solid #00cc96; border-radius: 8px; padding: 12px; text-align: center; font-size: 20px; font-weight: bold; color: #00cc96;}
-    .buy-watch {background: #3d3d1a; border: 2px solid #cccc00; border-radius: 8px; padding: 12px; text-align: center; font-size: 20px; font-weight: bold; color: #cccc00;}
-    .wait {background: #3d2d1a; border: 2px solid #ff8c00; border-radius: 8px; padding: 12px; text-align: center; font-size: 20px; font-weight: bold; color: #ff8c00;}
-    .no-buy {background: #3d1a1a; border: 2px solid #ff4b4b; border-radius: 8px; padding: 12px; text-align: center; font-size: 20px; font-weight: bold; color: #ff4b4b;}
-    .session-info {background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 16px; margin-bottom: 16px;}
+    .info-box {background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 16px; margin-bottom: 12px;}
+    .warning-box {background: #3d2d1a; border: 1px solid #ff8c00; border-radius: 8px; padding: 16px; margin-bottom: 12px;}
 </style>
 """, unsafe_allow_html=True)
 
@@ -63,94 +59,77 @@ def get_stock_chart(symbol, period="1mo"):
         return None
 
 
-TYPE_LABELS = {
-    'SHORT_SQUEEZE': '🔥 ضغط بائعي الشورت',
-    'WHALE_ACCUMULATION': '🐋 تجميع حيتان',
-    'VOLUME_SPIKE': '📊 ارتفاع حجم التداول',
-    'PRICE_SPIKE': '🚀 ارتفاع سعر حاد',
-    'PRICE_CRASH': '📉 انهيار سعر',
-    'INSIDER_CLUSTER': '👤 شراء مسؤولين داخلي',
-}
-
-ACTION_LABELS = {
-    'شراء فوري': '🟢 شراء فوري',
-    'شراء بمراقبة': '🟡 شراء بمراقبة',
-    'انتظار': '🟠 انتظار',
-    'لا تشتري': '🔴 لا تشتري',
-}
-
-ACTION_CSS = {
-    'شراء فوري': 'buy-now',
-    'شراء بمراقبة': 'buy-watch',
-    'انتظار': 'wait',
-    'لا تشتري': 'no-buy',
-}
-
-
 def main():
-    st.title("🐋 ماسح الحيتان - السوق الأمريكي")
-    st.caption("فحص نشاط الحيتان والاستثمارات الكبيرة في السوق الأمريكي بالوقت الحقيقي")
+    st.title("🐋 ماسح الحيتان — السوق الأمريكي")
+
+    st.markdown("""
+    <div class="warning-box">
+    <b>تنبيه مهم:</b> هذا الماسح يعرض <b>بيانات حقيقية</b> من البورصة فقط.
+    لا يعطي توصيات شراء أو بيع أو نسب أرباح.
+    أنت تقرر بناءً على المعلومات المعروضة. قراراتك المالية مسؤوليتك.
+    </div>
+    """, unsafe_allow_html=True)
 
     data = load_results()
     if data is None:
-        st.error("لا توجد نتائج مسح. شغّل الماسح أولاً.")
+        st.error("لا توجد نتائج. شغّل الماسح أولاً.")
         return
 
     signals = data.get('signals', [])
     scan_time = data.get('scan_time', 'غير معروف')
-    scan_session = data.get('session', 'unknown')
-    scan_session_name = data.get('session_name', 'غير معروف')
+    scan_session = data.get('session_name', 'غير معروف')
 
-    st.markdown(f"""
-    <div class="session-info">
-        <b>آخر مسح:</b> {scan_time} &nbsp; | &nbsp;
-        <b>الجلسة:</b> {scan_session_name} &nbsp; | &nbsp;
-        <b>إجمالي الإشارات:</b> {len(signals)}
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown(f"**آخر مسح:** {scan_time}  |  **الجلسة:** {scan_session}  |  **الأسهم المفحوصة:** {len(signals)}")
 
     st.divider()
 
+    # Sidebar filters
     st.sidebar.header("🔍 الفلاتر")
 
-    signal_types = list(set(s['type'] for s in signals))
-
-    selected_types = st.sidebar.multiselect(
-        "نوع الإشارة",
-        options=signal_types,
-        default=signal_types,
-        format_func=lambda x: TYPE_LABELS.get(x, x)
+    min_zscore = st.sidebar.slider(
+        "Z-Score الأدنى",
+        min_value=0.0, max_value=10.0, value=2.0, step=0.5,
+        help="يقيس كم حجم التداول اليوم غير عادي مقارنة بـ 20 يوم"
     )
-
-    min_score = st.sidebar.slider("الحد الأدنى لنقاط الاستراتيجية", 0, 100, 0)
+    min_rvol = st.sidebar.slider(
+        "الحجم النسبي الأدنى",
+        min_value=0.0, max_value=20.0, value=2.0, step=0.5,
+        help="كم مرة الحجم أكبر من المتوسط"
+    )
     max_price = st.sidebar.number_input("أعلى سعر ($)", value=1000, step=10)
     min_price = st.sidebar.number_input("أقل سعر ($)", value=0, step=1)
-
-    action_filter = st.sidebar.multiselect(
-        "فترة الشراء",
-        options=['شراء فوري', 'شراء بمراقبة', 'انتظار', 'لا تشتري'],
-        default=['شراء فوري', 'شراء بمراقبة']
-    )
-
+    show_short = st.sidebar.checkbox("بيع عَمَي مرتفع فقط (>15%)", value=False)
+    show_insider = st.sidebar.checkbox("شراء مسؤولين فقط", value=False)
     sort_by = st.sidebar.selectbox("ترتيب حسب", [
-        "نسبة التطابق (الأعلى أولاً)",
-        "النقاط (الأعلى أولاً)",
+        "Z-Score (الأعلى أولاً)",
+        "الحجم النسبي (الأعلى أولاً)",
         "السعر (الأقل أولاً)",
         "السعر (الأعلى أولاً)",
-        "الرمز"
+        "الرمز",
     ])
 
-    filtered = [s for s in signals
-                if s['type'] in selected_types
-                and s.get('price', 0) >= min_price
-                and s.get('price', 0) <= max_price
-                and s.get('strategy_score', 0) >= min_score
-                and s.get('strategy_action', '') in action_filter]
+    # Filter
+    filtered = []
+    for s in signals:
+        price = s.get('price', 0)
+        if price < min_price or price > max_price:
+            continue
+        vd = s.get('volume_data', {})
+        if vd.get('z_score', 0) < min_zscore:
+            continue
+        if vd.get('relative_volume', 0) < min_rvol:
+            continue
+        if show_short and not s.get('short_data'):
+            continue
+        if show_insider and not s.get('insider_data'):
+            continue
+        filtered.append(s)
 
-    if sort_by == "نسبة التطابق (الأعلى أولاً)":
-        filtered.sort(key=lambda x: x.get('strategy_score', 0), reverse=True)
-    elif sort_by == "النقاط (الأعلى أولاً)":
-        filtered.sort(key=lambda x: x.get('score', 0), reverse=True)
+    # Sort
+    if sort_by == "Z-Score (الأعلى أولاً)":
+        filtered.sort(key=lambda x: x.get('volume_data', {}).get('z_score', 0), reverse=True)
+    elif sort_by == "الحجم النسبي (الأعلى أولاً)":
+        filtered.sort(key=lambda x: x.get('volume_data', {}).get('relative_volume', 0), reverse=True)
     elif sort_by == "السعر (الأقل أولاً)":
         filtered.sort(key=lambda x: x.get('price', 0))
     elif sort_by == "السعر (الأعلى أولاً)":
@@ -159,132 +138,97 @@ def main():
         filtered.sort(key=lambda x: x.get('symbol', ''))
 
     # Stats
-    col1, col2, col3, col4, col5 = st.columns(5)
-    buy_now_count = len([s for s in filtered if s.get('strategy_action') == 'شراء فوري'])
-    buy_watch_count = len([s for s in filtered if s.get('strategy_action') == 'شراء بمراقبة'])
-    wait_count = len([s for s in filtered if s.get('strategy_action') == 'انتظار'])
-    no_buy_count = len([s for s in filtered if s.get('strategy_action') == 'لا تشتري'])
-
-    col1.metric("🟢 شراء فوري", buy_now_count)
-    col2.metric("🟡 شراء بمراقبة", buy_watch_count)
-    col3.metric("🟠 انتظار", wait_count)
-    col4.metric("🔴 لا تشتري", no_buy_count)
-    col5.metric("📋 الإجمالي", len(filtered))
+    col1, col2, col3, col4 = st.columns(4)
+    col1.metric("📊 حجم غير عادي", len([s for s in filtered if s.get('volume_data', {}).get('z_score', 0) > 2]))
+    col2.metric("🔥 بيع عَمَي", len([s for s in filtered if s.get('short_data')]))
+    col3.metric("👤 مسؤولين", len([s for s in filtered if s.get('insider_data')]))
+    col4.metric("📋 الإجمالي", len(filtered))
 
     st.divider()
 
-    # Tabs for sessions
-    tab_all, tab_pre, tab_reg, tab_after = st.tabs([
-        "📋 الكل",
-        "🌅 ماقبل التداول",
-        "☀️ الجلسة الرسمية",
-        "🌙 الجلسة المسائية"
-    ])
+    # Explanation section
+    st.subheader("📖 شرح البيانات")
+    st.markdown("""
+    <div class="info-box">
+    <b>Z-Score (الانحراف المعياري):</b><br>
+    حساب إحصائي حقيقي يقارن حجم التداول اليوم بـ 20 يوم سابقة.<br>
+    • Z = 2.0 → الحجم مرتفع جداً (يحدث في 5% فقط من الأيام)<br>
+    • Z = 3.0 → الحجم استثنائي (1%)<br>
+    • Z > 4.0 → الحجم نادر جداً — قد يعني تجميع أو خبر قادم<br><br>
 
-    def render_signals_table(sig_list, show_session=False):
-        if not sig_list:
-            st.warning("لا توجد إشارات في هذا القسم.")
-            return
+    <b>الحجم النسبي (Relative Volume):</b><br>
+    كم مرة حجم اليوم أكبر من المتوسط. 3x = ثلاثة أضعاف العادي.<br><br>
 
-        table_data = []
-        for s in sig_list:
-            action = s.get('strategy_action', 'لا تشتري')
-            action_display = ACTION_LABELS.get(action, action)
-            strategy_score = s.get('strategy_score', 0)
-            reasons = s.get('strategy_reasons', [])
-            reasons_text = ' + '.join(reasons) if reasons else '-'
+    <b>بيع العَمَي (Short Selling):</b><br>
+    شخص يبيع أسهم لا يملكها بانتظار هبوط السعر.<br>
+    نسبة عالية (>15%) + سعر يصعد = البائعون سيُضطرون للشراء = ضغط شراء إضافي.<br><br>
 
-            profit_pct = s.get('expected_profit_pct', 0)
-            loss_pct = s.get('expected_loss_pct', 0)
-            rr = s.get('risk_reward', 0)
+    <b>شراء المسؤولين الداخليين:</b><br>
+    مدير يشتري أسهم بماله الخاص من SEC filings حكومية.<br>
+    عادة يشترون قبل أخبار جيدة.
+    </div>
+    """, unsafe_allow_html=True)
 
-            row = {
-                'الرمز': s['symbol'],
-                'الإشارة': TYPE_LABELS.get(s['type'], s['type']),
-                'السعر الحالي ($)': f"${s.get('price', 0):.2f}",
-                'نسبة التطابق': f"{strategy_score}%",
-                'الربح المتوقع': f"+{profit_pct}%",
-                'command': action_display,
-                'سعر الدخول ($)': f"${s.get('entry_price', 0):.2f}",
-                'وقف الخسارة ($)': f"${s.get('stop_loss', 0):.2f}",
-                'الهدف الأول ($)': f"${s.get('target1', 0):.2f}",
-                'الهدف الثاني ($)': f"${s.get('target2', 0):.2f}",
-                'المخاطرة/العائد': f"{rr}x",
-                'الأسباب': reasons_text,
-            }
+    st.divider()
 
-            if 'short_percent' in s:
-                row['نسبة الشورت'] = f"{s['short_percent']*100:.1f}%"
-            if 'short_ratio' in s:
-                row['أيام التغطية'] = f"{s.get('short_ratio', 0):.1f}"
-            if 'float_shares' in s:
-                row['العوامة'] = f"{s.get('float_shares', 0)/1e6:.1f}M"
-            if 'zscore' in s:
-                row['Z-Score'] = f"{s.get('zscore', 0):.1f}"
-            if 'rvol' in s:
-                row['الحجم النسبي'] = f"{s.get('rvol', 1):.1f}x"
+    # Main table
+    st.subheader(f"📋 الأسهم المفحوصة ({len(filtered)} سهم)")
 
-            table_data.append(row)
+    if not filtered:
+        st.warning("لا توجد نتائج تطابق الفلاتر.")
+        return
 
-        df = pd.DataFrame(table_data)
-        st.dataframe(df, use_container_width=True, height=500)
+    table_data = []
+    for s in filtered:
+        vd = s.get('volume_data', {})
+        sd = s.get('short_data', {})
+        idata = s.get('insider_data', {})
 
-    with tab_all:
-        render_signals_table(filtered)
+        row = {
+            'الرمز': s['symbol'],
+            'السعر ($)': f"${s.get('price', 0):.2f}",
+            'Z-Score': vd.get('z_score', '-'),
+            'الحجم النسبي': f"{vd.get('relative_volume', 0)}x",
+            'حجم اليوم': f"{vd.get('today_volume', 0):,}",
+            'المتوسط': f"{vd.get('avg_volume_20d', 0):,}",
+            'تغيير 5 أيام': f"{vd.get('change_5d', 0):+.1f}%",
+        }
 
-    with tab_pre:
-        pre_signals = [s for s in filtered if s.get('session') == 'premarket']
-        st.markdown(f"**{len(pre_signals)} إشارة في جلسة ماقبل التداول** (الأكثر احتمالاً للانفجارات)")
-        render_signals_table(pre_signals)
+        if sd and sd.get('short_percent'):
+            row['بيع عَمَي'] = f"{sd['short_percent']*100:.1f}%"
+            row['أيام التغطية'] = f"{sd.get('days_to_cover', 0)}"
 
-    with tab_reg:
-        reg_signals = [s for s in filtered if s.get('session') == 'regular']
-        st.markdown(f"**{len(reg_signals)} إشارة في الجلسة الرسمية**")
-        render_signals_table(reg_signals)
+        if idata:
+            row['مسؤولين'] = f"{idata.get('count', 0)} مشتريات"
+            row['قيمة الشراء'] = f"${idata.get('total_value', 0):,.0f}"
 
-    with tab_after:
-        after_signals = [s for s in filtered if s.get('session') == 'afterhours']
-        st.markdown(f"**{len(after_signals)} إشارة في الجلسة المسائية**")
-        render_signals_table(after_signals)
+        table_data.append(row)
+
+    df = pd.DataFrame(table_data)
+    st.dataframe(df, use_container_width=True, height=500)
 
     st.divider()
 
     # Charts
     c1, c2 = st.columns([2, 1])
-
     with c1:
-        st.subheader("توزيع الإشارات")
-        type_counts = {}
-        for s in filtered:
-            t = TYPE_LABELS.get(s['type'], s['type'])
-            type_counts[t] = type_counts.get(t, 0) + 1
-        if type_counts:
-            fig = px.bar(
-                x=list(type_counts.keys()),
-                y=list(type_counts.values()),
-                color=list(type_counts.keys()),
-                color_discrete_sequence=px.colors.qualitative.Set2,
-            )
-            fig.update_layout(showlegend=False, height=300, margin=dict(l=0, r=0, t=0, b=0))
-            fig.update_xaxes(title="")
-            fig.update_yaxes(title="العدد")
+        st.subheader("Z-Score")
+        z_scores = [s.get('volume_data', {}).get('z_score', 0) for s in filtered]
+        if z_scores:
+            fig = px.histogram(x=z_scores, nbins=15, color_discrete_sequence=['#00cc96'])
+            fig.update_layout(height=300, margin=dict(l=0, r=0, t=0, b=0), showlegend=False)
+            fig.update_xaxes(title="Z-Score")
+            fig.update_yaxes(title="عدد")
             st.plotly_chart(fig, use_container_width=True)
 
     with c2:
-        st.subheader("توزيع أمر الشراء")
-        action_counts = {}
-        for s in filtered:
-            a = ACTION_LABELS.get(s.get('strategy_action', ''), s.get('strategy_action', ''))
-            action_counts[a] = action_counts.get(a, 0) + 1
-        if action_counts:
-            fig2 = px.pie(values=list(action_counts.values()), names=list(action_counts.keys()),
-                          color_discrete_map={
-                              '🟢 شراء فوري': '#00cc96',
-                              '🟡 شراء بمراقبة': '#cccc00',
-                              '🟠 انتظار': '#ff8c00',
-                              '🔴 لا تشتري': '#ff4b4b',
-                          })
-            fig2.update_layout(height=300, margin=dict(l=0, r=0, t=0, b=0))
+        st.subheader("الحجم النسبي")
+        rvols = [s.get('volume_data', {}).get('relative_volume', 0) for s in filtered]
+        if rvols:
+            fig2 = px.histogram(x=rvols, nbins=15, color_discrete_sequence=['#636efa'])
+            fig2.update_layout(height=300, margin=dict(l=0, r=0, t=0, b=0), showlegend=False)
+            fig2.update_xaxes(title="x")
+            fig2.update_yaxes(title="عدد")
             st.plotly_chart(fig2, use_container_width=True)
 
     st.divider()
@@ -292,60 +236,57 @@ def main():
     # Detail view
     st.subheader("🔎 تفاصيل سهم")
     if filtered:
-        symbols_list = [s['symbol'] for s in filtered]
-        selected_symbol = st.selectbox("اختر سهم", symbols_list)
-
-        if selected_symbol:
-            signal = next((s for s in filtered if s['symbol'] == selected_symbol), None)
-            if signal:
-                action = signal.get('strategy_action', 'لا تشتري')
-                action_display = ACTION_LABELS.get(action, action)
-                css_class = ACTION_CSS.get(action, 'no-buy')
-                strategy_score = signal.get('strategy_score', 0)
-                reasons = signal.get('strategy_reasons', [])
-
-                st.markdown(f'<div class="{css_class}">{action_display} | نسبة التطابق: {strategy_score}%</div>', unsafe_allow_html=True)
+        selected = st.selectbox("اختر سهم", [s['symbol'] for s in filtered])
+        if selected:
+            sig = next((s for s in filtered if s['symbol'] == selected), None)
+            if sig:
+                vd = sig.get('volume_data', {})
+                sd = sig.get('short_data', {})
 
                 col_a, col_b = st.columns([1, 1])
 
                 with col_a:
-                    st.markdown(f"### {signal['symbol']}")
-                    st.markdown(f"**النوع:** {TYPE_LABELS.get(signal['type'], signal['type'])}")
-                    st.markdown(f"**السعر الحالي:** ${signal.get('price', 0):.2f}")
-                    st.markdown(f"**نسبة التطابق:** {strategy_score}%")
-
-                    profit_pct = signal.get('expected_profit_pct', 0)
-                    loss_pct = signal.get('expected_loss_pct', 0)
-                    st.markdown(f"**الربح المتوقع:** +{profit_pct}%")
-                    st.markdown(f"**الخسارة المتوقعة:** -{loss_pct}%")
+                    st.markdown(f"### {sig['symbol']}")
+                    st.markdown(f"**السعر:** ${sig.get('price', 0):.2f}")
 
                     st.divider()
-                    st.markdown("**خطط التداول:**")
-                    st.markdown(f"- سعر الدخول: **${signal.get('entry_price', 0):.2f}**")
-                    st.markdown(f"- وقف الخسارة: **${signal.get('stop_loss', 0):.2f}**")
-                    st.markdown(f"- الهدف الأول: **${signal.get('target1', 0):.2f}** (+{profit_pct}%)")
-                    st.markdown(f"- الهدف الثاني: **${signal.get('target2', 0):.2f}**")
-                    st.markdown(f"- المخاطرة/العائد: **{signal.get('risk_reward', 0)}x**")
+                    st.markdown("**📊 الحجم:**")
+                    z = vd.get('z_score', 0)
+                    rvol = vd.get('relative_volume', 0)
+                    level = 'استثنائي' if z > 3 else 'مرتفع جداً' if z > 2 else 'مرتفع'
+                    st.markdown(f"- Z-Score: **{z}** ({level})")
+                    st.markdown(f"- الحجم النسبي: **{rvol}x**")
+                    st.markdown(f"- حجم اليوم: **{vd.get('today_volume', 0):,}**")
+                    st.markdown(f"- المتوسط 20 يوم: **{vd.get('avg_volume_20d', 0):,}**")
+                    st.markdown(f"- تغيّر 5 أيام: **{vd.get('change_5d', 0):+.1f}%**")
 
-                    if 'short_percent' in signal:
-                        sp = signal['short_percent'] * 100
-                        st.markdown(f"**نسبة الشورت:** {sp:.1f}%")
-                    if 'short_ratio' in signal:
-                        st.markdown(f"**أيام التغطية:** {signal['short_ratio']:.1f}")
-                    if 'float_shares' in signal:
-                        st.markdown(f"**العوامة:** {signal['float_shares']/1e6:.1f}M")
-                    if 'zscore' in signal:
-                        st.markdown(f"**Z-Score:** {signal['zscore']:.1f}")
-                    if 'rvol' in signal:
-                        st.markdown(f"**الحجم النسبي:** {signal['rvol']:.1f}x")
+                    if sd and sd.get('short_percent'):
+                        st.divider()
+                        st.markdown("**🔥 بيع العَمَي:**")
+                        sp = sd['short_percent'] * 100
+                        st.markdown(f"- النسبة: **{sp:.1f}%**")
+                        st.caption("النسبة المئوية من الأسهم المتداولة المباعة بيع عَمَي")
+                        st.markdown(f"- أيام التغطية: **{sd.get('days_to_cover', 0)}**")
+                        st.caption("عدد الأيام لتغطية جميع صفقات بيع العَمَي")
+                        st.markdown(f"- العوامة: **{sd.get('float_shares', 0)/1e6:.1f}M**")
+                        st.caption("الأسهم المتداولة فعلياً")
 
-                    if reasons:
-                        st.markdown("**الأسباب:**")
-                        for r in reasons:
-                            st.markdown(f"- {r}")
+                    if sig.get('insider_data'):
+                        idata = sig['insider_data']
+                        st.divider()
+                        st.markdown("**👤 شراء مسؤولين:**")
+                        st.markdown(f"- **{idata.get('count', 0)}** مشتريات من **{idata.get('unique_insiders', 0})** مسؤولين")
+                        st.markdown(f"- القيمة الإجمالية: **${idata.get('total_value', 0):,.0f}**")
+
+                    st.divider()
+                    st.markdown("""
+                    <div class="warning-box">
+                    هذه بيانات فقط — لا توصيات. قراراتك المالية مسؤوليتك.
+                    </div>
+                    """, unsafe_allow_html=True)
 
                 with col_b:
-                    chart_df = get_stock_chart(selected_symbol)
+                    chart_df = get_stock_chart(selected)
                     if chart_df is not None:
                         fig3 = go.Figure(data=[go.Candlestick(
                             x=chart_df.index,
@@ -353,20 +294,17 @@ def main():
                             high=chart_df['High'],
                             low=chart_df['Low'],
                             close=chart_df['Close'],
-                            name=selected_symbol
                         )])
                         fig3.update_layout(
-                            height=350,
-                            margin=dict(l=0, r=0, t=0, b=0),
-                            xaxis_rangeslider_visible=False,
-                            template="plotly_dark",
+                            height=400, margin=dict(l=0, r=0, t=0, b=0),
+                            xaxis_rangeslider_visible=False, template="plotly_dark",
                         )
                         st.plotly_chart(fig3, use_container_width=True)
                     else:
                         st.info("الرسم البياني غير متاح")
 
     st.divider()
-    st.caption(f"ماسح الحيتان v2.1 | آخر مسح: {scan_time} | الجلسة: {scan_session_name} | {len(signals)} إشارة إجمالية")
+    st.caption(f"ماسح الحيتان v3.0 | بيانات حقيقية فقط | لا توصيات")
 
 
 if __name__ == "__main__":
