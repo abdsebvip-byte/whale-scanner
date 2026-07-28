@@ -64,7 +64,7 @@ def get_stock_chart(symbol, period="1mo"):
 
 
 TYPE_LABELS = {
-    'SHORT_SQUEEZE': '🔥 سكвиз (اختصار)',
+    'SHORT_SQUEEZE': '🔥 ضغط بائعي الشورت',
     'WHALE_ACCUMULATION': '🐋 تجميع حيتان',
     'VOLUME_SPIKE': '📊 ارتفاع حجم التداول',
     'PRICE_SPIKE': '🚀 ارتفاع سعر حاد',

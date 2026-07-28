@@ -70,9 +70,9 @@ def calc_strategy_score(sig):
         elif sp > 0.15:
             score += 25; reasons.append("شورت مرتفع")
         if s_score >= 70:
-            score += 30; reasons.append("سكвиз قوي")
+            score += 30; reasons.append("ضغط شديد على بائعي الشورت")
         elif s_score >= 50:
-            score += 15; reasons.append("سكвиз متوسط")
+            score += 15; reasons.append("ضغط على بائعي الشورت")
 
     elif sig_type == 'WHALE_ACCUMULATION':
         z = sig.get('zscore', 0)
@@ -341,7 +341,7 @@ class FullMarketWhaleScanner:
         all_signals.extend(vol_signals)
         print(f"[+] {len(vol_signals)} إشارات حجم تم تأكيدها")
 
-        print("\n[4/5] فحص السكвиз على 200 سهم صغير...")
+        print("\n[4/5] فحص ضغط بائعي الشورت على 200 سهم صغير...")
         squeeze_candidates = [s for s in all_symbols if 0 < s['price'] <= 20][:200]
         squeeze_signals = []
         for s in squeeze_candidates:
@@ -373,7 +373,7 @@ class FullMarketWhaleScanner:
             except Exception:
                 continue
         all_signals.extend(squeeze_signals)
-        print(f"[+] {len(squeeze_signals)} إشارات سكвиз")
+        print(f"[+] {len(squeeze_signals)} إشارات ضغط بائعي الشورت")
 
         if include_insider:
             flagged = set(s['symbol'] for s in all_signals)[:30]
