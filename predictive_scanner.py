@@ -549,10 +549,6 @@ def run_post_session_scan():
     with open(PREDICTIONS_PATH, 'w', encoding='utf-8') as f:
         json.dump(output, f, indent=2, ensure_ascii=False, default=str)
 
-    # Also save as scan_results.json for dashboard
-    with open('scan_results.json', 'w', encoding='utf-8') as f:
-        json.dump(output, f, indent=2, ensure_ascii=False, default=str)
-
     # print top predictions
     print("\n" + "=" * 60)
     print(f"  🔮 أفضل 10 تنبؤات للجلسة القادمة:")
