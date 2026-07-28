@@ -1,7 +1,10 @@
-edgartools
 yfinance
 pandas
 numpy
 requests
 streamlit
 plotly
+ta
+scikit-learn
+openpyxl
+edgartools

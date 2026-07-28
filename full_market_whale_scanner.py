@@ -1,20 +1,25 @@
 """
-ماسح الحيتان v4.0 — النسخة الكاملة الحقيقية
+ماسح الحيتان v5.0 — النسخة الكاملة الحقيقية
 ==============================================
 بيانات حقيقية فقط. لا توصيات وهمية.
 
 المصادر الحقيقية:
 1. TradingView API → قائمة الأسهم + أسعار + أحجام
-2. yfinance → بيانات تاريخية + خيارات + بيع عَمَي
+2. yfinance → بيانات تاريخية + خيارات + بيع عَمَي + أخبار
 3. scikit-learn → Isolation Forest للكشف عن الشذوذ
 4. TA Library → CMF, OBV, Bollinger Bands, RSI
 5. SEC EDGAR → شراء المسؤولين الداخليين
+6. SQLite → تتبع تاريخ الإشارات والنتائج
 
 الفئات:
-A) تحليل الحجم (Z-Score + انكماش Bollinger)
+A) تحليل الحجم (Z-Score + انكماش Bollinger + تطبيع الوقت)
 B) خيارات غير عادية (UOA)
 C) مؤشرات التجميع (CMF, OBV)
 D) كشف الشذوذ (Isolation Forest)
+E) كشف الفجوات (Gap Detection)
+F) شراء المسؤولين الداخليين (SEC EDGAR)
+G) عناوين الأخبار
+H) نظام التقييم (Whale Score 0-100)
 """
 import requests
 import yfinance as yf
@@ -26,6 +31,7 @@ import time
 import sys
 import io
 import json
+import sqlite3
 import warnings
 warnings.filterwarnings('ignore')
 from sklearn.ensemble import IsolationForest
@@ -34,6 +40,213 @@ from self_learning import load_memory, save_memory, record_scan_result, analyze_
 if sys.platform == 'win32':
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
 
+
+# ─── قاعدة البيانات ────────────────────────────────────────────
+
+DB_PATH = "scanner_history.db"
+
+
+def init_db():
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute('''CREATE TABLE IF NOT EXISTS scan_history (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        scan_time TEXT,
+        symbol TEXT,
+        signals_json TEXT,
+        price REAL,
+        score REAL,
+        grade TEXT
+    )''')
+    c.execute('''CREATE TABLE IF NOT EXISTS outcome_tracking (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        symbol TEXT,
+        scan_time TEXT,
+        signals_json TEXT,
+        price_at_scan REAL,
+        price_1d REAL,
+        price_3d REAL,
+        price_5d REAL,
+        change_1d REAL,
+        change_3d REAL,
+        change_5d REAL
+    )''')
+    c.execute('''CREATE TABLE IF NOT EXISTS insider_buying (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        symbol TEXT,
+        filing_date TEXT,
+        insider_name TEXT,
+        title TEXT,
+        shares REAL,
+        price REAL,
+        value REAL,
+        transaction_type TEXT
+    )''')
+    conn.commit()
+    return conn
+
+
+def save_scan_to_db(conn, signals):
+    c = conn.cursor()
+    for sig in signals:
+        c.execute('''INSERT INTO scan_history
+            (scan_time, symbol, signals_json, price, score, grade)
+            VALUES (?, ?, ?, ?, ?, ?)''',
+            (datetime.now().isoformat(), sig['symbol'],
+             json.dumps([s['type'] for s in sig.get('signals', [])]),
+             sig.get('price', 0), sig.get('whale_score', 0), sig.get('grade', 'F')))
+    conn.commit()
+
+
+def track_outcomes(conn, symbols):
+    c = conn.cursor()
+    for sym in symbols:
+        c.execute('''SELECT id, scan_time, price_at_scan FROM outcome_tracking
+            WHERE symbol = ? AND price_5d IS NULL
+            ORDER BY scan_time DESC LIMIT 5''', (sym,))
+        rows = c.fetchall()
+        if not rows:
+            continue
+        try:
+            ticker = yf.Ticker(sym)
+            hist = ticker.history(period="7d")
+            if hist is None or len(hist) < 2:
+                continue
+            prices = hist['Close'].values
+            for row_id, scan_time, price_at_scan in rows:
+                scan_dt = datetime.fromisoformat(scan_time)
+                deltas = []
+                for p in prices:
+                    idx = len(deltas)
+                    if idx < 1:
+                        deltas.append(('price_1d', round(float(p), 2)))
+                    elif idx < 3:
+                        deltas.append(('price_3d', round(float(p), 2)))
+                    elif idx < 5:
+                        deltas.append(('price_5d', round(float(p), 2)))
+                for field, val in deltas:
+                    c.execute(f'UPDATE outcome_tracking SET {field} = ? WHERE id = ?', (val, row_id))
+                if price_at_scan > 0:
+                    for field in ['price_1d', 'price_3d', 'price_5d']:
+                        c.execute(f'SELECT {field} FROM outcome_tracking WHERE id = ?', (row_id,))
+                        pp = c.fetchone()[0]
+                        if pp and pp > 0:
+                            change_field = field.replace('price_', 'change_')
+                            c.execute(f'UPDATE outcome_tracking SET {change_field} = ? WHERE id = ?',
+                                      (round(((pp - price_at_scan) / price_at_scan) * 100, 2), row_id))
+            conn.commit()
+        except Exception:
+            continue
+
+
+# ─── كشف الفجوات ──────────────────────────────────────────────
+
+def detect_gap(symbol):
+    """كشف فجوات السعر ما قبل الافتتاح"""
+    try:
+        ticker = yf.Ticker(symbol)
+        info = ticker.info
+        prev_close = info.get('previousClose', 0)
+        current_price = info.get('currentPrice') or info.get('regularMarketPrice', 0)
+        pre_market = info.get('preMarketPrice', 0)
+        after_hours = info.get('postMarketPrice', 0)
+
+        gaps = []
+        if prev_close > 0:
+            if pre_market > 0:
+                gap_pct = ((pre_market - prev_close) / prev_close) * 100
+                if abs(gap_pct) > 2:
+                    gaps.append({
+                        'type': 'PREGAP_UP' if gap_pct > 0 else 'PREGAP_DOWN',
+                        'percent': round(gap_pct, 2),
+                        'from': round(prev_close, 2),
+                        'to': round(pre_market, 2),
+                    })
+            if after_hours > 0:
+                gap_pct = ((after_hours - prev_close) / prev_close) * 100
+                if abs(gap_pct) > 2:
+                    gaps.append({
+                        'type': 'AH_GAP_UP' if gap_pct > 0 else 'AH_GAP_DOWN',
+                        'percent': round(gap_pct, 2),
+                        'from': round(prev_close, 2),
+                        'to': round(after_hours, 2),
+                    })
+        return gaps if gaps else None
+    except Exception:
+        return None
+
+
+# ─── أخبار ─────────────────────────────────────────────────────
+
+def get_stock_news(symbol):
+    """جلب عناوين الأخبار من yfinance"""
+    try:
+        ticker = yf.Ticker(symbol)
+        news = ticker.news
+        if not news:
+            return None
+
+        headlines = []
+        for item in news[:5]:
+            title = item.get('title', '')
+            publisher = item.get('publisher', '')
+            link = item.get('link', '')
+            pub_date = datetime.fromtimestamp(item.get('providerPublishTime', 0)).strftime('%Y-%m-%d') if item.get('providerPublishTime') else ''
+            if title:
+                headlines.append({
+                    'title': title,
+                    'publisher': publisher,
+                    'date': pub_date,
+                    'link': link,
+                })
+
+        if headlines:
+            return {
+                'count': len(headlines),
+                'headlines': headlines,
+                'is_news_heavy': len(headlines) >= 3,
+            }
+        return None
+    except Exception:
+        return None
+
+
+# ─── شراء المسؤولين الداخليين ─────────────────────────────────
+
+def get_insider_buying(symbol):
+    """كشف شراء المسؤولين الداخليين من SEC EDGAR عبر yfinance"""
+    try:
+        ticker = yf.Ticker(symbol)
+        insider = ticker.insider_transactions
+        if insider is None or len(insider) == 0:
+            return None
+
+        buys = []
+        for _, row in insider.iterrows():
+            text = str(row.get('Text', '')).lower()
+            if 'purchase' in text or 'buy' in text:
+                buys.append({
+                    'insider': row.get('Insider Name', ''),
+                    'title': row.get('Title', ''),
+                    'date': str(row.get('Start Date', '')),
+                    'shares': row.get('Shares', 0),
+                    'price': row.get('Price', 0),
+                    'value': row.get('Value', 0),
+                })
+
+        if buys:
+            total_value = sum(b.get('value', 0) or 0 for b in buys)
+            return {
+                'count': len(buys),
+                'transactions': buys[:10],
+                'total_value': total_value,
+            }
+        return None
+    except Exception:
+        return None
+
+
+# ─── الجلسات ──────────────────────────────────────────────────
 
 def get_current_session():
     EDT = timezone(timedelta(hours=-4))
@@ -48,6 +261,121 @@ def get_current_session():
     else:
         return "closed", "السوق مغلق"
 
+
+def get_session_minutes_elapsed():
+    EDT = timezone(timedelta(hours=-4))
+    now_et = datetime.now(EDT)
+    t = now_et.hour * 60 + now_et.minute
+    if 570 <= t < 960:
+        return t - 570
+    return 390
+
+
+def normalize_volume_for_session(volume_today, minutes_elapsed, session_code):
+    """تطبيع الحجم حسب الوقت المنقضي في الجلسة"""
+    if session_code == 'regular':
+        full_session_minutes = 390
+    elif session_code == 'premarket':
+        full_session_minutes = 180
+    elif session_code == 'afterhours':
+        full_session_minutes = 240
+    else:
+        full_session_minutes = 390
+
+    if minutes_elapsed <= 0:
+        return volume_today
+
+    extrapolated = (volume_today / minutes_elapsed) * full_session_minutes
+    return extrapolated
+
+
+# ─── نظام التقييم ─────────────────────────────────────────────
+
+def calculate_whale_score(signals, data):
+    """حساب درجة الحوت 0-100 بناءً على قوة الإشارات"""
+    score = 0
+
+    for signal in signals:
+        sig_type = signal['type']
+
+        if sig_type == 'VOLUME_ANOMALY':
+            z = data.get('z_score', 0)
+            if z > 4:
+                score += 25
+            elif z > 3:
+                score += 20
+            elif z > 2.5:
+                score += 15
+            elif z > 2:
+                score += 10
+
+        elif sig_type == 'BOLLINGER_SQUEEZE':
+            score += 15
+
+        elif sig_type == 'ACCUMULATION':
+            cmf = data.get('cmf', 0)
+            if cmf > 0.3:
+                score += 20
+            elif cmf > 0.2:
+                score += 15
+            elif cmf > 0.15:
+                score += 10
+
+        elif sig_type == 'MULTI_DAY_VOLUME':
+            days = data.get('high_volume_days_5', 0)
+            score += min(days * 5, 20)
+
+        elif sig_type == 'UNUSUAL_OPTIONS':
+            score += 20
+
+        elif sig_type == 'HIGH_SHORT_INTEREST':
+            score += 15
+
+        elif sig_type == 'ANOMALY_DETECTED':
+            score += 10
+
+        elif sig_type == 'GAP_DETECTED':
+            score += 12
+
+        elif sig_type == 'NEWS_HEAVY':
+            score += 8
+
+        elif sig_type == 'INSIDER_BUYING':
+            score += 18
+
+    # مكافأة التنوع
+    num_signals = len(signals)
+    if num_signals >= 4:
+        score += 15
+    elif num_signals >= 3:
+        score += 10
+    elif num_signals >= 2:
+        score += 5
+
+    # RSI factor
+    rsi = data.get('rsi', 50)
+    if 30 <= rsi <= 70:
+        score += 5
+
+    score = min(score, 100)
+
+    if score >= 75:
+        grade = 'A+'
+    elif score >= 60:
+        grade = 'A'
+    elif score >= 45:
+        grade = 'B+'
+    elif score >= 30:
+        grade = 'B'
+    elif score >= 20:
+        grade = 'C'
+    else:
+        grade = 'D'
+
+    return score, grade
+
+
+# ─── الماسح الرئيسي ──────────────────────────────────────────
 
 class WhaleScanner:
     def __init__(self):
@@ -101,9 +429,7 @@ class WhaleScanner:
             return []
 
     def analyze_stock(self, symbol):
-        """
-        تحليل شامل لسهم واحد — كل الحسابات حقيقية
-        """
+        """تحليل شامل لسهم واحد — كل الحسابات حقيقية"""
         try:
             df = yf.download(symbol, period="3mo", progress=False)
             if df is None or len(df) < 30:
@@ -120,8 +446,6 @@ class WhaleScanner:
             result = {'symbol': symbol}
 
             # === A) تحليل الحجم ===
-
-            # Z-Score
             vol_mean = volume.rolling(20).mean()
             vol_std = volume.rolling(20).std()
             mean_val = float(vol_mean.iloc[-1]) if not pd.isna(vol_mean.iloc[-1]) else 0
@@ -140,17 +464,15 @@ class WhaleScanner:
             result['today_volume'] = int(today_vol)
             result['avg_volume_20d'] = int(mean_val)
 
-            # Multi-day volume consistency (3+ أيام Z>2)
             vol_z_scores = (volume - vol_mean) / vol_std
             high_vol_days = sum(1 for z in vol_z_scores.dropna().tail(5) if z > 2)
             result['high_volume_days_5'] = high_vol_days
 
-            # === B) Bollinger Bands — كشف الانكماش ===
-
+            # === B) Bollinger Bands ===
             bb = ta.volatility.BollingerBands(close, window=20, window_dev=2)
             bb_high = bb.bollinger_hband()
             bb_low = bb.bollinger_lband()
-            bb_width = (bb_high - bb_low) / close  # عرض الشريط
+            bb_width = (bb_high - bb_low) / close
 
             current_width = float(bb_width.iloc[-1]) if not pd.isna(bb_width.iloc[-1]) else 0
             avg_width = float(bb_width.rolling(20).mean().iloc[-1]) if len(bb_width) > 20 else 0
@@ -158,9 +480,7 @@ class WhaleScanner:
             result['bollinger_width'] = round(current_width, 4)
             result['bollinger_squeeze'] = current_width < avg_width * 0.7 if avg_width > 0 else False
 
-            # === C) مؤشرات التجميع (CMF, OBV) ===
-
-            # Chaikin Money Flow
+            # === C) CMF + OBV ===
             try:
                 ad = ta.volume.AccDistIndexIndicator(high=high, low=low, close=close, volume=volume)
                 ad_line = ad.acc_dist_index()
@@ -178,7 +498,6 @@ class WhaleScanner:
             except Exception:
                 result['cmf'] = 0
 
-            # On-Balance Volume
             try:
                 obv = ta.volume.OnBalanceVolumeIndicator(close=close, volume=volume)
                 obv_line = obv.on_balance_volume()
@@ -190,7 +509,6 @@ class WhaleScanner:
                 result['obv_above_sma'] = False
 
             # === D) RSI ===
-
             try:
                 rsi = ta.momentum.RSIIndicator(close, window=14)
                 result['rsi'] = round(float(rsi.rsi().iloc[-1]), 1)
@@ -198,7 +516,6 @@ class WhaleScanner:
                 result['rsi'] = 50
 
             # === E) تغيّر السعر ===
-
             close_valid = close.dropna()
             if len(close_valid) >= 6:
                 price_now = float(close_valid.iloc[-1])
@@ -209,7 +526,7 @@ class WhaleScanner:
 
             result['price'] = float(close.iloc[-1]) if len(close) > 0 else 0
 
-            # === F) Isolation Forest — كشف الشذوذ بالذكاء الاصطناعي ===
+            # === F) Isolation Forest ===
             try:
                 features = pd.DataFrame({
                     'volume_ratio': volume / volume.rolling(20).mean(),
@@ -238,10 +555,7 @@ class WhaleScanner:
             return None
 
     def analyze_options(self, symbol):
-        """
-        تحليل الخيارات غير العادية — بيانات حقيقية من yfinance
-        يكشف عندما حجم تداول العقد يتجاوز 3 مرات Open Interest
-        """
+        """خيارات غير عادية — بيانات حقيقية من yfinance"""
         try:
             ticker = yf.Ticker(symbol)
             expirations = ticker.options
@@ -249,7 +563,7 @@ class WhaleScanner:
                 return None
 
             unusual = []
-            for exp in expirations[:3]:  # أول 3 تواريخ
+            for exp in expirations[:3]:
                 try:
                     chain = ticker.option_chain(exp)
                     calls = chain.calls
@@ -319,32 +633,33 @@ class WhaleScanner:
         except Exception:
             return None
 
-    def scan(self, include_insider=False):
+    def scan(self, include_insider=False, include_news=True):
         session_code, session_name = get_current_session()
+        minutes_elapsed = get_session_minutes_elapsed()
 
-        # تحميل الذاكرة والتذكّر
         memory = load_memory()
         adjustments = get_threshold_adjustments(memory)
         z_threshold = adjustments.get("min_z_score", 2.0)
         rsi_oversold_threshold = adjustments.get("rsi_oversold", 30)
 
+        conn = init_db()
+
         print("=" * 60)
-        print("  ماسح الحيتان v4.0 — النسخة الكاملة الحقيقية")
+        print("  ماسح الحيتان v5.0 — النسخة الكاملة الحقيقية")
         print(f"  الجلسة: {session_name}")
+        print(f"  أوقات الجلسة: {minutes_elapsed} دقيقة")
         if adjustments.get("note"):
             print(f"  تعلم ذاتي: {adjustments['note']}")
-        if adjustments.get("note_rsi"):
-            print(f"  تعلم ذاتي: {adjustments['note_rsi']}")
         print("=" * 60)
 
-        # Step 1: Get all stocks
-        print("\n[1/5] جلب قائمة الأسهم...")
+        # Step 1
+        print("\n[1/7] جلب قائمة الأسهم...")
         all_symbols = self.fetch_all_market_symbols()
         if not all_symbols:
             return []
 
-        # Step 2: Deep analysis on top 400 candidates
-        print(f"\n[2/5] تحليل شامل على 400 سهم...")
+        # Step 2
+        print(f"\n[2/7] تحليل شامل على 400 سهم...")
         sorted_by_vol = sorted(all_symbols, key=lambda x: x['volume'], reverse=True)
         candidates = sorted_by_vol[:300] + all_symbols[600:2000:4]
 
@@ -354,13 +669,28 @@ class WhaleScanner:
                 print(f"  ... {i}/{len(candidates)}")
             data = self.analyze_stock(s['symbol'])
             if data:
+                # تطبيع الحجم حسب الوقت
+                extrapolated_vol = normalize_volume_for_session(
+                    data.get('today_volume', 0), minutes_elapsed, session_code
+                )
+                data['extrapolated_volume'] = int(extrapolated_vol)
+
+                # إعادة حساب Z-Score بالحجم المُسطّح
+                mean_val = data.get('avg_volume_20d', 0)
+                if mean_val > 0:
+                    data['session_adjusted_z'] = round(
+                        (extrapolated_vol - mean_val) / (mean_val * 0.3) if mean_val * 0.3 > 0 else 0, 2
+                    )
+                else:
+                    data['session_adjusted_z'] = data.get('z_score', 0)
+
                 analyzed.append(data)
             time.sleep(0.1)
 
         print(f"[+] {len(analyzed)} سهم تم تحليله")
 
-        # Step 3: Options analysis on top candidates
-        print(f"\n[3/5] تحليل الخيارات على أفضل 100 سهم...")
+        # Step 3
+        print(f"\n[3/7] تحليل الخيارات على أفضل 100 سهم...")
         options_results = {}
         for s in sorted(analyzed, key=lambda x: x.get('z_score', 0), reverse=True)[:100]:
             opt = self.analyze_options(s['symbol'])
@@ -370,8 +700,8 @@ class WhaleScanner:
 
         print(f"[+] {len(options_results)} أسهم بخيارات غير عادية")
 
-        # Step 4: Short selling data
-        print(f"\n[4/5] بيانات بيع العَمَي على الأسهم المثيرة...")
+        # Step 4
+        print(f"\n[4/7] بيانات بيع العَمَي...")
         short_results = {}
         interesting = [s for s in analyzed if s.get('z_score', 0) > 2 or s.get('cmf', 0) > 0.1]
         for s in interesting[:50]:
@@ -382,80 +712,133 @@ class WhaleScanner:
 
         print(f"[+] {len(short_results)} أسهم بيع عَمَي مرتفع")
 
-        # Step 5: Combine results
-        print(f"\n[5/5] تجميع النتائج...")
+        # Step 5
+        print(f"\n[5/7] كشف الفجوات...")
+        gap_results = {}
+        for s in analyzed[:200]:
+            gaps = detect_gap(s['symbol'])
+            if gaps:
+                gap_results[s['symbol']] = gaps
+            time.sleep(0.1)
+
+        print(f"[+] {len(gap_results)} أسهم بفجوات")
+
+        # Step 6
+        print(f"\n[6/7] شراء المسؤولين الداخليين...")
+        insider_results = {}
+        if include_insider:
+            for s in analyzed[:100]:
+                insider = get_insider_buying(s['symbol'])
+                if insider:
+                    insider_results[s['symbol']] = insider
+                time.sleep(0.2)
+            print(f"[+] {len(insider_results)} أسهم بشراء داخلي")
+        else:
+            print("[-] تخطي شراء المسؤولين (بطيء)")
+
+        # Step 7
+        print(f"\n[7/7] عناوين الأخبار...")
+        news_results = {}
+        if include_news:
+            for s in analyzed[:150]:
+                news = get_stock_news(s['symbol'])
+                if news and news.get('is_news_heavy'):
+                    news_results[s['symbol']] = news
+                time.sleep(0.1)
+            print(f"[+] {len(news_results)} أسهم بأخبار كثيرة")
+
+        # ─── تجميع النتائج ────────────────────────────────────
+        print(f"\nتجميع النتائج + التقييم...")
 
         all_signals = []
         for data in analyzed:
             sym = data['symbol']
             signals_for_stock = []
 
-            # حجم غير عادي
-            if data.get('z_score', 0) > 2.0:
+            if data.get('z_score', 0) > z_threshold:
                 signals_for_stock.append({
                     'type': 'VOLUME_ANOMALY',
                     'detail': f"Z-Score={data['z_score']}، حجم نسبي={data['relative_volume']}x",
                 })
 
-            # انكماش Bollinger
             if data.get('bollinger_squeeze'):
                 signals_for_stock.append({
                     'type': 'BOLLINGER_SQUEEZE',
-                    'detail': f"انكماش Bollinger — عرض الشريط={data.get('bollinger_width', 0)}",
+                    'detail': f"انكماش Bollinger — عرض={data.get('bollinger_width', 0)}",
                 })
 
-            # تجميع (CMF إيجابي + OBV صاعد)
             if data.get('cmf', 0) > 0.15 and data.get('obv_above_sma'):
                 signals_for_stock.append({
                     'type': 'ACCUMULATION',
-                    'detail': f"CMF={data.get('cmf', 0)} + OBV صاعد — تجميع أموال",
+                    'detail': f"CMF={data.get('cmf', 0)} + OBV صاعد",
                 })
 
-            # حجم عالي لأكثر من يوم
             if data.get('high_volume_days_5', 0) >= 3:
                 signals_for_stock.append({
                     'type': 'MULTI_DAY_VOLUME',
-                    'detail': f"{data['high_volume_days_5']} أيام حجم مرتفع من آخر 5",
+                    'detail': f"{data['high_volume_days_5']} أيام حجم مرتفع",
                 })
 
-            # خيارات غير عادية
             if sym in options_results:
                 opt = options_results[sym]
                 signals_for_stock.append({
                     'type': 'UNUSUAL_OPTIONS',
-                    'detail': f"{opt['count']} عقود غير عادية — اتجاه {opt['bias']}",
+                    'detail': f"{opt['count']} عقود غير عادية — {opt['bias']}",
                     'options_data': opt,
                 })
 
-            # بيع عَمَي مرتفع
             if sym in short_results:
                 sd = short_results[sym]
                 signals_for_stock.append({
                     'type': 'HIGH_SHORT_INTEREST',
-                    'detail': f"بيع عَمَي={sd['short_percent']*100:.1f}%، أيام التغطية={sd.get('days_to_cover', 0)}",
+                    'detail': f"بيع عَمَي={sd['short_percent']*100:.1f}%",
                     'short_data': sd,
                 })
 
-            # شذوذ Isolation Forest
             if data.get('is_anomaly'):
                 signals_for_stock.append({
                     'type': 'ANOMALY_DETECTED',
-                    'detail': f"شذوذ ذكاء اصطناعي — score={data.get('anomaly_score', 0)}",
+                    'detail': f"شذوذ AI — score={data.get('anomaly_score', 0)}",
                     'anomaly_score': data.get('anomaly_score', 0),
                 })
 
+            if sym in gap_results:
+                gap = gap_results[sym][0]
+                signals_for_stock.append({
+                    'type': 'GAP_DETECTED',
+                    'detail': f"فجوة {gap['type']} = {gap['percent']}%",
+                    'gap_data': gap,
+                })
+
+            if sym in news_results:
+                signals_for_stock.append({
+                    'type': 'NEWS_HEAVY',
+                    'detail': f"{news_results[sym]['count']} أخبار",
+                    'news_data': news_results[sym],
+                })
+
+            if sym in insider_results:
+                signals_for_stock.append({
+                    'type': 'INSIDER_BUYING',
+                    'detail': f"{insider_results[sym]['count']} عمليات شراء داخلي",
+                    'insider_data': insider_results[sym],
+                })
+
             if signals_for_stock:
+                score, grade = calculate_whale_score(signals_for_stock, data)
+
                 all_signals.append({
                     'symbol': sym,
                     'price': data.get('price', 0),
                     'change_5d': data.get('change_5d', 0),
-                    'change_today': data.get('change_today', 0),
                     'volume_data': {
                         'z_score': data.get('z_score', 0),
                         'relative_volume': data.get('relative_volume', 0),
                         'today_volume': data.get('today_volume', 0),
                         'avg_volume_20d': data.get('avg_volume_20d', 0),
                         'high_volume_days_5': data.get('high_volume_days_5', 0),
+                        'extrapolated_volume': data.get('extrapolated_volume', 0),
+                        'session_adjusted_z': data.get('session_adjusted_z', 0),
                     },
                     'bollinger': {
                         'width': data.get('bollinger_width', 0),
@@ -469,16 +852,18 @@ class WhaleScanner:
                     'rsi': data.get('rsi', 50),
                     'anomaly_score': data.get('anomaly_score', 0),
                     'is_anomaly': data.get('is_anomaly', False),
+                    'whale_score': score,
+                    'grade': grade,
                     'signals': signals_for_stock,
                     'session': session_code,
                 })
 
-        # Sort by number of signals (more signals = more interesting)
-        all_signals.sort(key=lambda x: len(x.get('signals', [])), reverse=True)
+        all_signals.sort(key=lambda x: x.get('whale_score', 0), reverse=True)
 
-        # حفظ في الذاكرة + تحليل الفقد
+        save_scan_to_db(conn, all_signals)
         memory = record_scan_result(memory, all_signals)
         save_memory(memory)
+        conn.close()
 
         print("\n" + "=" * 60)
         print(f"  النتائج: {len(all_signals)} سهم ببيانات مثيرة")
@@ -486,13 +871,11 @@ class WhaleScanner:
 
         for i, sig in enumerate(all_signals[:20], 1):
             sigs = sig.get('signals', [])
-            sig_types = [s['type'] for s in sigs]
             print(f"\n{i}. {sig['symbol']} — ${sig.get('price', 0):.2f}")
-            print(f"   الإشارات: {len(sigs)} — {', '.join(sig_types)}")
+            print(f"   درجة: {sig.get('whale_score', 0)}/100 ({sig.get('grade', '?')})")
+            print(f"   الإشارات: {len(sigs)}")
             vd = sig.get('volume_data', {})
             print(f"   Z-Score={vd.get('z_score', 0)} | حجم نسبي={vd.get('relative_volume', 0)}x")
-            acc = sig.get('accumulation', {})
-            print(f"   CMF={acc.get('cmf', 0)} | OBV={acc.get('obv_trend', '')}")
 
         return all_signals
 

@@ -34,7 +34,7 @@ jobs:
         run: |
           git config user.name "whale-scanner"
           git config user.email "scanner@github-actions"
-          git add scan_results.json
+          git add scan_results.json scanner_history.db scanner_memory.json
           git diff --staged --quiet || git commit -m "Scan results $(date -u '+%Y-%m-%d %H:%M UTC')"
           git push
 
