@@ -65,59 +65,104 @@ def calc_strategy_score(sig):
 
     if sig_type == 'SHORT_SQUEEZE':
         sp = sig.get('short_percent', 0)
-        if sp > 0.25:
-            score += 35; reasons.append("شورت عالي جداً")
+        days_cover = sig.get('short_ratio', 0)
+        if sp > 0.30:
+            score += 35; reasons.append(f"شورت عالي جداً ({sp*100:.0f}%)")
+        elif sp > 0.20:
+            score += 30; reasons.append(f"شورت عالي ({sp*100:.0f}%)")
         elif sp > 0.15:
-            score += 25; reasons.append("شورت مرتفع")
-        if s_score >= 70:
-            score += 30; reasons.append("ضغط شديد على بائعي الشورت")
-        elif s_score >= 50:
-            score += 15; reasons.append("ضغط على بائعي الشورت")
+            score += 25; reasons.append(f"شورت مرتفع ({sp*100:.0f}%)")
+        elif sp > 0.10:
+            score += 15; reasons.append(f"شورت متوسط ({sp*100:.0f}%)")
+        if days_cover > 7:
+            score += 25; reasons.append(f"أيام تغطية طويلة ({days_cover:.1f} يوم)")
+        elif days_cover > 5:
+            score += 20; reasons.append(f"أيام تغطية كافية ({days_cover:.1f} يوم)")
+        elif days_cover > 3:
+            score += 10
+        if s_score >= 80:
+            score += 20; reasons.append("إشارة سكвиз قوية جداً")
+        elif s_score >= 60:
+            score += 10
 
     elif sig_type == 'WHALE_ACCUMULATION':
         z = sig.get('zscore', 0)
-        if z > 3.5:
-            score += 35; reasons.append("تجميع حيتان قوي")
-        elif z > 2.5:
-            score += 20; reasons.append("تجميع حيتان")
-        if s_score >= 35:
-            score += 20
+        rvol = sig.get('rvol', 1)
+        if z > 4.0:
+            score += 40; reasons.append(f"تجميع حيتان عالي جداً (Z={z:.1f})")
+        elif z > 3.0:
+            score += 30; reasons.append(f"تجميع حيتان قوي (Z={z:.1f})")
+        elif z > 2.0:
+            score += 20; reasons.append(f"تجميع حيتان (Z={z:.1f})")
+        if rvol > 5:
+            score += 15; reasons.append(f"حجم نسبي عالي ({rvol:.1f}x)")
 
     elif sig_type == 'VOLUME_SPIKE':
         z = sig.get('zscore', 0)
         rvol = sig.get('rvol', 1)
-        if z > 4:
-            score += 30; reasons.append("ارتفاع حجم كبير جداً")
+        if z > 5:
+            score += 35; reasons.append(f"ارتفاع حجم استثنائي (Z={z:.1f})")
+        elif z > 4:
+            score += 25; reasons.append(f"ارتفاع حجم كبير جداً (Z={z:.1f})")
         elif z > 3:
-            score += 15; reasons.append("ارتفاع حجم")
-        if rvol > 5:
-            score += 20
+            score += 15; reasons.append(f"ارتفاع حجم (Z={z:.1f})")
+        if rvol > 8:
+            score += 20; reasons.append(f"الحجم النسبي مرتفع جداً ({rvol:.1f}x)")
+        elif rvol > 5:
+            score += 10
 
     elif sig_type == 'PRICE_SPIKE':
-        if s_score >= 15:
-            score += 25; reasons.append("اندفاع سعري")
-        if price < 20:
-            score += 15; reasons.append("سهم صغير - حركة أكبر")
+        if s_score >= 50:
+            score += 50; reasons.append(f"اندفاع سعري ضخم ({s_score}%)")
+        elif s_score >= 30:
+            score += 40; reasons.append(f"اندفاع سعري كبير ({s_score}%)")
+        elif s_score >= 20:
+            score += 30; reasons.append(f"اندفاع سعري ({s_score}%)")
+        elif s_score >= 15:
+            score += 20; reasons.append(f"ارتفاع ملحوظ ({s_score}%)")
+        else:
+            score += 10; reasons.append("حركة سعرية")
+        if price < 5:
+            score += 15; reasons.append("سهم صغير جداً - حركة قوية")
+        elif price < 20:
+            score += 10; reasons.append("سهم صغير")
+        elif price < 50:
+            score += 5
 
     elif sig_type == 'PRICE_CRASH':
-        if s_score >= 10:
-            score += 10; reasons.append("انخفاض كبير")
+        if s_score < -30:
+            score += 25; reasons.append(f"انخفاض حاد ({s_score}%) — فرصة شراء قوية")
+        elif s_score < -20:
+            score += 20; reasons.append(f"انخفاض كبير ({s_score}%) — فرصة شراء")
+        elif s_score < -15:
+            score += 15; reasons.append(f"انخفاض ({s_score}%) — مراقبة")
+        else:
+            score += 5; reasons.append("انخفاض طفيف — مراقبة")
+        if price < 5:
+            score += 5; reasons.append("سهم صغير — تذبذب عالي")
 
     elif sig_type == 'INSIDER_CLUSTER':
-        score += 30; reasons.append("شراء مسؤولين داخلي")
+        score += 35; reasons.append("شراء مسؤولين داخلي — إشارة قوية")
+        if price < 30:
+            score += 10; reasons.append("مسؤولون يشترون بسعر منخفض")
 
-    if 1 < price < 10:
-        score += 5; reasons.append("سهم صغير")
+    # Price range factor
+    if 0.5 < price < 2:
+        score += 3; reasons.append("سهم بنسات")
+    elif 2 <= price < 10:
+        score += 5; reasons.append("سهم صغير — فرصة كبيرة")
     elif 10 <= price < 30:
         score += 3
+    elif price >= 100:
+        score -= 5; reasons.append("سهم كبير — حركة أبطأ")
 
-    score = min(score, 100)
+    score = max(0, min(score, 100))
 
-    if score >= 70:
+    if score >= 75:
         action = "شراء فوري"
-    elif score >= 50:
+    elif score >= 55:
         action = "شراء بمراقبة"
-    elif score >= 30:
+    elif score >= 35:
         action = "انتظار"
     else:
         action = "لا تشتري"
@@ -126,6 +171,65 @@ def calc_strategy_score(sig):
         'strategy_score': score,
         'strategy_action': action,
         'strategy_reasons': reasons,
+    }
+
+
+def calc_entry_levels(sig):
+    price = sig.get('price', 0)
+    if price <= 0:
+        return {}
+    sig_type = sig.get('type', '')
+    score = sig.get('strategy_score', 0)
+
+    if sig_type == 'SHORT_SQUEEZE':
+        entry = price
+        stop_loss = round(price * 0.85, 2)
+        target1 = round(price * 1.20, 2)
+        target2 = round(price * 1.50, 2)
+        risk_reward = round((target1 - entry) / (entry - stop_loss), 1) if entry > stop_loss else 0
+    elif sig_type == 'WHALE_ACCUMULATION':
+        entry = price
+        stop_loss = round(price * 0.90, 2)
+        target1 = round(price * 1.15, 2)
+        target2 = round(price * 1.35, 2)
+        risk_reward = round((target1 - entry) / (entry - stop_loss), 1) if entry > stop_loss else 0
+    elif sig_type == 'VOLUME_SPIKE':
+        entry = round(price * 0.98, 2)
+        stop_loss = round(price * 0.92, 2)
+        target1 = round(price * 1.10, 2)
+        target2 = round(price * 1.25, 2)
+        risk_reward = round((target1 - entry) / (entry - stop_loss), 1) if entry > stop_loss else 0
+    elif sig_type == 'PRICE_SPIKE':
+        entry = round(price * 0.97, 2)
+        stop_loss = round(price * 0.90, 2)
+        target1 = round(price * 1.08, 2)
+        target2 = round(price * 1.15, 2)
+        risk_reward = round((target1 - entry) / (entry - stop_loss), 1) if entry > stop_loss else 0
+    elif sig_type == 'PRICE_CRASH':
+        entry = round(price * 0.95, 2)
+        stop_loss = round(price * 0.88, 2)
+        target1 = round(price * 1.10, 2)
+        target2 = round(price * 1.20, 2)
+        risk_reward = round((target1 - entry) / (entry - stop_loss), 1) if entry > stop_loss else 0
+    elif sig_type == 'INSIDER_CLUSTER':
+        entry = price
+        stop_loss = round(price * 0.88, 2)
+        target1 = round(price * 1.20, 2)
+        target2 = round(price * 1.40, 2)
+        risk_reward = round((target1 - entry) / (entry - stop_loss), 1) if entry > stop_loss else 0
+    else:
+        entry = price
+        stop_loss = round(price * 0.90, 2)
+        target1 = round(price * 1.10, 2)
+        target2 = round(price * 1.20, 2)
+        risk_reward = round((target1 - entry) / (entry - stop_loss), 1) if entry > stop_loss else 0
+
+    return {
+        'entry_price': entry,
+        'stop_loss': stop_loss,
+        'target1': target1,
+        'target2': target2,
+        'risk_reward': risk_reward,
     }
 
 
@@ -317,14 +421,30 @@ class FullMarketWhaleScanner:
             price = s['price']
 
             if change > 15:
+                if change >= 50:
+                    raw_score = 50
+                elif change >= 30:
+                    raw_score = 40
+                elif change >= 20:
+                    raw_score = 30
+                else:
+                    raw_score = 20
                 all_signals.append({
-                    'symbol': sym, 'type': 'PRICE_SPIKE', 'score': 15,
+                    'symbol': sym, 'type': 'PRICE_SPIKE', 'score': raw_score,
                     'detail': f"ارتفاع {change:+.1f}% اليوم", 'price': price,
                     'session': session,
                 })
             elif change < -15:
+                if change <= -50:
+                    raw_score = 50
+                elif change <= -30:
+                    raw_score = 40
+                elif change <= -20:
+                    raw_score = 30
+                else:
+                    raw_score = 20
                 all_signals.append({
-                    'symbol': sym, 'type': 'PRICE_CRASH', 'score': 10,
+                    'symbol': sym, 'type': 'PRICE_CRASH', 'score': raw_score,
                     'detail': f"انخفاض {change:+.1f}% اليوم", 'price': price,
                     'session': session,
                 })
@@ -391,6 +511,8 @@ class FullMarketWhaleScanner:
         for sig in all_signals:
             strat = calc_strategy_score(sig)
             sig.update(strat)
+            levels = calc_entry_levels(sig)
+            sig.update(levels)
 
         all_signals.sort(key=lambda x: x.get('strategy_score', 0), reverse=True)
 

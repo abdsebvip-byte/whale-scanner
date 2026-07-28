@@ -194,14 +194,23 @@ def main():
             reasons = s.get('strategy_reasons', [])
             reasons_text = ' + '.join(reasons) if reasons else '-'
 
+            profit_pct = s.get('expected_profit_pct', 0)
+            loss_pct = s.get('expected_loss_pct', 0)
+            rr = s.get('risk_reward', 0)
+
             row = {
-                'الإشارة': TYPE_LABELS.get(s['type'], s['type']),
                 'الرمز': s['symbol'],
-                'السعر ($)': f"${s.get('price', 0):.2f}",
+                'الإشارة': TYPE_LABELS.get(s['type'], s['type']),
+                'السعر الحالي ($)': f"${s.get('price', 0):.2f}",
                 'نسبة التطابق': f"{strategy_score}%",
-                'أمر الشراء': action_display,
+                'الربح المتوقع': f"+{profit_pct}%",
+                'command': action_display,
+                'سعر الدخول ($)': f"${s.get('entry_price', 0):.2f}",
+                'وقف الخسارة ($)': f"${s.get('stop_loss', 0):.2f}",
+                'الهدف الأول ($)': f"${s.get('target1', 0):.2f}",
+                'الهدف الثاني ($)': f"${s.get('target2', 0):.2f}",
+                'المخاطرة/العائد': f"{rr}x",
                 'الأسباب': reasons_text,
-                'التفاصيل': s.get('detail', ''),
             }
 
             if 'short_percent' in s:
@@ -218,7 +227,7 @@ def main():
             table_data.append(row)
 
         df = pd.DataFrame(table_data)
-        st.dataframe(df, use_container_width=True, height=400)
+        st.dataframe(df, use_container_width=True, height=500)
 
     with tab_all:
         render_signals_table(filtered)
@@ -302,27 +311,36 @@ def main():
                 with col_a:
                     st.markdown(f"### {signal['symbol']}")
                     st.markdown(f"**النوع:** {TYPE_LABELS.get(signal['type'], signal['type'])}")
-                    st.markdown(f"**النقاط:** {signal.get('score', 0)} / 100")
-                    st.markdown(f"**السعر:** ${signal.get('price', 0):.2f}")
-                    st.markdown(f"**التفاصيل:** {signal.get('detail', '')}")
+                    st.markdown(f"**السعر الحالي:** ${signal.get('price', 0):.2f}")
+                    st.markdown(f"**نسبة التطابق:** {strategy_score}%")
+
+                    profit_pct = signal.get('expected_profit_pct', 0)
+                    loss_pct = signal.get('expected_loss_pct', 0)
+                    st.markdown(f"**الربح المتوقع:** +{profit_pct}%")
+                    st.markdown(f"**الخسارة المتوقعة:** -{loss_pct}%")
+
+                    st.divider()
+                    st.markdown("**خطط التداول:**")
+                    st.markdown(f"- سعر الدخول: **${signal.get('entry_price', 0):.2f}**")
+                    st.markdown(f"- وقف الخسارة: **${signal.get('stop_loss', 0):.2f}**")
+                    st.markdown(f"- الهدف الأول: **${signal.get('target1', 0):.2f}** (+{profit_pct}%)")
+                    st.markdown(f"- الهدف الثاني: **${signal.get('target2', 0):.2f}**")
+                    st.markdown(f"- المخاطرة/العائد: **{signal.get('risk_reward', 0)}x**")
 
                     if 'short_percent' in signal:
                         sp = signal['short_percent'] * 100
-                        st.markdown(f"**نسبة البيع للشورت:** {sp:.1f}%")
-                        st.caption("النسبة المئوية من الأسهم المتداولة التي تم بيعها شورت (بيع عَمَي)")
+                        st.markdown(f"**نسبة الشورت:** {sp:.1f}%")
                     if 'short_ratio' in signal:
                         st.markdown(f"**أيام التغطية:** {signal['short_ratio']:.1f}")
-                        st.caption("عدد الأيام المطلوبة لتغطية جميع صفقات الشورت")
                     if 'float_shares' in signal:
-                        st.markdown(f"**العوامة (Float):** {signal['float_shares']/1e6:.1f}M")
-                        st.caption("عدد الأسهم المتداولة فعلياً في السوق")
+                        st.markdown(f"**العوامة:** {signal['float_shares']/1e6:.1f}M")
                     if 'zscore' in signal:
                         st.markdown(f"**Z-Score:** {signal['zscore']:.1f}")
                     if 'rvol' in signal:
                         st.markdown(f"**الحجم النسبي:** {signal['rvol']:.1f}x")
 
                     if reasons:
-                        st.markdown("**أسباب التوصية:**")
+                        st.markdown("**الأسباب:**")
                         for r in reasons:
                             st.markdown(f"- {r}")
 
@@ -348,7 +366,7 @@ def main():
                         st.info("الرسم البياني غير متاح")
 
     st.divider()
-    st.caption(f"ماسح الحيتان v2.0 | آخر مسح: {scan_time} | الجلسة: {scan_session_name} | {len(signals)} إشارة إجمالية")
+    st.caption(f"ماسح الحيتان v2.1 | آخر مسح: {scan_time} | الجلسة: {scan_session_name} | {len(signals)} إشارة إجمالية")
 
 
 if __name__ == "__main__":
