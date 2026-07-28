@@ -1,15 +1,12 @@
 """
-predictive_scanner.py — الماسح التنبؤي
-========================================
-يُشغّل بعد نهاية كل جلسة ويحلل:
-1. أي أسهم تحركت بشكل غير عادي خلال الجلسة
-2. أي أنماط سابقة تُشير لانفجار قادم
-3. يتنبأ بالأسهم الأعلى احتمالاً للانفجار في الجلسة القادمة
-
-يعمل بـ3 مراحل:
-1. جمع بيانات الجلسة المنقضية
-2. مقارنة مع أنماط الانفجار التاريخية
-3. توليد تنبؤات مرجّحة
+predictive_scanner.py — الماسح التنبؤي v6.0
+=============================================
+فكرة حقيقية:
+- يبحث عن أسهم تُراكم بقوة (CMF مرتفع) لكن سعرها ما تحرك بعد
+- يبحث عن انكماش سعري (Bollinger Squeeze) = طاقة متراكمة
+- يبحث عن ضغط شرائي (OBV صاعد مع سعر ثابت)
+- يُستبعد الأسهم اللي انفجرت فعلاً (change > 5%)
+- الهدف: كشف الأسهم قبل ما تنفجر، مو بعد ما تنفجر
 """
 import yfinance as yf
 import pandas as pd
@@ -25,15 +22,17 @@ import io
 from datetime import datetime, timedelta, timezone
 import warnings
 warnings.filterwarnings('ignore')
-from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
-from sklearn.preprocessing import StandardScaler
 import pickle
 
 DB_PATH = "scanner_history.db"
 MODEL_PATH = "explosion_model.pkl"
 PREDICTIONS_PATH = "predictions.json"
 
-# ─── قاعدة البيانات ────────────────────────────────────────────
+MAX_CHANGE_1D = 8.0
+MIN_PRICE = 1.0
+MAX_PRICE = 500.0
+MIN_VOLUME = 200000
+
 
 def init_db():
     conn = sqlite3.connect(DB_PATH)
@@ -56,34 +55,18 @@ def init_db():
         gap_pct REAL,
         float_shares REAL,
         short_percent REAL,
-        -- what happened NEXT session
         next_session_change REAL,
         exploded INTEGER
-    )''')
-    c.execute('''CREATE TABLE IF NOT EXISTS explosions (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        symbol TEXT,
-        date TEXT,
-        session_type TEXT,
-        pre_explosion_signals TEXT,
-        price_before REAL,
-        price_after_1d REAL,
-        price_after_3d REAL,
-        change_1d REAL,
-        change_3d REAL
     )''')
     conn.commit()
     return conn
 
 
-# ─── جمع بيانات الجلسة ────────────────────────────────────────
-
-def get_all_stocks_from_tradingview(min_volume=50000):
-    """جلب كل الأسهم من TradingView مع أحجامها الحالية"""
+def get_stock_list(min_volume=100000):
     url = "https://scanner.tradingview.com/america/scan"
     payload = {
         "filter": [
-            {"left": "close", "operation": "greater", "right": 0.5},
+            {"left": "close", "operation": "greater", "right": MIN_PRICE},
             {"left": "volume", "operation": "greater", "right": min_volume}
         ],
         "markets": ["america"],
@@ -119,15 +102,12 @@ def get_all_stocks_from_tradingview(min_volume=50000):
                     })
             return stocks
     except Exception as e:
-        print(f"[-] TradingView error: {e}")
+        print(f"[-] TradingView: {e}")
     return []
 
 
-def analyze_stock_for_prediction(symbol):
-    """
-    تحليل سهم واحد — استخراج الميزات للتنبؤ
-    يرجع ميزات حقيقية من بيانات yfinance
-    """
+def analyze_stock(symbol):
+    """تحليل سهم واحد — استخراج ميزات حقيقية"""
     try:
         df = yf.download(symbol, period="6mo", progress=False)
         if df is None or len(df) < 30:
@@ -142,7 +122,14 @@ def analyze_stock_for_prediction(symbol):
         low = df['Low'].astype(float)
         open_price = df['Open'].astype(float)
 
+        if close.iloc[-1] < MIN_PRICE or close.iloc[-1] > MAX_PRICE:
+            return None
+
         features = {}
+
+        # === تغيير السعر — هذا أهم شي ===
+        features['change_1d'] = float((close.iloc[-1] - close.iloc[-2]) / close.iloc[-2] * 100) if len(close) >= 2 else 0
+        features['change_5d'] = float((close.iloc[-1] - close.iloc[-5]) / close.iloc[-5] * 100) if len(close) >= 5 else 0
 
         # === الحجم ===
         vol_mean_20 = volume.rolling(20).mean().iloc[-1]
@@ -150,21 +137,14 @@ def analyze_stock_for_prediction(symbol):
         today_vol = float(volume.iloc[-1])
 
         if vol_std_20 > 0 and vol_mean_20 > 0:
-            features['volume_z_score'] = (today_vol - vol_mean_20) / vol_std_20
-            features['volume_ratio'] = today_vol / vol_mean_20
+            features['volume_z_score'] = float((today_vol - vol_mean_20) / vol_std_20)
+            features['volume_ratio'] = float(today_vol / vol_mean_20)
         else:
             features['volume_z_score'] = 0
             features['volume_ratio'] = 1
 
-        # حجم 5 أيام
         vol_5d = volume.tail(5)
         features['volume_5d_avg_ratio'] = float(vol_5d.mean() / vol_mean_20) if vol_mean_20 > 0 else 1
-        features['high_volume_days'] = sum(1 for z in (volume - vol_mean_20) / vol_std_20 if z > 2) if vol_std_20 > 0 else 0
-
-        # === السعر ===
-        features['change_1d'] = float((close.iloc[-1] - close.iloc[-2]) / close.iloc[-2] * 100) if len(close) >= 2 else 0
-        features['change_5d'] = float((close.iloc[-1] - close.iloc[-5]) / close.iloc[-5] * 100) if len(close) >= 5 else 0
-        features['change_20d'] = float((close.iloc[-1] - close.iloc[-20]) / close.iloc[-20] * 100) if len(close) >= 20 else 0
 
         # === Bollinger Bands ===
         bb = ta.volatility.BollingerBands(close, window=20, window_dev=2)
@@ -173,7 +153,6 @@ def analyze_stock_for_prediction(symbol):
         bb_width_avg = float(bb_width.rolling(20).mean().iloc[-1])
         features['bollinger_width'] = bb_width_now
         features['bollinger_squeeze'] = 1 if (bb_width_now < bb_width_avg * 0.7 and bb_width_avg > 0) else 0
-        features['bollinger_pct'] = float(bb.bollinger_pband().iloc[-1]) if not pd.isna(bb.bollinger_pband().iloc[-1]) else 0.5
 
         # === RSI ===
         rsi = ta.momentum.RSIIndicator(close, window=14)
@@ -188,7 +167,7 @@ def analyze_stock_for_prediction(symbol):
                 pad = ad_line.iloc[i] - ad_line.iloc[i-20]
                 pvol = volume.iloc[i-20:i].sum()
                 cmf_vals.append(pad / pvol if pvol > 0 else 0)
-            features['cmf'] = cmf_vals[-1] if cmf_vals else 0
+            features['cmf'] = float(cmf_vals[-1]) if cmf_vals else 0
         except:
             features['cmf'] = 0
 
@@ -219,20 +198,21 @@ def analyze_stock_for_prediction(symbol):
         features['dist_from_52w_high'] = float((close.iloc[-1] - close.max()) / close.max() * 100)
         features['dist_from_52w_low'] = float((close.iloc[-1] - close.min()) / close.min() * 100)
 
-        # === Price position in range ===
+        # === Price position in 20-day range ===
         range_20 = high.tail(20).max() - low.tail(20).min()
         if range_20 > 0:
             features['price_position'] = float((close.iloc[-1] - low.tail(20).min()) / range_20)
         else:
             features['price_position'] = 0.5
 
-        # === Gap from open ===
-        today_open = float(open_price.iloc[-1])
-        today_close = float(close.iloc[-1])
-        if today_open > 0:
-            features['gap_from_open'] = (today_close - today_open) / today_open * 100
-        else:
-            features['gap_from_open'] = 0
+        # === Days since volume started building ===
+        vol_build_days = 0
+        for i in range(len(volume)-1, max(len(volume)-10, 0), -1):
+            if volume.iloc[i] > vol_mean_20 * 1.3:
+                vol_build_days += 1
+            else:
+                break
+        features['volume_build_days'] = vol_build_days
 
         features['symbol'] = symbol
         features['price'] = float(close.iloc[-1])
@@ -244,213 +224,106 @@ def analyze_stock_for_prediction(symbol):
         return None
 
 
-# ─── كشف أنماط الانفجار التاريخية ─────────────────────────────
-
-def find_explosion_patterns(conn):
+def calculate_explosion_score(stock):
     """
-    يبحث في التاريخ عن أنماط السباق للانفجارات
-    انفجار = سهم صعد >8% في يوم واحد بعد جلسة معينة
+    حساب احتمالية الانفجار — القواعد الحقيقية:
+    - نبحث عن تجميع قبل الحركة، مو بعد الحركة
+    - اللي انẬ explodes فعلاً = تأخّرنا، مو هذا اللي نبيه
     """
-    c = conn.cursor()
-    c.execute('''
-        SELECT symbol, scan_time, session_type, price, volume_ratio, z_score,
-               change_pct, rsi, cmf, obv_above, bollinger_squeeze,
-               next_session_change, exploded
-        FROM session_data
-        WHERE exploded = 1
-        ORDER BY scan_time DESC
-        LIMIT 200
-    ''')
-    rows = c.fetchall()
-    patterns = []
-    for row in rows:
-        patterns.append({
-            'symbol': row[0], 'time': row[1], 'session': row[2],
-            'price': row[3], 'volume_ratio': row[4], 'z_score': row[5],
-            'change_pct': row[6], 'rsi': row[7], 'cmf': row[8],
-            'obv_above': row[9], 'squeeze': row[10],
-            'next_change': row[11], 'exploded': row[12],
-        })
-    return patterns
+    score = 0
 
+    change_1d = abs(stock.get('change_1d', 0))
+    volume_ratio = stock.get('volume_ratio', 0)
+    rsi = stock.get('rsi', 50)
+    cmf = stock.get('cmf', 0)
+    squeeze = stock.get('bollinger_squeeze', 0)
+    obv_up = stock.get('obv_above_sma', 0)
+    z = stock.get('volume_z_score', 0)
+    macd = stock.get('macd_diff', 0)
+    vol_build = stock.get('volume_build_days', 0)
+    price_pos = stock.get('price_position', 0.5)
 
-def build_training_data(conn):
-    """
-    بناء بيانات التدريب من التاريخ
-    positives: أسهم انفجرت بعد جلسة
-    negatives: أسهم ما انفجرت
-    """
-    c = conn.cursor()
+    # ─── عقوبة حادة للأسهم اللي انفجرت فعلاً ───
+    if change_1d > MAX_CHANGE_1D:
+        return 0
+    if change_1d > 5:
+        return 0
+    if change_1d > 3:
+        score -= 15
 
-    # إيجابيات — أسهم انفجرت
-    c.execute('''
-        SELECT volume_ratio, z_score, change_pct, rsi, cmf, obv_above,
-               bollinger_squeeze, gap_pct, float_shares, short_percent,
-               next_session_change
-        FROM session_data
-        WHERE exploded = 1 AND next_session_change IS NOT NULL
-    ''')
-    positives = c.fetchall()
+    # ─── تجميع (CMF) — أهم مؤشر ───
+    if cmf > 0.25:
+        score += 30
+    elif cmf > 0.15:
+        score += 22
+    elif cmf > 0.08:
+        score += 15
+    elif cmf > 0.03:
+        score += 8
+    elif cmf < -0.1:
+        score -= 15
 
-    # سلبيات — أسهم ما انفجرت
-    c.execute('''
-        SELECT volume_ratio, z_score, change_pct, rsi, cmf, obv_above,
-               bollinger_squeeze, gap_pct, float_shares, short_percent,
-               next_session_change
-        FROM session_data
-        WHERE exploded = 0 AND next_session_change IS NOT NULL
-    ''')
-    negatives = c.fetchall()
+    # ─── انكماش Bollinger — طاقة متراكمة ───
+    if squeeze:
+        score += 25
 
-    if len(positives) < 10 or len(negatives) < 10:
-        return None, None, None
+    # ─── حجم مرتفع مع سعر ثابت = تجميع ───
+    if volume_ratio > 3 and change_1d < 2:
+        score += 20
+    elif volume_ratio > 2 and change_1d < 2:
+        score += 14
+    elif volume_ratio > 1.5 and change_1d < 1.5:
+        score += 8
 
-    feature_names = ['volume_ratio', 'z_score', 'change_pct', 'rsi', 'cmf',
-                     'obv_above', 'bollinger_squeeze', 'gap_pct', 'float_shares',
-                     'short_percent', 'next_session_change']
+    # ─── OBV صاعد مع سعر ثابت ───
+    if obv_up and change_1d < 2:
+        score += 12
+    elif obv_up:
+        score += 5
 
-    X_pos = np.array([[r[i] for i in range(len(r)-1)] for r in positives])
-    X_neg = np.array([[r[i] for i in range(len(r)-1)] for r in negatives])
+    # ─── RSI في المجال الصحيح ───
+    if 40 <= rsi <= 65:
+        score += 10
+    elif 30 <= rsi < 40:
+        score += 6
+    elif rsi > 75:
+        score -= 10
+    elif rsi < 25:
+        score -= 5
 
-    X = np.vstack([X_pos, X_neg])
-    y = np.array([1]*len(positives) + [0]*len(negatives))
+    # ─── MACD يتحول إيجابي ───
+    if macd > 0:
+        score += 8
+    elif macd > -0.1:
+        score += 4
 
-    # Replace NaN
-    X = np.nan_to_num(X, nan=0)
+    # ─── بناء الحجم على مدار أيام ───
+    if vol_build >= 3:
+        score += 12
+    elif vol_build >= 2:
+        score += 7
 
-    return X, y, feature_names
+    # ─── السعر قريب من قاع النطاق = فرص صعود ───
+    if price_pos < 0.3:
+        score += 8
+    elif price_pos > 0.85:
+        score -= 5
 
+    score = max(0, min(score, 99))
+    return score
 
-# ─── النموذج ──────────────────────────────────────────────────
-
-def train_model(conn):
-    """تدريب نموذج التنبؤ"""
-    X, y, feature_names = build_training_data(conn)
-    if X is None:
-        print("[-] لا توجد بيانات كافية للتدريب (تحتاج 10+ انفجارات و10+ سلبيات)")
-        return None
-
-    scaler = StandardScaler()
-    X_scaled = scaler.fit_transform(X)
-
-    model = GradientBoostingClassifier(
-        n_estimators=100, max_depth=4, learning_rate=0.1,
-        random_state=42
-    )
-    model.fit(X_scaled, y)
-
-    # حفظ النموذج
-    with open(MODEL_PATH, 'wb') as f:
-        pickle.dump({'model': model, 'scaler': scaler, 'features': feature_names}, f)
-
-    accuracy = model.score(X_scaled, y)
-    print(f"[+] النموذج مدرب — دقة: {accuracy:.1%}")
-    print(f"   ميزات: {feature_names}")
-    print(f"   أهمية: {dict(zip(feature_names, [round(x,3) for x in model.feature_importances_]))}")
-
-    return {'model': model, 'scaler': scaler, 'features': feature_names}
-
-
-def load_model():
-    if os.path.exists(MODEL_PATH):
-        with open(MODEL_PATH, 'rb') as f:
-            return pickle.load(f)
-    return None
-
-
-# ─── التنبؤ ────────────────────────────────────────────────────
-
-def predict_explosions(stocks_to_analyze, model_data=None):
-    """
-    التنبؤ بالأسهم اللي ممكن تنفجر الجلسة القادمة
-    """
-    print(f"\n[تنبؤ] تحليل {len(stocks_to_analyze)} سهم...")
-
-    analyzed = []
-    for i, stock in enumerate(stocks_to_analyze):
-        if i % 50 == 0 and i > 0:
-            print(f"  ... {i}/{len(stocks_to_analyze)}")
-        features = analyze_stock_for_prediction(stock['symbol'])
-        if features:
-            analyzed.append(features)
-        time.sleep(0.1)
-
-    print(f"[+] {len(analyzed)} سهم محلل")
-
-    if not analyzed:
-        return []
-
-    predictions = []
-
-    if model_data:
-        # استخدام النموذج المدرب
-        feature_names = model_data['features']
-        model = model_data['model']
-        scaler = model_data['scaler']
-
-        for stock in analyzed:
-            try:
-                X = np.array([[stock.get(f, 0) for f in feature_names]])
-                X = np.nan_to_num(X, nan=0)
-                X_scaled = scaler.transform(X)
-                prob = model.predict_proba(X_scaled)[0][1]
-                stock['explosion_probability'] = round(prob * 100, 1)
-                predictions.append(stock)
-            except Exception:
-                stock['explosion_probability'] = 0
-                predictions.append(stock)
-    else:
-        # بدون نموذج — قواعد بسيطة مبنية على الأنماط المعروفة
-        for stock in analyzed:
-            score = 0
-
-            # حجم مرتفع + انكماش = احتمال انفجار
-            if stock.get('volume_ratio', 0) > 2.0:
-                score += 20
-            if stock.get('volume_z_score', 0) > 2.5:
-                score += 15
-
-            # انكماش Bollinger = السعر يجهز لحركة
-            if stock.get('bollinger_squeeze', 0) == 1:
-                score += 25
-
-            # CMF إيجابي = تجميع
-            if stock.get('cmf', 0) > 0.1:
-                score += 15
-
-            # RSI معتدل (30-70) = في مجال للحركة
-            rsi = stock.get('rsi', 50)
-            if 30 <= rsi <= 70:
-                score += 10
-            elif rsi < 30:
-                score += 5  # oversold bounce potential
-
-            # OBV صاعد = ضغط شرائي
-            if stock.get('obv_above_sma', 0) == 1:
-                score += 10
-
-            # MACD إيجابي
-            if stock.get('macd_diff', 0) > 0:
-                score += 5
-
-            stock['explosion_probability'] = min(score, 99)
-            predictions.append(stock)
-
-    predictions.sort(key=lambda x: x.get('explosion_probability', 0), reverse=True)
-    return predictions
-
-
-# ─── المنسّق الرئيسي ──────────────────────────────────────────
 
 def run_post_session_scan():
-    """
-    المسح التنبؤي — يُشغّل بعد نهاية كل جلسة
-    """
-    EDT = timezone(timedelta(hours=-4))
-    now = datetime.now(EDT)
+    """المسح التنبؤي الرئيسي"""
+    import pytz
+    try:
+        et = pytz.timezone('US/Eastern')
+    except:
+        et = timezone(timedelta(hours=-4))
+    now = datetime.now(et)
     t = now.hour * 60 + now.minute
 
-    if 390 <= t < 570:
+    if 240 <= t < 570:
         session = "premarket"
         session_name = "ما قبل التداول"
     elif 570 <= t < 960:
@@ -464,43 +337,51 @@ def run_post_session_scan():
         session_name = "السوق مغلق"
 
     print("=" * 60)
-    print("  🔮 الماسح التنبؤي v5.0")
+    print("  الماسح التنبؤي v6.0")
     print(f"  الجلسة: {session_name}")
     print(f"  الوقت: {now.strftime('%Y-%m-%d %H:%M ET')}")
     print("=" * 60)
 
     conn = init_db()
 
-    # الخطوة 1: جلب الأسهم
-    print("\n[1/4] جلب قائمة الأسهم...")
-    all_stocks = get_all_stocks_from_tradingview(min_volume=100000)
+    print("\n[1/3] جلب الأسهم...")
+    all_stocks = get_stock_list(min_volume=MIN_VOLUME)
     if not all_stocks:
         print("[-] فشل جلب الأسهم")
         return []
-    print(f"[+] {len(all_stocks)} سهم")
 
-    # الخطوة 2: تحليل الأفضل
-    print(f"\n[2/4] تحليل أفضل 400 سهم...")
-    sorted_by_vol = sorted(all_stocks, key=lambda x: x['volume'], reverse=True)
-    candidates = sorted_by_vol[:300] + all_stocks[600:2000:5]
-    candidates = candidates[:400]
+    # فلترة أولية — إزالة اللي انفجر فعلاً
+    candidates = [s for s in all_stocks if abs(s['change']) <= MAX_CHANGE_1D and MIN_PRICE <= s['price'] <= MAX_PRICE]
+    print(f"[+] {len(all_stocks)} سهم، {len(candidates)} بعد الفلترة (تغيير < {MAX_CHANGE_1D}%)")
 
-    # الخطوة 3: التنبؤ
-    print(f"\n[3/4] التنبؤ بالانفجارات...")
-    model_data = load_model()
-    if model_data:
-        print("[+] تم تحميل النموذج المدرب")
-    else:
-        print("[-] لا يوجد نموذج — استخدام القواعد")
+    # ترتيب بالحجم و lấy أفضل
+    candidates.sort(key=lambda x: x['volume'], reverse=True)
+    candidates = candidates[:500]
 
-    predictions = predict_explosions(candidates, model_data)
+    print(f"\n[2/3] تحليل {len(candidates)} سهم...")
+    analyzed = []
+    for i, stock in enumerate(candidates):
+        if i % 50 == 0 and i > 0:
+            print(f"  ... {i}/{len(candidates)}")
+        features = analyze_stock(stock['symbol'])
+        if features:
+            # فلترة ثانية — إزالة اللي تحرك بعدين
+            if abs(features.get('change_1d', 0)) <= MAX_CHANGE_1D:
+                analyzed.append(features)
+        time.sleep(0.1)
+
+    print(f"[+] {len(analyzed)} سهم محلل")
+
+    print(f"\n[3/3] حساب الاحتمالات...")
+    for stock in analyzed:
+        stock['explosion_probability'] = calculate_explosion_score(stock)
+
+    analyzed.sort(key=lambda x: x.get('explosion_probability', 0), reverse=True)
 
     # حفظ في قاعدة البيانات
-    print(f"\n[4/4] حفظ البيانات...")
     c = conn.cursor()
-    for p in predictions:
+    for p in analyzed:
         try:
-            # التحقق إذا انفجر هذا السهم في الجلسة القادمة (للتاريخ)
             c.execute('''INSERT INTO session_data
                 (scan_time, session_type, symbol, price, volume, volume_ratio,
                  z_score, change_pct, rsi, cmf, obv_above, bollinger_squeeze,
@@ -518,9 +399,8 @@ def run_post_session_scan():
             continue
     conn.commit()
 
-    # حفظ التنبؤات
     top_predictions = []
-    for p in predictions[:30]:
+    for p in analyzed[:30]:
         top_predictions.append({
             'symbol': p.get('symbol', ''),
             'price': round(p.get('price', 0), 2),
@@ -541,28 +421,26 @@ def run_post_session_scan():
         'scan_time': now.isoformat(),
         'session': session,
         'session_name': session_name,
-        'total_analyzed': len(predictions),
+        'total_analyzed': len(analyzed),
         'predictions': top_predictions,
-        'model_trained': model_data is not None,
+        'model_trained': False,
     }
 
     with open(PREDICTIONS_PATH, 'w', encoding='utf-8') as f:
         json.dump(output, f, indent=2, ensure_ascii=False, default=str)
 
-    # print top predictions
     print("\n" + "=" * 60)
-    print(f"  🔮 أفضل 10 تنبؤات للجلسة القادمة:")
+    print("  أفضل 10 تنبؤات:")
     print("=" * 60)
     for i, p in enumerate(top_predictions[:10], 1):
         prob = p['explosion_probability']
-        icon = "🔴" if prob >= 70 else "🟡" if prob >= 40 else "🟢"
-        print(f"\n{i}. {icon} {p['symbol']} — ${p['price']}")
-        print(f"   احتمال الانفجار: {prob}%")
-        print(f"   حجم={p['volume_ratio']}x | Z={p['z_score']} | RSI={p['rsi']}")
-        print(f"   قوة التجميع={p['cmf']} | انكماش={'نعم' if p['bollinger_squeeze'] else 'لا'} | OBV={'صاعد' if p['obv_above_sma'] else 'هابط'}")
+        icon = "!!!" if prob >= 60 else "!" if prob >= 40 else "."
+        print(f"\n{i}. {icon} {p['symbol']} — ${p['price']} — {prob}%")
+        print(f"   حجم={p['volume_ratio']}x | RSI={p['rsi']} | CMF={p['cmf']}")
+        print(f"   تغيير يوم={p['change_1d']:+.1f}% | انكماش={'نعم' if p['bollinger_squeeze'] else 'لا'} | OBV={'صاعد' if p['obv_above_sma'] else 'هابط'}")
 
     conn.close()
-    print(f"\n[✓] محفوظ في {PREDICTIONS_PATH}")
+    print(f"\n[✓] محفوظ — {len(top_predictions)} تنبؤ")
     return top_predictions
 
 

@@ -7,4 +7,4 @@ plotly
 ta
 scikit-learn
 openpyxl
-edgartools
+pytz
