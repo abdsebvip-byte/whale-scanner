@@ -6,5 +6,8 @@ streamlit
 plotly
 ta
 scikit-learn
+joblib
+xgboost
+imbalanced-learn
 openpyxl
 pytz
