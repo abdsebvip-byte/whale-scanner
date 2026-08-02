@@ -10,7 +10,10 @@ import requests
 from datetime import datetime
 
 if sys.platform == 'win32':
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+    else:
+        sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
 
 from full_market_whale_scanner import WhaleScanner, get_current_session
 from self_learning import load_memory, save_memory, analyze_misses, daily_report

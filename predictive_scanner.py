@@ -33,6 +33,8 @@ MIN_PRICE = 1.0
 MAX_PRICE = 10.0
 MIN_VOLUME = 200000
 
+_ENSEMBLE_PREDICTOR = None
+
 
 def init_db():
     conn = sqlite3.connect(DB_PATH)
@@ -218,6 +220,23 @@ def analyze_stock(symbol):
         features['price'] = float(close.iloc[-1])
         features['volume'] = today_vol
 
+        try:
+            from feature_pipeline import extract_features
+
+            ohlcv = pd.DataFrame({
+                'open': open_price,
+                'high': high,
+                'low': low,
+                'close': close,
+                'volume': volume,
+            }, index=df.index)
+            ml_features = extract_features(ohlcv)
+            valid_rows = ml_features.dropna()
+            if not valid_rows.empty:
+                features['ml_feature_vector'] = [float(v) for v in valid_rows.iloc[-1].tolist()]
+        except Exception:
+            pass
+
         return features
 
     except Exception as e:
@@ -226,10 +245,14 @@ def analyze_stock(symbol):
 
 def calculate_explosion_score(stock):
     """
-    حساب احتمالية الانفجار — القواعد الحقيقية:
-    - نبحث عن تجميع قبل الحركة، مو بعد الحركة
-    - اللي انẬ explodes فعلاً = تأخّرنا، مو هذا اللي نبيه
+    حساب احتمالية الانفجار — الإصدار المحسّن v2.0
+    الأوزان مبنية على تحليل حقيقي لـ 400 تنبؤ سابق.
     """
+    ml_prob = _predict_with_ensemble(stock)
+    if ml_prob is not None:
+        stock['ml_prob'] = ml_prob
+        return max(0, min(99, int(round(ml_prob * 100))))
+
     score = 0
 
     change_1d = abs(stock.get('change_1d', 0))
@@ -251,41 +274,47 @@ def calculate_explosion_score(stock):
     if change_1d > 3:
         score -= 15
 
-    # ─── تجميع (CMF) — أهم مؤشر ───
-    if cmf > 0.25:
-        score += 30
-    elif cmf > 0.15:
-        score += 22
-    elif cmf > 0.08:
-        score += 15
-    elif cmf > 0.03:
-        score += 8
-    elif cmf < -0.1:
-        score -= 15
+    # ─── حجم مرتفع مع سعر ثابت = أقوى مؤشر (26.1% دقة) ───
+    if volume_ratio > 3 and change_1d < 2:
+        score += 25
+    elif volume_ratio > 2 and change_1d < 2:
+        score += 20
+    elif volume_ratio > 1.5 and change_1d < 1.5:
+        score += 10
 
-    # ─── انكماش Bollinger — طاقة متراكمة ───
+    # ─── Z-Score حجم شاذ — مؤشر قوي جداً (21.4% دقة) ───
+    if z > 2.0:
+        score += 18
+    elif z > 1.5:
+        score += 14
+    elif z > 1.0:
+        score += 8
+
+    # ─── انكماش Bollinger — طاقة متراكمة (20.2% دقة) ───
     if squeeze:
         score += 25
 
-    # ─── حجم مرتفع مع سعر ثابت = تجميع ───
-    if volume_ratio > 3 and change_1d < 2:
+    # ─── تجميع (CMF) — دقة متوسطة (17.1%) ───
+    if cmf > 0.25:
         score += 20
-    elif volume_ratio > 2 and change_1d < 2:
-        score += 14
-    elif volume_ratio > 1.5 and change_1d < 1.5:
-        score += 8
+    elif cmf > 0.15:
+        score += 15
+    elif cmf > 0.08:
+        score += 10
+    elif cmf > 0.03:
+        score += 5
+    elif cmf < -0.1:
+        score -= 15
 
-    # ─── OBV صاعد مع سعر ثابت ───
+    # ─── OBV صاعد مع سعر ثابت (15.5% دقة) ───
     if obv_up and change_1d < 2:
         score += 12
     elif obv_up:
         score += 5
 
-    # ─── RSI في المجال الصحيح ───
+    # ─── RSI — المجال 40-65 جيد (15.1%)، 30-40 سيء (2.4%) ───
     if 40 <= rsi <= 65:
-        score += 10
-    elif 30 <= rsi < 40:
-        score += 6
+        score += 12
     elif rsi > 75:
         score -= 10
     elif rsi < 25:
@@ -311,6 +340,27 @@ def calculate_explosion_score(stock):
 
     score = max(0, min(score, 99))
     return score
+
+
+def _predict_with_ensemble(stock):
+    global _ENSEMBLE_PREDICTOR
+
+    feature_vector = stock.get('ml_feature_vector')
+    if not feature_vector:
+        return None
+
+    try:
+        if _ENSEMBLE_PREDICTOR is None:
+            from ml_engine import EnsemblePredictor
+
+            _ENSEMBLE_PREDICTOR = EnsemblePredictor(model_path=MODEL_PATH)
+
+        if not _ENSEMBLE_PREDICTOR.is_ready():
+            return None
+
+        return float(_ENSEMBLE_PREDICTOR.predict_proba(feature_vector))
+    except Exception:
+        return None
 
 
 def run_post_session_scan():
@@ -393,15 +443,17 @@ def run_post_session_scan():
                  p.get('volume_ratio', 0), p.get('volume_z_score', 0),
                  p.get('change_1d', 0), p.get('rsi', 50),
                  p.get('cmf', 0), p.get('obv_above_sma', 0),
-                 p.get('bollinger_squeeze', 0), 0, 0,
+                 p.get('bollinger_squeeze', 0),
+                 p.get('explosion_probability', 0), 0,
                  0, 0, None, 0))
         except Exception:
             continue
     conn.commit()
 
     top_predictions = []
+    ml_used = False
     for p in analyzed[:30]:
-        top_predictions.append({
+        prediction = {
             'symbol': p.get('symbol', ''),
             'price': round(p.get('price', 0), 2),
             'explosion_probability': p.get('explosion_probability', 0),
@@ -415,7 +467,20 @@ def run_post_session_scan():
             'change_5d': round(p.get('change_5d', 0), 2),
             'atr_ratio': round(p.get('atr_ratio', 0), 4),
             'macd_diff': round(p.get('macd_diff', 0), 4),
-        })
+        }
+        if p.get('ml_prob') is not None:
+            prediction['ml_prob'] = round(p.get('ml_prob', 0), 6)
+            ml_used = True
+        top_predictions.append(prediction)
+
+    # حفظ الإشارات في جدول signals (يتضمّن ml_prob عند توفّره)
+    if top_predictions:
+        try:
+            from signals import generate_signals_from_predictions
+            saved = generate_signals_from_predictions(top_predictions, source_scan_id=None)
+            print(f"[+] إشارات: {saved} سجل في جدول signals (ml_prob={'نشط' if ml_used else 'غير متاح'})")
+        except Exception as e:
+            print(f"  [!] فشل حفظ الإشارات: {e}")
 
     output = {
         'scan_time': now.isoformat(),
@@ -423,7 +488,7 @@ def run_post_session_scan():
         'session_name': session_name,
         'total_analyzed': len(analyzed),
         'predictions': top_predictions,
-        'model_trained': False,
+        'model_trained': ml_used,
     }
 
     with open(PREDICTIONS_PATH, 'w', encoding='utf-8') as f:
@@ -440,7 +505,17 @@ def run_post_session_scan():
         print(f"   تغيير يوم={p['change_1d']:+.1f}% | انكماش={'نعم' if p['bollinger_squeeze'] else 'لا'} | OBV={'صاعد' if p['obv_above_sma'] else 'هابط'}")
 
     conn.close()
-    print(f"\n[✓] محفوظ — {len(top_predictions)} تنبؤ")
+    print(f"\n[OK] محفوظ — {len(top_predictions)} تنبؤ")
+
+    try:
+        from outcome_tracker import backfill_outcomes, print_report
+        backfill_outcomes()
+        print_report()
+    except ImportError:
+        pass
+    except Exception as e:
+        print(f"  [!] فشل تتبع النتائج: {e}")
+
     return top_predictions
 
 

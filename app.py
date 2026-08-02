@@ -529,6 +529,98 @@ def page_alerts(preds):
         st.markdown(html, unsafe_allow_html=True)
 
 
+def page_outcomes():
+    st.markdown(f"""<div class="dash-header">
+        <div><h1>Outcome Tracking</h1><div class="meta">Real accuracy of every prediction — who exploded and who didn't</div></div>
+    </div>""", unsafe_allow_html=True)
+
+    db_path = "scanner_history.db"
+    if not os.path.exists(db_path):
+        st.info("No database yet.")
+        return
+
+    try:
+        conn = sqlite3.connect(db_path)
+        c = conn.cursor()
+
+        c.execute("SELECT COUNT(*) FROM outcome_tracking")
+        total = c.fetchone()[0]
+        c.execute("SELECT COUNT(*) FROM outcome_tracking WHERE exploded = 1")
+        hits = c.fetchone()[0]
+        c.execute("SELECT ROUND(AVG(change_1d),2) FROM outcome_tracking WHERE change_1d IS NOT NULL")
+        avg1d = c.fetchone()[0] or 0
+        c.execute("SELECT ROUND(AVG(change_5d),2) FROM outcome_tracking WHERE change_5d IS NOT NULL")
+        avg5d = c.fetchone()[0] or 0
+        c.execute("SELECT ROUND(AVG(max_change_5d),2) FROM outcome_tracking WHERE max_change_5d IS NOT NULL")
+        avg_max = c.fetchone()[0] or 0
+        c.execute("SELECT ROUND(AVG(min_change_5d),2) FROM outcome_tracking WHERE min_change_5d IS NOT NULL")
+        avg_min = c.fetchone()[0] or 0
+        c.execute("SELECT COUNT(*) FROM outcome_tracking WHERE touched_stop = 1")
+        stopped = c.fetchone()[0]
+
+        c1, c2, c3, c4 = st.columns(4)
+        with c1:
+            acc = round(hits/total*100, 1) if total > 0 else 0
+            st.markdown(f'<div class="metric-card"><div class="metric-label">Accuracy</div><div class="metric-value" style="color:{"#34d399" if acc>=20 else "#f59e0b" if acc>=10 else "#f87171"};">{acc}%</div><div class="metric-label">{hits}/{total} predictions</div></div>', unsafe_allow_html=True)
+        with c2:
+            st.markdown(f'<div class="metric-card"><div class="metric-label">Avg Return 1D</div><div class="metric-value" style="color:{"#34d399" if avg1d>=0 else "#f87171"};">{avg1d:+.1f}%</div></div>', unsafe_allow_html=True)
+        with c3:
+            st.markdown(f'<div class="metric-card"><div class="metric-label">Avg Return 5D</div><div class="metric-value" style="color:{"#34d399" if avg5d>=0 else "#f87171"};">{avg5d:+.1f}%</div></div>', unsafe_allow_html=True)
+        with c4:
+            st.markdown(f'<div class="metric-card"><div class="metric-label">Max Drawdown Avg</div><div class="metric-value" style="color:#f87171;">{avg_min:+.1f}%</div><div class="metric-label">Stop-touched: {stopped}</div></div>', unsafe_allow_html=True)
+
+        st.markdown('<div class="section-title">Indicator Accuracy Breakdown</div>', unsafe_allow_html=True)
+        indicators = [
+            ('volume_ratio', 'Volume > 2x', 'volume_ratio >= 2.0'),
+            ('bollinger_squeeze', 'Bollinger Squeeze', 'bollinger_squeeze = 1'),
+            ('obv_above', 'OBV Uptrend', 'obv_above = 1'),
+            ('cmf', 'CMF > 0.15', 'cmf >= 0.15'),
+            ('rsi_40_65', 'RSI 40-65', 'rsi BETWEEN 40 AND 65'),
+            ('volume_z', 'Z-Score > 1.5', 'z_score >= 1.5'),
+        ]
+        ind_data = []
+        for key, name, cond in indicators:
+            try:
+                c.execute(f"SELECT COUNT(*) FROM outcome_tracking WHERE {cond}")
+                cnt = c.fetchone()[0]
+                c.execute(f"SELECT COUNT(*) FROM outcome_tracking WHERE {cond} AND exploded = 1")
+                ih = c.fetchone()[0]
+                acc_ind = round(ih/cnt*100, 1) if cnt > 0 else 0
+                c.execute(f"SELECT COUNT(*) FROM outcome_tracking WHERE NOT ({cond}) AND exploded = 1")
+                hits_without = c.fetchone()[0]
+                c.execute(f"SELECT COUNT(*) FROM outcome_tracking WHERE NOT ({cond})")
+                total_without = c.fetchone()[0]
+                baseline = round(hits_without/total_without*100, 1) if total_without > 0 else 0
+                ind_data.append({'Indicator': name, 'Count': cnt, 'Accuracy': f'{acc_ind}%', 'Baseline': f'{baseline}%', 'vs Baseline': f'{round(acc_ind-baseline, 1):+.1f}%'})
+            except:
+                pass
+        if ind_data:
+            df = pd.DataFrame(ind_data)
+            st.dataframe(df, use_container_width=True, hide_index=True)
+
+        st.markdown('<div class="section-title">Top Winning Predictions (5D Change)</div>', unsafe_allow_html=True)
+        try:
+            c.execute("SELECT symbol, change_5d, cmf, bollinger_squeeze, volume_ratio, z_score, explosion_score FROM outcome_tracking WHERE change_5d IS NOT NULL ORDER BY change_5d DESC LIMIT 10")
+            top = c.fetchall()
+            if top:
+                win_df = pd.DataFrame(top, columns=['Symbol', '5D Return %', 'CMF', 'Squeeze', 'Vol Ratio', 'Z-Score', 'Score'])
+                st.dataframe(win_df, use_container_width=True, hide_index=True)
+        except: pass
+
+        st.markdown('<div class="section-title">Worst Predictions (5D Change)</div>', unsafe_allow_html=True)
+        try:
+            c.execute("SELECT symbol, change_5d, cmf, bollinger_squeeze, volume_ratio, z_score, explosion_score FROM outcome_tracking WHERE change_5d IS NOT NULL ORDER BY change_5d ASC LIMIT 10")
+            worst = c.fetchall()
+            if worst:
+                lose_df = pd.DataFrame(worst, columns=['Symbol', '5D Return %', 'CMF', 'Squeeze', 'Vol Ratio', 'Z-Score', 'Score'])
+                st.dataframe(lose_df, use_container_width=True, hide_index=True)
+        except: pass
+
+        conn.close()
+    except Exception as e:
+        st.error(f"Error: {e}")
+
+
 def page_analytics(preds):
     st.markdown(f"""<div class="dash-header">
         <div><h1>Analytics</h1><div class="meta">Distribution and correlation analysis</div></div>
@@ -565,6 +657,80 @@ def page_analytics(preds):
     fig.update_layout(height=350, template="plotly_dark", margin=dict(l=80,r=10,t=10,b=40),
         paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='#111827', xaxis=dict(gridcolor='#1e293b'), yaxis=dict(gridcolor='#1e293b'))
     st.plotly_chart(fig, use_container_width=True)
+
+
+def page_signals():
+    st.markdown(f"""<div class="dash-header">
+        <div><h1>Signals</h1><div class="meta">AI-powered trading signals based on real indicator accuracy</div></div>
+    </div>""", unsafe_allow_html=True)
+
+    try:
+        from signals import get_active_signals, get_signal_summary
+        summary = get_signal_summary()
+        signals = get_active_signals(limit=50)
+    except:
+        st.info("Signals engine not ready. Run a scan first.")
+        return
+
+    if summary["total_signals"] == 0:
+        st.info("No signals generated yet. Run a scan to generate signals.")
+        return
+
+    c1, c2, c3, c4 = st.columns(4)
+    with c1:
+        st.markdown(f'<div class="metric-card purple"><div class="metric-label">Total Signals</div><div class="metric-value">{summary["total_signals"]}</div></div>', unsafe_allow_html=True)
+    with c2:
+        st.markdown(f'<div class="metric-card green"><div class="metric-label">STRONG BUY</div><div class="metric-value" style="color:#34d399;">{summary["strong_buys"]}</div></div>', unsafe_allow_html=True)
+    with c3:
+        st.markdown(f'<div class="metric-card yellow"><div class="metric-label">BUY</div><div class="metric-value" style="color:#fbbf24;">{summary["buys"]}</div></div>', unsafe_allow_html=True)
+    with c4:
+        st.markdown(f'<div class="metric-card"><div class="metric-label">Unique Symbols</div><div class="metric-value">{summary["unique_symbols"]}</div></div>', unsafe_allow_html=True)
+
+    st.markdown('<div class="section-title">Active Signals</div>', unsafe_allow_html=True)
+
+    for s in signals:
+        level = s["signal_level"]
+        color = "#34d399" if level == "STRONG_BUY" else "#fbbf24" if level == "BUY" else "#3b82f6"
+        border = "alert-critical" if level == "STRONG_BUY" else "alert-warning" if level == "BUY" else "alert-info"
+
+        tags = ""
+        if s["bollinger_squeeze"]: tags += '<span class="tag b">Squeeze</span>'
+        if s["obv_above"]: tags += '<span class="tag g">OBV</span>'
+        if s.get("cmf", 0) > 0.15: tags += '<span class="tag g">Accum</span>'
+        if s.get("volume_ratio", 0) > 2: tags += f'<span class="tag o">Vol {s["volume_ratio"]:.1f}x</span>'
+        if not tags: tags = '<span class="tag">-</span>'
+
+        active_tags = ""
+        for ind in s.get("active_indicators", []):
+            active_tags += f'<span class="tag g">{ind}</span>'
+
+        st.markdown(f"""<div class="pred-card {border}">
+            <div class="left">
+                <div class="prob" style="color:{color};font-size:22px;">{s['signal_label']}</div>
+                <div class="info">
+                    <div class="sym">{s['symbol']}</div>
+                    <div class="price">${s['price']:.2f} | Score: {s['adjusted_score']}/99 | Explosion: {s['explosion_score']}%</div>
+                    <div class="tags">{tags}</div>
+                    <div style="margin-top:4px;font-size:11px;color:#64748b;">Indicators active: {active_tags}</div>
+                </div>
+            </div>
+            <div class="change" style="color:{'#34d399' if s.get('day_change_pct',0) > 0 else '#f87171'};">
+                {s.get('day_change_pct',0):+.1f}% 1D
+            </div>
+        </div>""", unsafe_allow_html=True)
+
+    st.markdown('<div class="section-title">Signal History</div>', unsafe_allow_html=True)
+    try:
+        import sqlite3
+        conn = sqlite3.connect("scanner_history.db")
+        df = pd.read_sql_query(
+            "SELECT signal_time, symbol, price, adjusted_score, signal_level, volume_ratio, rsi, cmf FROM signals ORDER BY signal_time DESC LIMIT 100",
+            conn)
+        conn.close()
+        if not df.empty:
+            st.dataframe(df, use_container_width=True, height=400, hide_index=True)
+    except:
+        pass
 
 
 def page_history():
@@ -608,7 +774,7 @@ def main():
         if "page" not in st.session_state:
             st.session_state.page = "Overview"
 
-        pages = ["Overview", "All Predictions", "Sessions", "Scanner", "Alerts", "Analytics", "History"]
+        pages = ["Overview", "All Predictions", "Sessions", "Scanner", "Signals", "Alerts", "Analytics", "نتائج التوقعات", "History"]
         for p_name in pages:
             if st.button(p_name, key=f"nav_{p_name}", use_container_width=True):
                 st.session_state.page = p_name
@@ -621,6 +787,8 @@ def main():
     elif page == "Scanner": page_scanner(preds)
     elif page == "Alerts": page_alerts(preds)
     elif page == "Analytics": page_analytics(preds)
+    elif page == "نتائج التوقعات": page_outcomes()
+    elif page == "Signals": page_signals()
     elif page == "History": page_history()
 
 

@@ -180,3 +180,134 @@ def daily_report(memory):
         report += f"\nمتوسط التغيير للأسهم المفقودة: {avg_miss:.1f}%"
 
     return report
+
+
+def auto_adjust_weights():
+    """
+    ضبط أوزان التقييم تلقائياً بناءً على دقة كل مؤشر من النتائج الفعلية.
+    المؤشرات ذات الـ Lift العالي تزيد أوزانها، والضعيفة تقل.
+    يُرجع قاموس التعديلات المقترحة مع التوصيات.
+    """
+    try:
+        from outcome_tracker import get_indicator_breakdown
+        indicators = get_indicator_breakdown()
+    except:
+        return {"error": "لا يمكن الوصول لنتائج التتبع"}
+
+    if not indicators:
+        return {"error": "لا توجد بيانات مؤشرات"}
+
+    recommendations = {}
+
+    weight_map = {
+        "volume_ratio": {"name": "حجم مرتفع", "current_weight": 25, "max": 35, "min": 5},
+        "z_score": {"name": "Z-Score شاذ", "current_weight": 18, "max": 28, "min": 5},
+        "bollinger_squeeze": {"name": "انكماش Bollinger", "current_weight": 25, "max": 35, "min": 5},
+        "cmf": {"name": "تجميع CMF", "current_weight": 20, "max": 30, "min": 5},
+        "obv_above": {"name": "OBV صاعد", "current_weight": 12, "max": 20, "min": 5},
+        "rsi_40_65": {"name": "RSI 40-65", "current_weight": 12, "max": 20, "min": 5},
+    }
+
+    for key, data in weight_map.items():
+        ind = indicators.get(key)
+        if not ind:
+            continue
+
+        lift = ind.get("lift", 0)
+        accuracy = ind.get("accuracy", 0)
+        baseline = ind.get("baseline", 0)
+        total = ind.get("total", 0)
+
+        if total < 10:
+            recommendations[key] = {
+                "action": "keep",
+                "reason": f"بيانات غير كافية ({total} عينة فقط)",
+            }
+            continue
+
+        new_weight = data["current_weight"]
+        if lift > 10:
+            new_weight = min(data["max"], new_weight + 8)
+            action = "زيادة"
+        elif lift > 5:
+            new_weight = min(data["max"], new_weight + 4)
+            action = "زيادة طفيفة"
+        elif lift < -2:
+            new_weight = max(data["min"], new_weight - 6)
+            action = "تخفيض"
+        elif accuracy < baseline:
+            new_weight = max(data["min"], new_weight - 3)
+            action = "تخفيض طفيف"
+        else:
+            action = "إبقاء"
+
+        recommendations[key] = {
+            "action": action,
+            "current_weight": data["current_weight"],
+            "new_weight": new_weight,
+            "lift": lift,
+            "accuracy": accuracy,
+            "baseline": baseline,
+            "total": total,
+        }
+
+    memory = load_memory()
+    memory["weight_adjustments"] = {
+        "updated_at": datetime.now().isoformat(),
+        "recommendations": recommendations,
+    }
+    save_memory(memory)
+
+    return recommendations
+
+
+def print_weight_report():
+    recommendations = auto_adjust_weights()
+    if "error" in recommendations:
+        print(f"\n[-] {recommendations['error']}")
+        return
+
+    print("\n" + "=" * 65)
+    print("  تقرير ضبط الأوزان التلقائي")
+    print("=" * 65)
+    print(f"  {'المؤشر':<20} {'الآن':<6} {'جديد':<6} {'Lift':<8} {'الإجراء':<16}")
+    print("-" * 65)
+    for key, rec in recommendations.items():
+        print(f"  {key:<20} {rec['current_weight']:<6} {rec['new_weight']:<6} {rec['lift']:<+8.1f} {rec['action']:<16}")
+    print("=" * 65)
+
+
+def run_self_learning_cycle():
+    """دورة التعلم الذاتي الكاملة: ضبط أوزان ← تحديث الذاكرة ← تقرير"""
+    print("[1/3] تحليل دقة المؤشرات...")
+    weights = auto_adjust_weights()
+    if "error" in weights:
+        return weights
+
+    print(f"[2/3] تم تحليل {len(weights)} مؤشر")
+
+    memory = load_memory()
+
+    avg_lift = sum(r["lift"] for r in weights.values()) / len(weights) if weights else 0
+    improvements = sum(1 for r in weights.values() if "زيادة" in r["action"])
+    reductions = sum(1 for r in weights.values() if "تخفيض" in r["action"])
+
+    memory["self_learning_log"] = memory.get("self_learning_log", [])
+    memory["self_learning_log"].append({
+        "time": datetime.now().isoformat(),
+        "avg_lift": round(avg_lift, 1),
+        "indicators_analyzed": len(weights),
+        "improvements": improvements,
+        "reductions": reductions,
+    })
+    if len(memory["self_learning_log"]) > 50:
+        memory["self_learning_log"] = memory["self_learning_log"][-50:]
+
+    save_memory(memory)
+
+    print(f"\n[3/3] ملخص:")
+    print(f"  متوسط Lift: {avg_lift:+.1f}%")
+    print(f"  مؤشرات للزيادة: {improvements}")
+    print(f"  مؤشرات للتخفيض: {reductions}")
+
+    return weights
