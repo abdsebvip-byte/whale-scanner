@@ -8,7 +8,7 @@ import pytz
 from datetime import datetime, timedelta
 
 MAX_CHANGE_1D = 8.0
-MIN_PRICE = 1.0
+MIN_PRICE = 0.10
 MAX_PRICE = 10.0
 MIN_VOLUME = 200000
 
@@ -53,6 +53,14 @@ def get_stock_list():
     return []
 
 
+def _get_short_percent(symbol):
+    """Best-effort short interest (fraction of float, e.g. 0.15 = 15%)."""
+    try:
+        return float(yf.Ticker(symbol).info.get('shortPercentOfFloat') or 0.0)
+    except Exception:
+        return 0.0
+
+
 def analyze_stock(symbol):
     try:
         df = yf.download(symbol, period="6mo", progress=False)
@@ -65,9 +73,14 @@ def analyze_stock(symbol):
         vol = df['Volume'].astype(float)
         high = df['High'].astype(float)
         low = df['Low'].astype(float)
+        open_ = df['Open'].astype(float)
 
         if close.iloc[-1] < MIN_PRICE or close.iloc[-1] > MAX_PRICE:
             return None
+
+        price_at_scan = float(close.iloc[-1])
+        gap_pct = float((open_.iloc[-1] - close.iloc[-2]) / close.iloc[-2] * 100) if len(close) >= 2 else 0.0
+        short_percent = _get_short_percent(symbol)
 
         vol_mean = vol.rolling(20).mean().iloc[-1]
         vol_std = vol.rolling(20).std().iloc[-1]
@@ -132,6 +145,10 @@ def analyze_stock(symbol):
             'macd_diff': macd_diff,
             'volume_build_days': vol_build,
             'price_position': price_pos,
+            'price_at_scan': price_at_scan,
+            'gap_pct': gap_pct,
+            'short_percent': short_percent,
+            'ohlcv': df,
         }
     except:
         return None

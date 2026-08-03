@@ -29,7 +29,7 @@ MODEL_PATH = "explosion_model.pkl"
 PREDICTIONS_PATH = "predictions.json"
 
 MAX_CHANGE_1D = 8.0
-MIN_PRICE = 1.0
+MIN_PRICE = 0.10
 MAX_PRICE = 10.0
 MIN_VOLUME = 200000
 

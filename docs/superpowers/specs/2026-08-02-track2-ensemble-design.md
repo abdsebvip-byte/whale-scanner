@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-02
 **Phase:** Phase 3, Track 2
-**Status:** Proposed (pending user approval)
+**Status:** Approved (execution in progress)
 
 ## 1. Objective
 
@@ -22,10 +22,12 @@ and **measurably better than random** in backtest before it is trusted.
   Approach 3 (two-stage hybrid). If it does not hold, we do not claim success.
 - **No implementation before this design is approved.**
 - **Scan universe = $10 and under:** explosions concentrate in low-priced
-  stocks; high-priced stocks produce only ordinary/small moves. The scan must
-  run on the `$1.00 – $10.00` band (matching `predictive_scanner.py` constants
-  `MIN_PRICE = 1.0`, `MAX_PRICE = 10.0`). Do not include higher-priced stocks
-  in the explosive-detection universe.
+  stocks; high-priced stocks produce only ordinary/small moves. The scan runs
+  on the `$0.10 – $10.00` band (matching `predictive_scanner.py` constants
+  `MIN_PRICE = 0.10`, `MAX_PRICE = 10.0`). The floor was lowered from `$1.00`
+  to `$0.10` because many explosive movers live under $1 (per the measured
+  bucket distribution in §3). Do not include higher-priced stocks in the
+  explosive-detection universe.
 - **No fake positives:** the deliverable is a ranked list with predicted max
   upside and a pass/fail gate on the backtest metric — never a hard claim that
   specific stocks will explode.
@@ -96,6 +98,23 @@ regression in Approach 1.
 Current state: 898 outcome rows exist; the binding question is how many can be
 aligned with a full 23+4 feature vector. The design assumes alignment is
 feasible for the majority; if not, the data-collection loop runs first.
+
+**Measured alignment (2026-08-02):** JOIN of `feature_vectors`
+(399 rows, single timestamp 2026-07-27) to `outcome_tracking`
+(898 rows across 07-27 and 07-31 scans) on `(symbol, timestamp == scan_time)`
+yields **399 fully-aligned rows with a complete 23-feature vector and a
+`max_change_5d` target** (avg 8.19%, max +283.36%; ≥10% = 53, ≥30% = 9,
+≥50% = 6, ≥100% = 5). **399 ≥ 100 → decision: start the quick scan on current
+data immediately.** The 498 rows from the 07-31 scan have no feature vectors and
+are excluded from this training round (they feed the daily collection loop).
+
+**Price-band decision (2026-08-02):** applying the new `$0.10 – $10.00` band to
+the 399 aligned rows leaves **126 rows in band** (`$0.50–0.99` contributes 5
+rows — 1 exploded, avg max upside 4.38%; `$1.00–10.00` contributes 121 rows —
+17 exploded, avg max upside 14.36%, including all the big movers YYAI 278%,
+MPLT 269%, STAK 268%, CAPR 183%, BIYA 54%). No aligned rows exist under
+$0.50, so the `$0.10` floor adds no data today but widens tomorrow's daily
+universe. Training for this round uses the 126 in-band rows.
 
 ## 7. Honest Expectations
 

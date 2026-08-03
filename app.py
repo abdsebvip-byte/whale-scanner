@@ -111,6 +111,7 @@ st.markdown("""
 }
 .pred-card .info .sym { font-size: 18px; font-weight: 700; color: #f1f5f9; }
 .pred-card .info .price { font-size: 14px; color: #94a3b8; margin-top: 2px; }
+.pred-card .info .upside { font-size: 12px; font-weight: 600; margin-top: 1px; }
 .pred-card .tags { display: flex; gap: 6px; flex-wrap: wrap; }
 .pred-card .tag {
     padding: 3px 10px; border-radius: 6px;
@@ -215,6 +216,7 @@ def build_df(preds):
             'Symbol': p.get('symbol', ''),
             'Price': p.get('price', 0),
             'Probability %': p.get('explosion_probability', 0),
+            'Upside %': p.get('predicted_upside', 0),
             'Vol Ratio': p.get('volume_ratio', 0),
             'Z-Score': p.get('z_score', 0),
             'RSI': p.get('rsi', 50),
@@ -240,6 +242,12 @@ def pred_row_html(p, index=""):
     elif chg < 0: cc, arrow = "#f87171", ""
     else: cc, arrow = "#94a3b8", ""
 
+    up = p.get('predicted_upside', 0) or 0
+    if up >= 5: uc = "#34d399"
+    elif up >= 3: uc = "#60a5fa"
+    elif up >= 1: uc = "#fbbf24"
+    else: uc = "#64748b"
+
     tags = ""
     if p.get('bollinger_squeeze'): tags += '<span class="tag b">Squeeze</span>'
     if p.get('obv_above_sma'): tags += '<span class="tag g">OBV Up</span>'
@@ -253,6 +261,7 @@ def pred_row_html(p, index=""):
             <div class="info">
                 <div class="sym">{p.get('symbol','')}</div>
                 <div class="price">${p.get('price',0):.2f}</div>
+                <div class="upside" style="color:{uc};">+{up:.1f}% upside</div>
             </div>
             <div class="tags">{tags}</div>
         </div>
@@ -310,6 +319,7 @@ def page_all_preds(preds):
     df = build_df(preds)
     st.dataframe(df, column_config={
         'Probability %': st.column_config.ProgressColumn('Probability %', min_value=0, max_value=100, format="%d%%"),
+        'Upside %': st.column_config.NumberColumn('Upside %', format="%+.1f%%"),
         'Price': st.column_config.NumberColumn('Price', format="$%.2f"),
         'Vol Ratio': st.column_config.NumberColumn('Vol Ratio', format="%.1fx"),
         'Z-Score': st.column_config.NumberColumn('Z-Score', format="%.2f"),
@@ -447,6 +457,7 @@ def page_scanner(preds):
     df = build_df(filtered)
     st.dataframe(df, column_config={
         'Probability %': st.column_config.ProgressColumn('Probability %', min_value=0, max_value=100, format="%d%%"),
+        'Upside %': st.column_config.NumberColumn('Upside %', format="%+.1f%%"),
         'Price': st.column_config.NumberColumn('Price', format="$%.2f"),
         'Vol Ratio': st.column_config.NumberColumn('Vol Ratio', format="%.1fx"),
         'Z-Score': st.column_config.NumberColumn('Z-Score', format="%.2f"),
@@ -769,6 +780,10 @@ def main():
             st.info(f"● {session_name}")
         st.caption(f"Scan: {data.get('scan_time', 'N/A')[:16]}")
         st.caption(f"Analyzed: {data.get('total_analyzed', 0)}")
+        gate = data.get('gate') or {}
+        if gate.get('ratio') is not None:
+            g_ok = bool(gate.get('passed'))
+            st.caption(f"Gate: {'PASSED' if g_ok else 'NOT-PASSED'} (ratio {gate.get('ratio', 0):.2f})")
         st.markdown("---")
 
         if "page" not in st.session_state:
