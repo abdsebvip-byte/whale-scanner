@@ -25,7 +25,7 @@ FAIL = 0
 ERRORS: list[str] = []
 
 
-def test(name: str, condition: bool, detail: str = "") -> None:
+def check_condition(name: str, condition: bool, detail: str = "") -> None:
     global PASS, FAIL, ERRORS
     if condition:
         PASS += 1
@@ -70,17 +70,17 @@ def run_tests() -> tuple[int, int, list[str]]:
     print("=" * 60)
 
     section("IMPORTS & COMPOSITION")
-    test("module imports cleanly", run_quick_scan is not None)
-    test("pulls analyze_stock from run_real_scan", callable(run_quick_scan.analyze_stock))
-    test("pulls get_stock_list from run_real_scan", callable(run_quick_scan.tv_get_stock_list))
-    test("pulls extract_features from feature_pipeline", callable(run_quick_scan.extract_features))
-    test("pulls quick_scan training/ranking helpers", all(callable(getattr(run_quick_scan, fn, None)) for fn in (
+    check_condition("module imports cleanly", run_quick_scan is not None)
+    check_condition("pulls analyze_stock from run_real_scan", callable(run_quick_scan.analyze_stock))
+    check_condition("pulls get_stock_list from run_real_scan", callable(run_quick_scan.tv_get_stock_list))
+    check_condition("pulls extract_features from feature_pipeline", callable(run_quick_scan.extract_features))
+    check_condition("pulls quick_scan training/ranking helpers", all(callable(getattr(run_quick_scan, fn, None)) for fn in (
         "load_training_matrix", "train_regressor", "backtest_honesty_gate",
         "rank_universe", "quick_scan",
     )))
-    test("DB_PATH points at scanner_history.db", run_quick_scan.DB_PATH == "scanner_history.db")
-    test("DB_PATH matches predictive_scanner", run_quick_scan.DB_PATH == __import__("predictive_scanner").DB_PATH)
-    test("DB_PATH matches outcome_tracker", run_quick_scan.DB_PATH == __import__("outcome_tracker").DB_PATH)
+    check_condition("DB_PATH points at scanner_history.db", run_quick_scan.DB_PATH == "scanner_history.db")
+    check_condition("DB_PATH matches predictive_scanner", run_quick_scan.DB_PATH == __import__("predictive_scanner").DB_PATH)
+    check_condition("DB_PATH matches outcome_tracker", run_quick_scan.DB_PATH == __import__("outcome_tracker").DB_PATH)
 
     section("FEATURE ROW BUILDING")
     df = make_ohlcv()
@@ -102,59 +102,59 @@ def run_tests() -> tuple[int, int, list[str]]:
         "ohlcv": df,
     }
     row = run_quick_scan._build_feature_row(features)
-    test("builds a 27-dim feature row", isinstance(row, list) and len(row) == 27)
+    check_condition("builds a 27-dim feature row", isinstance(row, list) and len(row) == 27)
     if isinstance(row, list):
-        test("row is all finite floats", len(row) == 27 and all(np.isfinite(float(v)) for v in row))
+        check_condition("row is all finite floats", len(row) == 27 and all(np.isfinite(float(v)) for v in row))
     short = dict(features, ohlcv=make_ohlcv(n=20))
-    test("rejects too-short OHLCV", run_quick_scan._build_feature_row(short) is None)
-    test("rejects missing OHLCV", run_quick_scan._build_feature_row(dict(features, ohlcv=None)) is None)
+    check_condition("rejects too-short OHLCV", run_quick_scan._build_feature_row(short) is None)
+    check_condition("rejects missing OHLCV", run_quick_scan._build_feature_row(dict(features, ohlcv=None)) is None)
     bad = dict(features, volume_ratio=float("inf"))
-    test("rejects non-finite engine value", run_quick_scan._build_feature_row(bad) is None)
+    check_condition("rejects non-finite engine value", run_quick_scan._build_feature_row(bad) is None)
     bad_ohlcv = make_ohlcv(n=80)
     bad_ohlcv.loc[bad_ohlcv.index[-1], "high"] = float("inf")
-    test("rejects non-finite OHLCV tail", run_quick_scan._build_feature_row(dict(features, ohlcv=bad_ohlcv)) is None)
+    check_condition("rejects non-finite OHLCV tail", run_quick_scan._build_feature_row(dict(features, ohlcv=bad_ohlcv)) is None)
 
     section("SESSION LABELLING")
     def label(h: int, m: int) -> tuple[str, str]:
         return run_quick_scan._session_label(pd.Timestamp("2026-08-03", tz="US/Eastern").tz_localize(None).replace(hour=h, minute=m).tz_localize("US/Eastern"))
-    test("premarket 08:00", label(8, 0)[0] == "premarket")
-    test("regular 10:00", label(10, 0)[0] == "regular")
-    test("afterhours 16:30", label(16, 30)[0] == "afterhours")
-    test("closed 01:00", label(1, 0)[0] == "closed")
+    check_condition("premarket 08:00", label(8, 0)[0] == "premarket")
+    check_condition("regular 10:00", label(10, 0)[0] == "regular")
+    check_condition("afterhours 16:30", label(16, 30)[0] == "afterhours")
+    check_condition("closed 01:00", label(1, 0)[0] == "closed")
 
     section("CLI FLAGS & RUN SIGNATURE")
-    test("run() accepts max_stocks", run_quick_scan.run.__code__.co_varnames[:4] == ("max_stocks", "top_n", "seed", "do_log"))
-    test("run() has defaults for limit/seed/log",
+    check_condition("run() accepts max_stocks", run_quick_scan.run.__code__.co_varnames[:4] == ("max_stocks", "top_n", "seed", "do_log"))
+    check_condition("run() has defaults for limit/seed/log",
          run_quick_scan.run.__defaults__ == (200, None, 42, True))
     with open(run_quick_scan.__file__, "r", encoding="utf-8") as f:
         rqs_source = f.read()
-    test("run() routes seed to backtest_honesty_gate", "random_state=seed" in rqs_source)
-    test("run() guards DB write with do_log", "if do_log:" in rqs_source)
-    test("_keep_previous_predictions exists", callable(run_quick_scan._keep_previous_predictions))
+    check_condition("run() routes seed to backtest_honesty_gate", "random_state=seed" in rqs_source)
+    check_condition("run() guards DB write with do_log", "if do_log:" in rqs_source)
+    check_condition("_keep_previous_predictions exists", callable(run_quick_scan._keep_previous_predictions))
 
     section("EMPTY-RUN GUARD")
     empty_path = os.path.join(tempfile.gettempdir(), "predictions_guard_test.json")
     if os.path.exists(empty_path):
         os.remove(empty_path)
-    test("guard returns False when file missing", run_quick_scan._keep_previous_predictions(empty_path) is False)
+    check_condition("guard returns False when file missing", run_quick_scan._keep_previous_predictions(empty_path) is False)
     with open(empty_path, "w", encoding="utf-8") as f:
         json.dump({"predictions": []}, f)
-    test("guard returns False when prev empty", run_quick_scan._keep_previous_predictions(empty_path) is False)
+    check_condition("guard returns False when prev empty", run_quick_scan._keep_previous_predictions(empty_path) is False)
     with open(empty_path, "w", encoding="utf-8") as f:
         json.dump({"predictions": [{"symbol": "X"}]}, f)
-    test("guard returns True when prev has preds", run_quick_scan._keep_previous_predictions(empty_path) is True)
+    check_condition("guard returns True when prev has preds", run_quick_scan._keep_previous_predictions(empty_path) is True)
     with open(empty_path, "w", encoding="utf-8") as f:
         f.write("{broken json")
-    test("guard returns False on corrupt file", run_quick_scan._keep_previous_predictions(empty_path) is False)
+    check_condition("guard returns False on corrupt file", run_quick_scan._keep_previous_predictions(empty_path) is False)
     os.remove(empty_path)
 
     section("PREDICTION ENTRY SHAPE")
     meta = dict(features)
     entry = run_quick_scan._prediction_entry(meta, {"symbol": "TEST", "predicted_upside": 12.34})
-    test("entry carries symbol", entry.get("symbol") == "TEST")
-    test("entry carries predicted_upside", abs(entry.get("predicted_upside", 0) - 12.34) < 1e-6)
-    test("entry carries explosion_probability (clamped 0-99)", 0 <= entry.get("explosion_probability", -1) <= 99)
-    test("entry carries app-facing keys",
+    check_condition("entry carries symbol", entry.get("symbol") == "TEST")
+    check_condition("entry carries predicted_upside", abs(entry.get("predicted_upside", 0) - 12.34) < 1e-6)
+    check_condition("entry carries explosion_probability (clamped 0-99)", 0 <= entry.get("explosion_probability", -1) <= 99)
+    check_condition("entry carries app-facing keys",
          all(k in entry for k in ("price", "volume_ratio", "z_score", "rsi", "cmf",
                                   "bollinger_squeeze", "obv_above_sma", "change_1d", "change_5d")))
 
@@ -201,13 +201,13 @@ def run_tests() -> tuple[int, int, list[str]]:
         )
         sid = conn.execute("SELECT id FROM session_data WHERE symbol='TEST'").fetchone()
         ot = conn.execute("SELECT prediction_id FROM outcome_tracking WHERE symbol='TEST'").fetchone()
-        test("insert returns positive id", isinstance(pred_id, int) and pred_id > 0)
-        test("session_data row written", sid is not None and sid[0] == pred_id)
-        test("outcome_tracking row linked", ot is not None and ot[0] == pred_id)
+        check_condition("insert returns positive id", isinstance(pred_id, int) and pred_id > 0)
+        check_condition("session_data row written", sid is not None and sid[0] == pred_id)
+        check_condition("outcome_tracking row linked", ot is not None and ot[0] == pred_id)
         if sid is not None:
             row_s = conn.execute("SELECT * FROM session_data WHERE id=?", (pred_id,)).fetchone()
             cols_s = [c[0] for c in conn.execute("SELECT * FROM session_data").description]
-            test("session_data columns align with predictive_scanner schema",
+            check_condition("session_data columns align with predictive_scanner schema",
                  set(cols_s) >= {"scan_time", "session_type", "symbol", "price", "volume",
                                  "volume_ratio", "z_score", "change_pct", "rsi", "cmf",
                                  "obv_above", "bollinger_squeeze", "anomaly_score", "gap_pct",
@@ -215,12 +215,12 @@ def run_tests() -> tuple[int, int, list[str]]:
         if ot is not None:
             row_o = conn.execute("SELECT * FROM outcome_tracking WHERE prediction_id=?", (pred_id,)).fetchone()
             cols_o = [c[0] for c in conn.execute("SELECT * FROM outcome_tracking").description]
-            test("outcome_tracking columns align with outcome_tracker schema",
+            check_condition("outcome_tracking columns align with outcome_tracker schema",
                  set(cols_o) >= {"prediction_id", "symbol", "scan_time", "session_type",
                                  "price_at_scan", "explosion_score", "max_change_5d",
                                  "min_change_5d", "exploded", "touched_stop", "last_checked"})
     except Exception as exc:
-        test("db insert ran without exception", False, detail=str(exc))
+        check_condition("db insert ran without exception", False, detail=str(exc))
     finally:
         if conn is not None:
             conn.close()
