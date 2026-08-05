@@ -32,6 +32,7 @@ import sys
 import io
 import json
 import sqlite3
+from concurrent.futures import ThreadPoolExecutor
 import warnings
 warnings.filterwarnings('ignore')
 from sklearn.ensemble import IsolationForest
@@ -681,28 +682,37 @@ class WhaleScanner:
         candidates = sorted_by_vol[:300] + all_symbols[600:2000:4]
 
         analyzed = []
-        for i, s in enumerate(candidates):
-            if i % 80 == 0 and i > 0:
-                print(f"  ... {i}/{len(candidates)}")
-            data = self.analyze_stock(s['symbol'])
-            if data:
-                # تطبيع الحجم حسب الوقت
-                extrapolated_vol = normalize_volume_for_session(
-                    data.get('today_volume', 0), minutes_elapsed, session_code
+
+        def _analyze_worker(s):
+            try:
+                data = self.analyze_stock(s['symbol'])
+            except Exception:
+                return None
+            if not data:
+                return None
+            # تطبيع الحجم حسب الوقت
+            extrapolated_vol = normalize_volume_for_session(
+                data.get('today_volume', 0), minutes_elapsed, session_code
+            )
+            data['extrapolated_volume'] = int(extrapolated_vol)
+
+            # إعادة حساب Z-Score بالحجم المُسطّح
+            mean_val = data.get('avg_volume_20d', 0)
+            if mean_val > 0:
+                data['session_adjusted_z'] = round(
+                    (extrapolated_vol - mean_val) / (mean_val * 0.3) if mean_val * 0.3 > 0 else 0, 2
                 )
-                data['extrapolated_volume'] = int(extrapolated_vol)
+            else:
+                data['session_adjusted_z'] = data.get('z_score', 0)
+            return data
 
-                # إعادة حساب Z-Score بالحجم المُسطّح
-                mean_val = data.get('avg_volume_20d', 0)
-                if mean_val > 0:
-                    data['session_adjusted_z'] = round(
-                        (extrapolated_vol - mean_val) / (mean_val * 0.3) if mean_val * 0.3 > 0 else 0, 2
-                    )
-                else:
-                    data['session_adjusted_z'] = data.get('z_score', 0)
-
-                analyzed.append(data)
-            time.sleep(0.1)
+        max_workers = min(8, len(candidates) if candidates else 1)
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            for i, data in enumerate(executor.map(_analyze_worker, candidates)):
+                if i % 80 == 0 and i > 0:
+                    print(f"  ... {i}/{len(candidates)}")
+                if data:
+                    analyzed.append(data)
 
         print(f"[+] {len(analyzed)} سهم تم تحليله")
 
@@ -820,9 +830,8 @@ class WhaleScanner:
                 print("   ⚠ ML models not loaded")
         except Exception as e:
             print(f"   ⚠ ML error: {e}")
-            print(f"[+] {len(ml_predictions)} أسهم بها توقعات ML")
         else:
-            print("[-] نماذج ML غير متوفرة — تخطي التوقعات")
+            print(f"[+] {len(ml_predictions)} أسهم بها توقعات ML")
 
         # ─── تجميع النتائج ────────────────────────────────────
         print(f"\nتجميع النتائج + التقييم...")
