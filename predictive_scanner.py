@@ -53,13 +53,20 @@ def init_db():
         cmf REAL,
         obv_above INTEGER,
         bollinger_squeeze INTEGER,
-        anomaly_score REAL,
+        explosion_score REAL,
         gap_pct REAL,
         float_shares REAL,
         short_percent REAL,
         next_session_change REAL,
         exploded INTEGER
     )''')
+    # ترحيل القواعد القديمة: إعادة تسمية anomaly_score -> explosion_score (آمن إن لم يوجد)
+    try:
+        cols = [r[1] for r in c.execute("PRAGMA table_info(session_data)").fetchall()]
+        if 'anomaly_score' in cols and 'explosion_score' not in cols:
+            c.execute("ALTER TABLE session_data RENAME COLUMN anomaly_score TO explosion_score")
+    except Exception:
+        pass
     conn.commit()
     return conn
 
@@ -246,7 +253,7 @@ def analyze_stock(symbol):
 def calculate_explosion_score(stock):
     """
     حساب احتمالية الانفجار — الإصدار المحسّن v2.0
-    الأوزان مبنية على تحليل حقيقي لـ 400 تنبؤ سابق.
+    الأوزان مبنية على نتائج التعلّم الذاتي الفعلية في scanner_memory.json (592 تنبؤ).
     """
     ml_prob = _predict_with_ensemble(stock)
     if ml_prob is not None:
@@ -274,7 +281,7 @@ def calculate_explosion_score(stock):
     if change_1d > 3:
         score -= 15
 
-    # ─── حجم مرتفع مع سعر ثابت = أقوى مؤشر (26.1% دقة) ───
+    # ─── حجم مرتفع مع سعر ثابت = أقوى مؤشر (13.6% دقة) ───
     if volume_ratio > 3 and change_1d < 2:
         score += 25
     elif volume_ratio > 2 and change_1d < 2:
@@ -282,7 +289,7 @@ def calculate_explosion_score(stock):
     elif volume_ratio > 1.5 and change_1d < 1.5:
         score += 10
 
-    # ─── Z-Score حجم شاذ — مؤشر قوي جداً (21.4% دقة) ───
+    # ─── Z-Score حجم شاذ — مؤشر قوي جداً (10.1% دقة) ───
     if z > 2.0:
         score += 18
     elif z > 1.5:
@@ -290,11 +297,11 @@ def calculate_explosion_score(stock):
     elif z > 1.0:
         score += 8
 
-    # ─── انكماش Bollinger — طاقة متراكمة (20.2% دقة) ───
+    # ─── انكماش Bollinger — طاقة متراكمة (8.7% دقة) ───
     if squeeze:
         score += 25
 
-    # ─── تجميع (CMF) — دقة متوسطة (17.1%) ───
+    # ─── تجميع (CMF) — دقة متوسطة (9.4%) ───
     if cmf > 0.25:
         score += 20
     elif cmf > 0.15:
@@ -306,13 +313,13 @@ def calculate_explosion_score(stock):
     elif cmf < -0.1:
         score -= 15
 
-    # ─── OBV صاعد مع سعر ثابت (15.5% دقة) ───
+    # ─── OBV صاعد مع سعر ثابت (7.8% دقة) ───
     if obv_up and change_1d < 2:
         score += 12
     elif obv_up:
         score += 5
 
-    # ─── RSI — المجال 40-65 جيد (15.1%)، 30-40 سيء (2.4%) ───
+    # ─── RSI — المجال 40-65 جيد (6.8%)، 30-40 سيء (غير مؤكد) ───
     if 40 <= rsi <= 65:
         score += 12
     elif rsi > 75:
@@ -435,7 +442,7 @@ def run_post_session_scan():
             c.execute('''INSERT INTO session_data
                 (scan_time, session_type, symbol, price, volume, volume_ratio,
                  z_score, change_pct, rsi, cmf, obv_above, bollinger_squeeze,
-                 anomaly_score, gap_pct, float_shares, short_percent,
+                 explosion_score, gap_pct, float_shares, short_percent,
                  next_session_change, exploded)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
                 (now.isoformat(), session, p.get('symbol', ''),
@@ -444,8 +451,9 @@ def run_post_session_scan():
                  p.get('change_1d', 0), p.get('rsi', 50),
                  p.get('cmf', 0), p.get('obv_above_sma', 0),
                  p.get('bollinger_squeeze', 0),
-                 p.get('explosion_probability', 0), 0,
-                 0, 0, None, 0))
+                 p.get('explosion_probability', 0),
+                 None, p.get('float', 0), None,
+                 None, 0))
         except Exception:
             continue
     conn.commit()

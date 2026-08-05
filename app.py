@@ -1,5 +1,5 @@
 """
-Whale Scanner v6.0 — Professional Trading Dashboard
+Whale Scanner v6.0 — لوحة تحكم التداول الاحترافية
 """
 import streamlit as st
 import json
@@ -11,7 +11,7 @@ import yfinance as yf
 import sqlite3
 import os
 
-st.set_page_config(page_title="Whale Scanner", page_icon=" whale", layout="wide", initial_sidebar_state="collapsed")
+st.set_page_config(page_title="ماسح الحيتان - Whale Scanner", page_icon=" whale", layout="wide", initial_sidebar_state="collapsed")
 
 st.markdown("""
 <style>
@@ -198,34 +198,34 @@ def get_session():
         et = timezone(timedelta(hours=-4))
     now = datetime.now(et)
     t = now.hour * 60 + now.minute
-    if 240 <= t < 570: return "premarket", "Pre-Market"
-    elif 570 <= t < 960: return "regular", "Regular"
-    elif 960 <= t < 1200: return "afterhours", "After-Hours"
-    else: return "closed", "Market Closed"
+    if 240 <= t < 570: return "premarket", "ما قبل التداول"
+    elif 570 <= t < 960: return "regular", "الجلسة الرسمية"
+    elif 960 <= t < 1200: return "afterhours", "الجلسة المسائية"
+    else: return "closed", "السوق مغلق"
 
 
 def build_df(preds):
     rows = []
     for p in preds:
         sigs = []
-        if p.get('bollinger_squeeze'): sigs.append("Squeeze")
-        if p.get('obv_above_sma'): sigs.append("OBV Up")
-        if p.get('cmf', 0) > 0.15: sigs.append("Accum")
-        if p.get('volume_ratio', 0) > 2: sigs.append("Vol Spike")
+        if p.get('bollinger_squeeze'): sigs.append("انكماش")
+        if p.get('obv_above_sma'): sigs.append("OBV صاعد")
+        if p.get('cmf', 0) > 0.15: sigs.append("تراكم")
+        if p.get('volume_ratio', 0) > 2: sigs.append("قفزة حجم")
         rows.append({
-            'Symbol': p.get('symbol', ''),
-            'Price': p.get('price', 0),
-            'Probability %': p.get('explosion_probability', 0),
-            'Upside %': p.get('predicted_upside', 0),
-            'Vol Ratio': p.get('volume_ratio', 0),
+            'الرمز': p.get('symbol', ''),
+            'السعر': p.get('price', 0),
+            'الاحتمال %': p.get('explosion_probability', 0),
+            'الصعود المتوقع %': p.get('predicted_upside', 0),
+            'نسبة الحجم': p.get('volume_ratio', 0),
             'Z-Score': p.get('z_score', 0),
             'RSI': p.get('rsi', 50),
             'CMF': p.get('cmf', 0),
-            '1D %': p.get('change_1d', 0),
-            '5D %': p.get('change_5d', 0),
-            'Squeeze': 'Yes' if p.get('bollinger_squeeze') else '',
-            'OBV': 'Up' if p.get('obv_above_sma') else '',
-            'Signals': ', '.join(sigs) if sigs else '-',
+            'تغير يوم %': p.get('change_1d', 0),
+            'تغير 5 أيام %': p.get('change_5d', 0),
+            'الانكماش': 'نعم' if p.get('bollinger_squeeze') else '',
+            'OBV': 'صاعد' if p.get('obv_above_sma') else '',
+            'الإشارات': ', '.join(sigs) if sigs else '-',
         })
     return pd.DataFrame(rows)
 
@@ -249,10 +249,10 @@ def pred_row_html(p, index=""):
     else: uc = "#64748b"
 
     tags = ""
-    if p.get('bollinger_squeeze'): tags += '<span class="tag b">Squeeze</span>'
-    if p.get('obv_above_sma'): tags += '<span class="tag g">OBV Up</span>'
-    if p.get('cmf', 0) > 0.15: tags += '<span class="tag g">Accumulation</span>'
-    if p.get('volume_ratio', 0) > 2: tags += '<span class="tag o">Vol {0:.1f}x</span>'.format(p['volume_ratio'])
+    if p.get('bollinger_squeeze'): tags += '<span class="tag b">انكماش</span>'
+    if p.get('obv_above_sma'): tags += '<span class="tag g">OBV صاعد</span>'
+    if p.get('cmf', 0) > 0.15: tags += '<span class="tag g">تراكم</span>'
+    if p.get('volume_ratio', 0) > 2: tags += '<span class="tag o">حجم {0:.1f}x</span>'.format(p['volume_ratio'])
     if not tags: tags = '<span class="tag">-</span>'
 
     return f"""<div class="pred-card">
@@ -261,11 +261,11 @@ def pred_row_html(p, index=""):
             <div class="info">
                 <div class="sym">{p.get('symbol','')}</div>
                 <div class="price">${p.get('price',0):.2f}</div>
-                <div class="upside" style="color:{uc};">+{up:.1f}% upside</div>
+                <div class="upside" style="color:{uc};">صعود متوقع +{up:.1f}%</div>
             </div>
             <div class="tags">{tags}</div>
         </div>
-        <div class="change" style="color:{cc};">{arrow}{chg:.1f}% 1D</div>
+        <div class="change" style="color:{cc};">{arrow}{chg:.1f}% يوم</div>
     </div>"""
 
 
@@ -275,63 +275,63 @@ def page_overview(preds, data, session_name):
     scan_time = data.get('scan_time', '')
 
     st.markdown(f"""<div class="dash-header">
-        <div><h1>Overview</h1><div class="meta">Scan: {scan_time[:16] if scan_time else 'N/A'} | Session: {session_name} | Model: {'ML' if data.get('model_trained') else 'Rules'}</div></div>
+        <div><h1>نظرة عامة</h1><div class="meta">المسح: {scan_time[:16] if scan_time else 'غير متاح'} | الجلسة: {session_name} | النموذج: {'تعلم آلي' if data.get('model_trained') else 'قواعد'}</div></div>
     </div>""", unsafe_allow_html=True)
 
     m1, m2, m3, m4 = st.columns(4)
     with m1:
-        st.markdown(f'<div class="metric-card"><div class="metric-label">Analyzed</div><div class="metric-value">{data.get("total_analyzed",0)}</div></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="metric-card"><div class="metric-label">تم التحليل</div><div class="metric-value">{data.get("total_analyzed",0)}</div></div>', unsafe_allow_html=True)
     with m2:
-        st.markdown(f'<div class="metric-card"><div class="metric-label">Predictions</div><div class="metric-value">{len(preds)}</div></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="metric-card"><div class="metric-label">التوقعات</div><div class="metric-value">{len(preds)}</div></div>', unsafe_allow_html=True)
     with m3:
-        st.markdown(f'<div class="metric-card green"><div class="metric-label">High 50%+</div><div class="metric-value" style="color:#34d399;">{high}</div></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="metric-card green"><div class="metric-label">مرتفع 50% فأكثر</div><div class="metric-value" style="color:#34d399;">{high}</div></div>', unsafe_allow_html=True)
     with m4:
-        st.markdown(f'<div class="metric-card yellow"><div class="metric-label">Critical 60%+</div><div class="metric-value" style="color:#fbbf24;">{critical}</div></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="metric-card yellow"><div class="metric-label">حرج 60% فأكثر</div><div class="metric-value" style="color:#fbbf24;">{critical}</div></div>', unsafe_allow_html=True)
 
     if not preds:
-        st.warning("No predictions yet.")
+        st.warning("لا توجد توقعات بعد.")
         return
 
-    st.markdown('<div class="section-title">Top Predictions - Next Session</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-title">أفضل التوقعات - الجلسة القادمة</div>', unsafe_allow_html=True)
 
     html = ""
     for p in preds[:10]:
         html += pred_row_html(p)
     st.markdown(html, unsafe_allow_html=True)
 
-    st.markdown('<div class="section-title">Probability Distribution</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-title">توزيع الاحتمالات</div>', unsafe_allow_html=True)
     probs = [p.get('explosion_probability', 0) for p in preds]
     fig = go.Figure(data=[go.Histogram(x=probs, nbinsx=12, marker_color='#3b82f6', marker_line=dict(width=1, color='#1e293b'))])
     fig.update_layout(height=250, template="plotly_dark", margin=dict(l=40,r=10,t=10,b=40),
-        paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='#111827', xaxis=dict(gridcolor='#1e293b', title="Probability %"), yaxis=dict(gridcolor='#1e293b'))
+        paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='#111827', xaxis=dict(gridcolor='#1e293b', title="الاحتمال %"), yaxis=dict(gridcolor='#1e293b'))
     st.plotly_chart(fig, use_container_width=True)
 
 
 def page_all_preds(preds):
     st.markdown(f"""<div class="dash-header">
-        <div><h1>All Predictions</h1><div class="meta">{len(preds)} stocks ranked by explosion probability</div></div>
+        <div><h1>جميع التوقعات</h1><div class="meta">{len(preds)} سهم مرتبة حسب احتمالية الانفجار</div></div>
     </div>""", unsafe_allow_html=True)
 
     if not preds:
-        st.warning("No predictions.")
+        st.warning("لا توجد توقعات.")
         return
 
     df = build_df(preds)
     st.dataframe(df, column_config={
-        'Probability %': st.column_config.ProgressColumn('Probability %', min_value=0, max_value=100, format="%d%%"),
-        'Upside %': st.column_config.NumberColumn('Upside %', format="%+.1f%%"),
-        'Price': st.column_config.NumberColumn('Price', format="$%.2f"),
-        'Vol Ratio': st.column_config.NumberColumn('Vol Ratio', format="%.1fx"),
+        'الاحتمال %': st.column_config.ProgressColumn('الاحتمال %', min_value=0, max_value=100, format="%d%%"),
+        'الصعود المتوقع %': st.column_config.NumberColumn('الصعود المتوقع %', format="%+.1f%%"),
+        'السعر': st.column_config.NumberColumn('السعر', format="$%.2f"),
+        'نسبة الحجم': st.column_config.NumberColumn('نسبة الحجم', format="%.1fx"),
         'Z-Score': st.column_config.NumberColumn('Z-Score', format="%.2f"),
         'RSI': st.column_config.NumberColumn('RSI', format="%.0f"),
         'CMF': st.column_config.NumberColumn('CMF', format="%.3f"),
-        '1D %': st.column_config.NumberColumn('1D %', format="%+.1f%%"),
-        '5D %': st.column_config.NumberColumn('5D %', format="%+.1f%%"),
+        'تغير يوم %': st.column_config.NumberColumn('تغير يوم %', format="%+.1f%%"),
+        'تغير 5 أيام %': st.column_config.NumberColumn('تغير 5 أيام %', format="%+.1f%%"),
     }, use_container_width=True, height=500, hide_index=True)
 
-    st.markdown('<div class="section-title">Stock Chart</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-title">رسم السهم</div>', unsafe_allow_html=True)
     syms = [p['symbol'] for p in preds]
-    selected = st.selectbox("Select stock", syms)
+    selected = st.selectbox("اختر السهم", syms)
     if selected:
         p = next((x for x in preds if x['symbol'] == selected), None)
         chart = get_chart(selected)
@@ -341,27 +341,27 @@ def page_all_preds(preds):
                 prob = p.get('explosion_probability', 0)
                 pc = "#34d399" if prob >= 60 else "#60a5fa" if prob >= 40 else "#fbbf24"
                 st.markdown(f"""<div class="metric-card" style="border-left:3px solid {pc};">
-                    <div class="metric-label">Explosion Probability</div>
+                    <div class="metric-label">احتمالية الانفجار</div>
                     <div class="metric-value" style="color:{pc};font-size:40px;">{prob}%</div>
                     <div style="margin-top:16px;font-size:13px;color:#94a3b8;line-height:2.2;">
-                        Price: <b style="color:#f1f5f9;">${p.get('price',0):.2f}</b><br>
-                        Volume: <b style="color:#f1f5f9;">{p.get('volume_ratio',0):.1f}x</b> avg<br>
+                        السعر: <b style="color:#f1f5f9;">${p.get('price',0):.2f}</b><br>
+                        الحجم: <b style="color:#f1f5f9;">{p.get('volume_ratio',0):.1f}x</b> المتوسط<br>
                         RSI: <b style="color:#f1f5f9;">{p.get('rsi',0):.0f}</b><br>
                         CMF: <b style="color:#f1f5f9;">{p.get('cmf',0):.3f}</b><br>
-                        Squeeze: <b style="color:#f1f5f9;">{'Yes' if p.get('bollinger_squeeze') else 'No'}</b><br>
-                        OBV: <b style="color:#f1f5f9;">{'Above' if p.get('obv_above_sma') else 'Below'}</b>
+                        الانكماش: <b style="color:#f1f5f9;">{'نعم' if p.get('bollinger_squeeze') else 'لا'}</b><br>
+                        OBV: <b style="color:#f1f5f9;">{'صاعد' if p.get('obv_above_sma') else 'منخفض'}</b>
                     </div>
                 </div>""", unsafe_allow_html=True)
             with col_b:
                 fig = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.03, row_heights=[0.7, 0.3])
                 fig.add_trace(go.Candlestick(x=chart.index, open=chart['Open'], high=chart['High'],
-                    low=chart['Low'], close=chart['Close'], name='Price',
+                    low=chart['Low'], close=chart['Close'], name='السعر',
                     increasing_line_color='#34d399', decreasing_line_color='#f87171'), row=1, col=1)
                 if len(chart) > 20:
                     sma20 = chart['Close'].rolling(20).mean()
-                    fig.add_trace(go.Scatter(x=chart.index, y=sma20, name='SMA 20',
+                    fig.add_trace(go.Scatter(x=chart.index, y=sma20, name='المتوسط 20',
                         line=dict(color='#f59e0b', width=1, dash='dot')), row=1, col=1)
-                fig.add_trace(go.Bar(x=chart.index, y=chart['Volume'], name='Volume',
+                fig.add_trace(go.Bar(x=chart.index, y=chart['Volume'], name='الحجم',
                     marker_color='rgba(59,130,246,0.25)'), row=2, col=1)
                 fig.update_layout(height=450, template="plotly_dark", margin=dict(l=0,r=0,t=10,b=0),
                     xaxis_rangeslider_visible=False, paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='#111822',
@@ -384,13 +384,13 @@ def page_sessions(preds, data):
     pred_session = data.get('session_name', '')
 
     st.markdown(f"""<div class="dash-header">
-        <div><h1>Market Sessions</h1><div class="meta">Eastern Time: {now.strftime('%I:%M %p')} | Current: {name_now}</div></div>
+        <div><h1>جلسات السوق</h1><div class="meta">التوقيت الشرقي: {now.strftime('%I:%M %p')} | الجلسة الحالية: {name_now}</div></div>
     </div>""", unsafe_allow_html=True)
 
     sessions = [
-        {"name": "Pre-Market", "ar": "ما قبل التداول", "hours": "4:00 AM - 9:30 AM ET", "start": 240, "end": 570, "code": "premarket", "icon": "🌅"},
-        {"name": "Regular", "ar": "الجلسة الرسمية", "hours": "9:30 AM - 4:00 PM ET", "start": 570, "end": 960, "code": "regular", "icon": "📊"},
-        {"name": "After-Hours", "ar": "الجلسة المسائية", "hours": "4:00 PM - 8:00 PM ET", "start": 960, "end": 1200, "code": "afterhours", "icon": "🌙"},
+        {"name": "ما قبل التداول", "hours": "4:00 صباحًا - 9:30 صباحًا ET", "start": 240, "end": 570, "code": "premarket", "icon": "🌅"},
+        {"name": "الجلسة الرسمية", "hours": "9:30 صباحًا - 4:00 مساءً ET", "start": 570, "end": 960, "code": "regular", "icon": "📊"},
+        {"name": "الجلسة المسائية", "hours": "4:00 مساءً - 8:00 مساءً ET", "start": 960, "end": 1200, "code": "afterhours", "icon": "🌙"},
     ]
 
     sess_html = '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;">'
@@ -401,28 +401,27 @@ def page_sessions(preds, data):
 
         if is_active:
             remaining = sess['end'] - current_min
-            status_text = f'<div class="status live">● LIVE</div><div class="remaining">{remaining//60}h {remaining%60}m remaining</div>'
+            status_text = f'<div class="status live">● مباشر</div><div class="remaining">{remaining//60}س {remaining%60}د متبقٍ</div>'
         else:
             if current_min < sess['start']:
                 to_go = sess['start'] - current_min
-                status_text = f'<div class="status off">Starts in {to_go//60}h {to_go%60}m</div>'
+                status_text = f'<div class="status off">تبدأ خلال {to_go//60}س {to_go%60}د</div>'
             else:
-                status_text = '<div class="status off">Closed</div>'
+                status_text = '<div class="status off">مغلق</div>'
 
         sess_html += f"""<div class="sess-card {active_class}">
             <div class="icon">{sess['icon']}</div>
             <div class="name">{sess['name']}</div>
-            <div style="font-size:13px;color:#64748b;">{sess['ar']}</div>
             <div class="hours">{sess['hours']}</div>
             {status_text}
         </div>"""
     sess_html += '</div>'
     st.markdown(sess_html, unsafe_allow_html=True)
 
-    st.markdown(f'<div class="section-title">Last Scan — {pred_session} — {scan_time[:16] if scan_time else "—"}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="section-title">آخر مسح — {pred_session} — {scan_time[:16] if scan_time else "—"}</div>', unsafe_allow_html=True)
 
     if not preds:
-        st.info("No scan data.")
+        st.info("لا توجد بيانات مسح.")
         return
 
     html = ""
@@ -433,52 +432,52 @@ def page_sessions(preds, data):
 
 def page_scanner(preds):
     st.markdown(f"""<div class="dash-header">
-        <div><h1>Scanner & Filters</h1><div class="meta">Filter and sort predictions</div></div>
+        <div><h1>الماسح والفلاتر</h1><div class="meta">تصفية وترتيب التوقعات</div></div>
     </div>""", unsafe_allow_html=True)
 
     if not preds:
-        st.info("No data.")
+        st.info("لا توجد بيانات.")
         return
 
     c1, c2, c3 = st.columns(3)
     with c1:
-        min_prob = st.slider("Min Probability %", 0, 100, 20, 5)
+        min_prob = st.slider("الحد الأدنى للاحتمال %", 0, 100, 20, 5)
     with c2:
-        max_price = st.number_input("Max Price $", value=10, step=1)
+        max_price = st.number_input("الحد الأقصى للسعر $", value=10, step=1)
     with c3:
-        sort_by = st.selectbox("Sort By", ["Probability %", "Vol Ratio", "Price", "Z-Score"])
+        sort_by = st.selectbox("الترتيب حسب", ["الاحتمال %", "نسبة الحجم", "السعر", "Z-Score"])
 
-    sort_map = {"Probability %": "explosion_probability", "Vol Ratio": "volume_ratio", "Price": "price", "Z-Score": "z_score"}
+    sort_map = {"الاحتمال %": "explosion_probability", "نسبة الحجم": "volume_ratio", "السعر": "price", "Z-Score": "z_score"}
     filtered = [p for p in preds if p.get('explosion_probability', 0) >= min_prob and p.get('price', 0) <= max_price]
     filtered.sort(key=lambda x: x.get(sort_map[sort_by], 0), reverse=True)
 
-    st.markdown(f'<div class="section-title">{len(filtered)} Results</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="section-title">{len(filtered)} نتيجة</div>', unsafe_allow_html=True)
 
     df = build_df(filtered)
     st.dataframe(df, column_config={
-        'Probability %': st.column_config.ProgressColumn('Probability %', min_value=0, max_value=100, format="%d%%"),
-        'Upside %': st.column_config.NumberColumn('Upside %', format="%+.1f%%"),
-        'Price': st.column_config.NumberColumn('Price', format="$%.2f"),
-        'Vol Ratio': st.column_config.NumberColumn('Vol Ratio', format="%.1fx"),
+        'الاحتمال %': st.column_config.ProgressColumn('الاحتمال %', min_value=0, max_value=100, format="%d%%"),
+        'الصعود المتوقع %': st.column_config.NumberColumn('الصعود المتوقع %', format="%+.1f%%"),
+        'السعر': st.column_config.NumberColumn('السعر', format="$%.2f"),
+        'نسبة الحجم': st.column_config.NumberColumn('نسبة الحجم', format="%.1fx"),
         'Z-Score': st.column_config.NumberColumn('Z-Score', format="%.2f"),
         'RSI': st.column_config.NumberColumn('RSI', format="%.0f"),
         'CMF': st.column_config.NumberColumn('CMF', format="%.3f"),
-        '1D %': st.column_config.NumberColumn('1D %', format="%+.1f%%"),
-        '5D %': st.column_config.NumberColumn('5D %', format="%+.1f%%"),
+        'تغير يوم %': st.column_config.NumberColumn('تغير يوم %', format="%+.1f%%"),
+        'تغير 5 أيام %': st.column_config.NumberColumn('تغير 5 أيام %', format="%+.1f%%"),
     }, use_container_width=True, height=500, hide_index=True)
 
     if filtered:
         csv = df.to_csv(index=False, encoding='utf-8-sig')
-        st.download_button("Download CSV", csv, "predictions.csv")
+        st.download_button("تحميل CSV", csv, "predictions.csv")
 
 
 def page_alerts(preds):
     st.markdown(f"""<div class="dash-header">
-        <div><h1>Alerts</h1><div class="meta">Stocks ranked by urgency</div></div>
+        <div><h1>التنبيهات</h1><div class="meta">أسهم مرتبة حسب درجة الاستعجال</div></div>
     </div>""", unsafe_allow_html=True)
 
     if not preds:
-        st.info("No alerts.")
+        st.info("لا توجد تنبيهات.")
         return
 
     critical = [p for p in preds if p.get('explosion_probability', 0) >= 60]
@@ -486,7 +485,7 @@ def page_alerts(preds):
     watchlist = [p for p in preds if 25 <= p.get('explosion_probability', 0) < 40]
 
     if critical:
-        st.markdown(f'<div class="section-title" style="color:#ef4444;">Critical — {len(critical)} stocks (60%+)</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="section-title" style="color:#ef4444;">حرج — {len(critical)} سهم (60% فأكثر)</div>', unsafe_allow_html=True)
         html = ""
         for p in critical:
             prob = p['explosion_probability']
@@ -494,9 +493,9 @@ def page_alerts(preds):
             cc = "#34d399" if chg > 0 else "#f87171" if chg < 0 else "#94a3b8"
             arrow = "+" if chg > 0 else ""
             tags = ""
-            if p.get('bollinger_squeeze'): tags += '<span class="tag b">Squeeze</span>'
-            if p.get('obv_above_sma'): tags += '<span class="tag g">OBV</span>'
-            if p.get('cmf', 0) > 0.15: tags += '<span class="tag g">Accum</span>'
+            if p.get('bollinger_squeeze'): tags += '<span class="tag b">انكماش</span>'
+            if p.get('obv_above_sma'): tags += '<span class="tag g">OBV صاعد</span>'
+            if p.get('cmf', 0) > 0.15: tags += '<span class="tag g">تراكم</span>'
             html += f"""<div class="pred-card alert-critical">
                 <div class="left">
                     <div class="prob" style="color:#ef4444;">{prob}%</div>
@@ -508,7 +507,7 @@ def page_alerts(preds):
         st.markdown(html, unsafe_allow_html=True)
 
     if warning:
-        st.markdown(f'<div class="section-title" style="color:#f59e0b;">Warning — {len(warning)} stocks (40-60%)</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="section-title" style="color:#f59e0b;">تحذير — {len(warning)} سهم (40-60%)</div>', unsafe_allow_html=True)
         html = ""
         for p in warning:
             prob = p['explosion_probability']
@@ -524,7 +523,7 @@ def page_alerts(preds):
         st.markdown(html, unsafe_allow_html=True)
 
     if watchlist:
-        st.markdown(f'<div class="section-title">Watchlist — {len(watchlist)} stocks (25-40%)</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="section-title">قائمة المراقبة — {len(watchlist)} سهم (25-40%)</div>', unsafe_allow_html=True)
         html = ""
         for p in watchlist[:10]:
             prob = p['explosion_probability']
@@ -542,12 +541,12 @@ def page_alerts(preds):
 
 def page_outcomes():
     st.markdown(f"""<div class="dash-header">
-        <div><h1>Outcome Tracking</h1><div class="meta">Real accuracy of every prediction — who exploded and who didn't</div></div>
+        <div><h1>تتبع النتائج</h1><div class="meta">الدقة الفعلية لكل توقع — من انفجر ومن لم ينفجر</div></div>
     </div>""", unsafe_allow_html=True)
 
     db_path = "scanner_history.db"
     if not os.path.exists(db_path):
-        st.info("No database yet.")
+        st.info("لا توجد قاعدة بيانات بعد.")
         return
 
     try:
@@ -572,19 +571,19 @@ def page_outcomes():
         c1, c2, c3, c4 = st.columns(4)
         with c1:
             acc = round(hits/total*100, 1) if total > 0 else 0
-            st.markdown(f'<div class="metric-card"><div class="metric-label">Accuracy</div><div class="metric-value" style="color:{"#34d399" if acc>=20 else "#f59e0b" if acc>=10 else "#f87171"};">{acc}%</div><div class="metric-label">{hits}/{total} predictions</div></div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="metric-card"><div class="metric-label">الدقة</div><div class="metric-value" style="color:{"#34d399" if acc>=20 else "#f59e0b" if acc>=10 else "#f87171"};">{acc}%</div><div class="metric-label">{hits}/{total} توقعات</div></div>', unsafe_allow_html=True)
         with c2:
-            st.markdown(f'<div class="metric-card"><div class="metric-label">Avg Return 1D</div><div class="metric-value" style="color:{"#34d399" if avg1d>=0 else "#f87171"};">{avg1d:+.1f}%</div></div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="metric-card"><div class="metric-label">متوسط العائد يوم</div><div class="metric-value" style="color:{"#34d399" if avg1d>=0 else "#f87171"};">{avg1d:+.1f}%</div></div>', unsafe_allow_html=True)
         with c3:
-            st.markdown(f'<div class="metric-card"><div class="metric-label">Avg Return 5D</div><div class="metric-value" style="color:{"#34d399" if avg5d>=0 else "#f87171"};">{avg5d:+.1f}%</div></div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="metric-card"><div class="metric-label">متوسط العائد 5 أيام</div><div class="metric-value" style="color:{"#34d399" if avg5d>=0 else "#f87171"};">{avg5d:+.1f}%</div></div>', unsafe_allow_html=True)
         with c4:
-            st.markdown(f'<div class="metric-card"><div class="metric-label">Max Drawdown Avg</div><div class="metric-value" style="color:#f87171;">{avg_min:+.1f}%</div><div class="metric-label">Stop-touched: {stopped}</div></div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="metric-card"><div class="metric-label">متوسط أقصى تراجع</div><div class="metric-value" style="color:#f87171;">{avg_min:+.1f}%</div><div class="metric-label">لامس الإيقاف: {stopped}</div></div>', unsafe_allow_html=True)
 
-        st.markdown('<div class="section-title">Indicator Accuracy Breakdown</div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-title">تفصيل دقة المؤشرات</div>', unsafe_allow_html=True)
         indicators = [
-            ('volume_ratio', 'Volume > 2x', 'volume_ratio >= 2.0'),
-            ('bollinger_squeeze', 'Bollinger Squeeze', 'bollinger_squeeze = 1'),
-            ('obv_above', 'OBV Uptrend', 'obv_above = 1'),
+            ('volume_ratio', 'حجم > 2x', 'volume_ratio >= 2.0'),
+            ('bollinger_squeeze', 'الانكماش', 'bollinger_squeeze = 1'),
+            ('obv_above', 'OBV صاعد', 'obv_above = 1'),
             ('cmf', 'CMF > 0.15', 'cmf >= 0.15'),
             ('rsi_40_65', 'RSI 40-65', 'rsi BETWEEN 40 AND 65'),
             ('volume_z', 'Z-Score > 1.5', 'z_score >= 1.5'),
@@ -602,55 +601,55 @@ def page_outcomes():
                 c.execute(f"SELECT COUNT(*) FROM outcome_tracking WHERE NOT ({cond})")
                 total_without = c.fetchone()[0]
                 baseline = round(hits_without/total_without*100, 1) if total_without > 0 else 0
-                ind_data.append({'Indicator': name, 'Count': cnt, 'Accuracy': f'{acc_ind}%', 'Baseline': f'{baseline}%', 'vs Baseline': f'{round(acc_ind-baseline, 1):+.1f}%'})
+                ind_data.append({'المؤشر': name, 'العدد': cnt, 'الدقة %': f'{acc_ind}%', 'الأساس %': f'{baseline}%', 'الفرق عن الأساس': f'{round(acc_ind-baseline, 1):+.1f}%'})
             except:
                 pass
         if ind_data:
             df = pd.DataFrame(ind_data)
             st.dataframe(df, use_container_width=True, hide_index=True)
 
-        st.markdown('<div class="section-title">Top Winning Predictions (5D Change)</div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-title">أفضل التوقعات الفائزة (تغير 5 أيام)</div>', unsafe_allow_html=True)
         try:
             c.execute("SELECT symbol, change_5d, cmf, bollinger_squeeze, volume_ratio, z_score, explosion_score FROM outcome_tracking WHERE change_5d IS NOT NULL ORDER BY change_5d DESC LIMIT 10")
             top = c.fetchall()
             if top:
-                win_df = pd.DataFrame(top, columns=['Symbol', '5D Return %', 'CMF', 'Squeeze', 'Vol Ratio', 'Z-Score', 'Score'])
+                win_df = pd.DataFrame(top, columns=['الرمز', 'العائد 5 أيام %', 'CMF', 'الانكماش', 'نسبة الحجم', 'Z-Score', 'النتيجة'])
                 st.dataframe(win_df, use_container_width=True, hide_index=True)
         except: pass
 
-        st.markdown('<div class="section-title">Worst Predictions (5D Change)</div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-title">أسوأ التوقعات (تغير 5 أيام)</div>', unsafe_allow_html=True)
         try:
             c.execute("SELECT symbol, change_5d, cmf, bollinger_squeeze, volume_ratio, z_score, explosion_score FROM outcome_tracking WHERE change_5d IS NOT NULL ORDER BY change_5d ASC LIMIT 10")
             worst = c.fetchall()
             if worst:
-                lose_df = pd.DataFrame(worst, columns=['Symbol', '5D Return %', 'CMF', 'Squeeze', 'Vol Ratio', 'Z-Score', 'Score'])
+                lose_df = pd.DataFrame(worst, columns=['الرمز', 'العائد 5 أيام %', 'CMF', 'الانكماش', 'نسبة الحجم', 'Z-Score', 'النتيجة'])
                 st.dataframe(lose_df, use_container_width=True, hide_index=True)
         except: pass
 
         conn.close()
     except Exception as e:
-        st.error(f"Error: {e}")
+        st.error(f"خطأ: {e}")
 
 
 def page_analytics(preds):
     st.markdown(f"""<div class="dash-header">
-        <div><h1>Analytics</h1><div class="meta">Distribution and correlation analysis</div></div>
+        <div><h1>التحليلات</h1><div class="meta">تحليل التوزيع والارتباط</div></div>
     </div>""", unsafe_allow_html=True)
 
     if not preds:
-        st.info("No data.")
+        st.info("لا توجد بيانات.")
         return
 
     c1, c2 = st.columns(2)
     with c1:
-        st.markdown('<div class="section-title">Probability Distribution</div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-title">توزيع الاحتمالات</div>', unsafe_allow_html=True)
         probs = [p.get('explosion_probability', 0) for p in preds]
         fig = go.Figure(data=[go.Histogram(x=probs, nbinsx=12, marker_color='#3b82f6', marker_line=dict(width=1, color='#1e293b'))])
         fig.update_layout(height=300, template="plotly_dark", margin=dict(l=40,r=10,t=10,b=40),
             paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='#111827', xaxis=dict(gridcolor='#1e293b'), yaxis=dict(gridcolor='#1e293b'))
         st.plotly_chart(fig, use_container_width=True)
     with c2:
-        st.markdown('<div class="section-title">Volume vs Probability</div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-title">الحجم مقابل الاحتمال</div>', unsafe_allow_html=True)
         fig = go.Figure(data=[go.Scatter(
             x=[p.get('volume_ratio', 0) for p in preds], y=[p.get('explosion_probability', 0) for p in preds],
             text=[p.get('symbol', '') for p in preds], mode='markers+text', textposition='top center',
@@ -661,7 +660,7 @@ def page_analytics(preds):
             paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='#111827', xaxis=dict(gridcolor='#1e293b'), yaxis=dict(gridcolor='#1e293b'))
         st.plotly_chart(fig, use_container_width=True)
 
-    st.markdown('<div class="section-title">Top 10 by Volume Ratio</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-title">الأعلى 10 حسب نسبة الحجم</div>', unsafe_allow_html=True)
     top_vol = sorted(preds, key=lambda x: x.get('volume_ratio', 0), reverse=True)[:10]
     fig = go.Figure(data=[go.Bar(y=[p.get('symbol','') for p in top_vol], x=[p.get('volume_ratio',0) for p in top_vol],
         orientation='h', marker_color='#8b5cf6', marker_line=dict(width=0))])
@@ -672,7 +671,7 @@ def page_analytics(preds):
 
 def page_signals():
     st.markdown(f"""<div class="dash-header">
-        <div><h1>Signals</h1><div class="meta">AI-powered trading signals based on real indicator accuracy</div></div>
+        <div><h1>الإشارات</h1><div class="meta">إشارات تداول مدعومة بالذكاء الاصطناعي بناءً على دقة مؤشرات فعلية</div></div>
     </div>""", unsafe_allow_html=True)
 
     try:
@@ -680,24 +679,24 @@ def page_signals():
         summary = get_signal_summary()
         signals = get_active_signals(limit=50)
     except:
-        st.info("Signals engine not ready. Run a scan first.")
+        st.info("محرك الإشارات غير جاهز. قم بتشغيل مسح أولاً.")
         return
 
     if summary["total_signals"] == 0:
-        st.info("No signals generated yet. Run a scan to generate signals.")
+        st.info("لم تُنشأ إشارات بعد. قم بتشغيل مسح لتوليد الإشارات.")
         return
 
     c1, c2, c3, c4 = st.columns(4)
     with c1:
-        st.markdown(f'<div class="metric-card purple"><div class="metric-label">Total Signals</div><div class="metric-value">{summary["total_signals"]}</div></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="metric-card purple"><div class="metric-label">إجمالي الإشارات</div><div class="metric-value">{summary["total_signals"]}</div></div>', unsafe_allow_html=True)
     with c2:
-        st.markdown(f'<div class="metric-card green"><div class="metric-label">STRONG BUY</div><div class="metric-value" style="color:#34d399;">{summary["strong_buys"]}</div></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="metric-card green"><div class="metric-label">شراء قوي</div><div class="metric-value" style="color:#34d399;">{summary["strong_buys"]}</div></div>', unsafe_allow_html=True)
     with c3:
-        st.markdown(f'<div class="metric-card yellow"><div class="metric-label">BUY</div><div class="metric-value" style="color:#fbbf24;">{summary["buys"]}</div></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="metric-card yellow"><div class="metric-label">شراء</div><div class="metric-value" style="color:#fbbf24;">{summary["buys"]}</div></div>', unsafe_allow_html=True)
     with c4:
-        st.markdown(f'<div class="metric-card"><div class="metric-label">Unique Symbols</div><div class="metric-value">{summary["unique_symbols"]}</div></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="metric-card"><div class="metric-label">رموز فريدة</div><div class="metric-value">{summary["unique_symbols"]}</div></div>', unsafe_allow_html=True)
 
-    st.markdown('<div class="section-title">Active Signals</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-title">الإشارات النشطة</div>', unsafe_allow_html=True)
 
     for s in signals:
         level = s["signal_level"]
@@ -705,10 +704,10 @@ def page_signals():
         border = "alert-critical" if level == "STRONG_BUY" else "alert-warning" if level == "BUY" else "alert-info"
 
         tags = ""
-        if s["bollinger_squeeze"]: tags += '<span class="tag b">Squeeze</span>'
-        if s["obv_above"]: tags += '<span class="tag g">OBV</span>'
-        if s.get("cmf", 0) > 0.15: tags += '<span class="tag g">Accum</span>'
-        if s.get("volume_ratio", 0) > 2: tags += f'<span class="tag o">Vol {s["volume_ratio"]:.1f}x</span>'
+        if s["bollinger_squeeze"]: tags += '<span class="tag b">انكماش</span>'
+        if s["obv_above"]: tags += '<span class="tag g">OBV صاعد</span>'
+        if s.get("cmf", 0) > 0.15: tags += '<span class="tag g">تراكم</span>'
+        if s.get("volume_ratio", 0) > 2: tags += f'<span class="tag o">حجم {s["volume_ratio"]:.1f}x</span>'
         if not tags: tags = '<span class="tag">-</span>'
 
         active_tags = ""
@@ -720,22 +719,22 @@ def page_signals():
                 <div class="prob" style="color:{color};font-size:22px;">{s['signal_label']}</div>
                 <div class="info">
                     <div class="sym">{s['symbol']}</div>
-                    <div class="price">${s['price']:.2f} | Score: {s['adjusted_score']}/99 | Explosion: {s['explosion_score']}%</div>
+                    <div class="price">${s['price']:.2f} | النتيجة: {s['adjusted_score']}/99 | الانفجار: {s['explosion_score']}%</div>
                     <div class="tags">{tags}</div>
-                    <div style="margin-top:4px;font-size:11px;color:#64748b;">Indicators active: {active_tags}</div>
+                    <div style="margin-top:4px;font-size:11px;color:#64748b;">المؤشرات النشطة: {active_tags}</div>
                 </div>
             </div>
             <div class="change" style="color:{'#34d399' if s.get('day_change_pct',0) > 0 else '#f87171'};">
-                {s.get('day_change_pct',0):+.1f}% 1D
+                {s.get('day_change_pct',0):+.1f}% يوم
             </div>
         </div>""", unsafe_allow_html=True)
 
-    st.markdown('<div class="section-title">Signal History</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-title">سجل الإشارات</div>', unsafe_allow_html=True)
     try:
         import sqlite3
         conn = sqlite3.connect("scanner_history.db")
         df = pd.read_sql_query(
-            "SELECT signal_time, symbol, price, adjusted_score, signal_level, volume_ratio, rsi, cmf FROM signals ORDER BY signal_time DESC LIMIT 100",
+            "SELECT signal_time as الوقت, symbol as الرمز, price as السعر, adjusted_score as النتيجة, signal_level as المستوى, volume_ratio as 'نسبة الحجم', rsi as RSI, cmf as CMF FROM signals ORDER BY signal_time DESC LIMIT 100",
             conn)
         conn.close()
         if not df.empty:
@@ -746,24 +745,24 @@ def page_signals():
 
 def page_history():
     st.markdown(f"""<div class="dash-header">
-        <div><h1>Scan History</h1><div class="meta">Previous scan results from database</div></div>
+        <div><h1>سجل المسح</h1><div class="meta">نتائج المسوح السابقة من قاعدة البيانات</div></div>
     </div>""", unsafe_allow_html=True)
 
     db_path = "scanner_history.db"
     if not os.path.exists(db_path):
-        st.info("No database yet. Created after first scan.")
+        st.info("لا توجد قاعدة بيانات بعد. تُنشأ بعد أول مسح.")
         return
     try:
         conn = sqlite3.connect(db_path)
         df = pd.read_sql_query(
-            "SELECT scan_time as Time, symbol as Symbol, price as Price, volume_ratio as Vol, rsi as RSI, round(cmf,3) as CMF, change_pct as Change FROM session_data ORDER BY id DESC LIMIT 200", conn)
+            "SELECT scan_time as الوقت, symbol as الرمز, price as السعر, volume_ratio as 'نسبة الحجم', rsi as RSI, round(cmf,3) as CMF, change_pct as 'التغير %' FROM session_data ORDER BY id DESC LIMIT 200", conn)
         conn.close()
         if not df.empty:
             st.dataframe(df, use_container_width=True, height=500, hide_index=True)
         else:
-            st.info("No history yet.")
+            st.info("لا يوجد سجل بعد.")
     except Exception as e:
-        st.error(f"Error: {e}")
+        st.error(f"خطأ: {e}")
 
 
 def main():
@@ -773,26 +772,36 @@ def main():
     is_live = code_now != "closed"
 
     with st.sidebar:
-        st.markdown("### Whale Scanner")
+        st.markdown("### ماسح الحيتان")
         if is_live:
-            st.success(f"● {session_name} — LIVE")
+            st.success(f"● {session_name} — مباشر")
         else:
             st.info(f"● {session_name}")
-        st.caption(f"Scan: {data.get('scan_time', 'N/A')[:16]}")
-        st.caption(f"Analyzed: {data.get('total_analyzed', 0)}")
+        st.caption(f"المسح: {data.get('scan_time', 'N/A')[:16]}")
+        st.caption(f"تم التحليل: {data.get('total_analyzed', 0)}")
         gate = data.get('gate') or {}
         if gate.get('ratio') is not None:
             g_ok = bool(gate.get('passed'))
-            st.caption(f"Gate: {'PASSED' if g_ok else 'NOT-PASSED'} (ratio {gate.get('ratio', 0):.2f})")
+            st.caption(f"البوابة: {'مُجتاز' if g_ok else 'غير مُجتاز'} (النسبة {gate.get('ratio', 0):.2f})")
         st.markdown("---")
 
         if "page" not in st.session_state:
             st.session_state.page = "Overview"
 
-        pages = ["Overview", "All Predictions", "Sessions", "Scanner", "Signals", "Alerts", "Analytics", "نتائج التوقعات", "History"]
-        for p_name in pages:
-            if st.button(p_name, key=f"nav_{p_name}", use_container_width=True):
-                st.session_state.page = p_name
+        pages = {
+            "Overview": "نظرة عامة",
+            "All Predictions": "جميع التوقعات",
+            "Sessions": "الجلسات",
+            "Scanner": "الماسح",
+            "Signals": "الإشارات",
+            "Alerts": "التنبيهات",
+            "Analytics": "التحليلات",
+            "نتائج التوقعات": "نتائج التوقعات",
+            "History": "السجل",
+        }
+        for p_key, p_label in pages.items():
+            if st.button(p_label, key=f"nav_{p_key}", use_container_width=True):
+                st.session_state.page = p_key
 
     page = st.session_state.page
 

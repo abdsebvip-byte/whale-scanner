@@ -86,7 +86,7 @@ def backfill_outcomes():
 
     c.execute('''SELECT s.id, s.scan_time, s.session_type, s.symbol,
         s.price, s.volume_ratio, s.z_score, s.rsi, s.cmf,
-        s.bollinger_squeeze, s.obv_above, s.change_pct, s.anomaly_score
+        s.bollinger_squeeze, s.obv_above, s.change_pct, s.explosion_score
         FROM session_data s
         LEFT JOIN outcome_tracking o ON s.id = o.prediction_id
         WHERE o.id IS NULL''')

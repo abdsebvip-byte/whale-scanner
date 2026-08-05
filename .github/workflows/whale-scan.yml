@@ -35,9 +35,13 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python predictive_scanner.py
 
-      - name: Train Model (weekly)
-        if: github.event.schedule == '0 0 * * 2-6'
-        run: python -c "from predictive_scanner import *; conn=init_db(); train_model(conn); conn.close()"
+      - name: Train Model (after last session)
+        # Runs after the after-hours scan (5 0 * * 2-6) using the standalone trainer.
+        # train_models.py exits 1 when fewer than 30 labeled rows exist, so the job
+        # keeps running (continue-on-error) until enough data accumulates.
+        if: github.event.schedule == '5 0 * * 2-6'
+        continue-on-error: true
+        run: python train_models.py
 
       - name: Commit results
         run: |
