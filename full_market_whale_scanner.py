@@ -36,6 +36,11 @@ import warnings
 warnings.filterwarnings('ignore')
 from sklearn.ensemble import IsolationForest
 from self_learning import load_memory, save_memory, record_scan_result, analyze_misses, get_threshold_adjustments
+from feature_pipeline import extract_features as extract_ml_features, FEATURE_COLUMNS
+from ml_engine import EnsemblePredictor, ENSEMBLE_WEIGHTS, MODEL_PATH
+
+ML_ENGINE_FEATURES = ["price_at_scan", "volume_ratio", "gap_pct", "short_percent"]
+ML_FEATURE_COLUMNS = list(FEATURE_COLUMNS) + ML_ENGINE_FEATURES
 
 if sys.platform == 'win32':
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
@@ -343,6 +348,18 @@ def calculate_whale_score(signals, data):
         elif sig_type == 'INSIDER_BUYING':
             score += 18
 
+        elif sig_type == 'ML_PREDICTION':
+            ml = signal.get('ml_data', {})
+            upside = ml.get('predicted_upside', 0)
+            if upside > 100:
+                score += 25
+            elif upside > 50:
+                score += 20
+            elif upside > 30:
+                score += 15
+            elif upside > 15:
+                score += 10
+
     # مكافأة التنوع
     num_signals = len(signals)
     if num_signals >= 4:
@@ -443,7 +460,7 @@ class WhaleScanner:
             high = df['High'].astype(float)
             low = df['Low'].astype(float)
 
-            result = {'symbol': symbol}
+            result = {'symbol': symbol, '_df': df}
 
             # === A) تحليل الحجم ===
             vol_mean = volume.rolling(20).mean()
@@ -747,6 +764,66 @@ class WhaleScanner:
                 time.sleep(0.1)
             print(f"[+] {len(news_results)} أسهم بأخبار كثيرة")
 
+        # ─── [8] توقعات ML ─────────────────────────────────────
+        print(f"\n[8/8] توقعات ML (انفجار أسهم)...")
+
+        ml_predictions = {}
+        try:
+            ml_predictor = EnsemblePredictor(MODEL_PATH)
+            if ml_predictor.is_ready():
+                for data in analyzed:
+                    sym = data['symbol']
+                    ohlcv_df = data.get('_df')
+                    if ohlcv_df is None or len(ohlcv_df) < 30:
+                        continue
+                    try:
+                        df_lower = ohlcv_df.copy()
+                        df_lower.columns = [c.lower() for c in df_lower.columns]
+                        base_features = extract_ml_features(df_lower)
+                        last_row = base_features.iloc[[-1]].to_numpy(dtype=np.float64)
+                        if last_row.shape[1] == len(FEATURE_COLUMNS):
+                            prob = ml_predictor.predict_proba(last_row[0])
+                            # تحويل الاحتمال إلى تقدير صعود نسبي
+                            # prob > 0.7 = صعود عالي (~30-100%)
+                            # prob 0.5-0.7 = صعود متوسط (~10-30%)
+                            # prob < 0.5 = ضعيف (~0-10%)
+                            price = data.get('price', 1)
+                            if prob > 0.7:
+                                predicted = 30 + (prob - 0.7) * 233  # 30% → 100%
+                            elif prob > 0.5:
+                                predicted = 10 + (prob - 0.5) * 100  # 10% → 30%
+                            else:
+                                predicted = prob * 20  # 0% → 10%
+                            # سقف واقعي حسب السعر
+                            if price < 0.50:
+                                max_upside = 200.0
+                            elif price < 2.0:
+                                max_upside = 150.0
+                            elif price < 5.0:
+                                max_upside = 100.0
+                            else:
+                                max_upside = 75.0
+                            predicted = max(0, min(predicted, max_upside))
+                            confidence = (
+                                'high' if prob > 0.7 else
+                                'medium' if prob > 0.5 else
+                                'low'
+                            )
+                            ml_predictions[sym] = {
+                                'predicted_upside': round(predicted, 1),
+                                'probability': round(prob, 3),
+                                'confidence': confidence,
+                            }
+                    except Exception:
+                        continue
+            else:
+                print("   ⚠ ML models not loaded")
+        except Exception as e:
+            print(f"   ⚠ ML error: {e}")
+            print(f"[+] {len(ml_predictions)} أسهم بها توقعات ML")
+        else:
+            print("[-] نماذج ML غير متوفرة — تخطي التوقعات")
+
         # ─── تجميع النتائج ────────────────────────────────────
         print(f"\nتجميع النتائج + التقييم...")
 
@@ -824,6 +901,14 @@ class WhaleScanner:
                     'insider_data': insider_results[sym],
                 })
 
+            if sym in ml_predictions:
+                ml = ml_predictions[sym]
+                signals_for_stock.append({
+                    'type': 'ML_PREDICTION',
+                    'detail': f"ML توقع ↑{ml['predicted_upside']}% ({ml['confidence']})",
+                    'ml_data': ml,
+                })
+
             if signals_for_stock:
                 score, grade = calculate_whale_score(signals_for_stock, data)
 
@@ -852,6 +937,7 @@ class WhaleScanner:
                     'rsi': data.get('rsi', 50),
                     'anomaly_score': data.get('anomaly_score', 0),
                     'is_anomaly': data.get('is_anomaly', False),
+                    'ml_prediction': ml_predictions.get(sym),
                     'whale_score': score,
                     'grade': grade,
                     'signals': signals_for_stock,
@@ -876,6 +962,9 @@ class WhaleScanner:
             print(f"   الإشارات: {len(sigs)}")
             vd = sig.get('volume_data', {})
             print(f"   Z-Score={vd.get('z_score', 0)} | حجم نسبي={vd.get('relative_volume', 0)}x")
+            ml = sig.get('ml_prediction')
+            if ml:
+                print(f"   ML توقع: ↑{ml['predicted_upside']}% ({ml['confidence']})")
 
         return all_signals
 
