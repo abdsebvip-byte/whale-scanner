@@ -88,6 +88,7 @@ def run_tests() -> tuple[int, int, list[str]]:
     test("ML path converts probability to score", ml_score == 82)
     test("ML path stores ml_prob on stock", abs(ml_stock.get("ml_prob", 0.0) - 0.82) < 1e-12)
 
+    signals.clear_signals_for_scan(434343)
     saved = signals.generate_signals_from_predictions(
         [
             {
@@ -107,7 +108,7 @@ def run_tests() -> tuple[int, int, list[str]]:
         source_scan_id=434343,
     )
     test("ML-backed signal is saved", saved == 1)
-    active = signals.get_active_signals(limit=20)
+    active = signals.get_active_signals(limit=1000)
     integration_rows = [row for row in active if row.get("symbol") == "INTG"]
     test("saved ML-backed signal is queryable", len(integration_rows) >= 1)
     if integration_rows:

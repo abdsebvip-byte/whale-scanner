@@ -1307,7 +1307,7 @@
     }
   ],
   "weight_adjustments": {
-    "updated_at": "2026-08-05T07:45:38.570198",
+    "updated_at": "2026-08-05T18:53:04.236538",
     "recommendations": {
       "volume_ratio": {
         "action": "إبقاء",
@@ -1522,6 +1522,27 @@
     },
     {
       "time": "2026-08-05T07:45:38.615593",
+      "avg_lift": 0.8,
+      "indicators_analyzed": 6,
+      "improvements": 0,
+      "reductions": 0
+    },
+    {
+      "time": "2026-08-05T08:07:52.796672",
+      "avg_lift": 0.8,
+      "indicators_analyzed": 6,
+      "improvements": 0,
+      "reductions": 0
+    },
+    {
+      "time": "2026-08-05T18:48:09.507499",
+      "avg_lift": 0.8,
+      "indicators_analyzed": 6,
+      "improvements": 0,
+      "reductions": 0
+    },
+    {
+      "time": "2026-08-05T18:53:04.263712",
       "avg_lift": 0.8,
       "indicators_analyzed": 6,
       "improvements": 0,

@@ -1,7 +1,7 @@
 """
 Track 2 quick scan: direct regression on max 5-day upside for sub-$10 pennies.
-Approach 1 baseline: train GradientBoostingRegressor on the training matrix,
-honestly gate it against the historical average, then rank today's universe.
+Trains an ensemble (RandomForest + MLP via VotingRegressor) on the training
+matrix, honestly gates it against the historical average, then ranks today's universe.
 """
 
 from __future__ import annotations

@@ -311,16 +311,18 @@ def run(max_stocks: int = 200, top_n: int | None = None, seed: int = 42, do_log:
     else:
         print("  --no-log: skipping DB write")
 
+    shown = min(len(output["predictions"]), 15)
     print(f"\n{'='*60}")
-    print(f"  TOP {len(output['predictions'])} PREDICTIONS:")
+    print(f"  TOP {shown} PREDICTIONS:")
     print(f"{'='*60}")
     print(f"  {'#':>2} {'Sym':<8} {'Upside%':>8} {'Price':>8} {'1D%':>7} {'Vol':>6} {'RSI':>5} {'CMF':>7}")
     print(f"  {'-'*65}")
     for i, p in enumerate(output["predictions"][:15], 1):
+        up = p.get("predicted_upside") if p.get("predicted_upside") is not None else p.get("explosion_probability", 0)
         print(
-            f"  {i:>2} {p['symbol']:<8} {p['predicted_upside']:>7.1f} "
-            f"${p['price']:>6.2f} {p['change_1d']:>+6.1f}% "
-            f"{p['volume_ratio']:>5.1f}x {p['rsi']:>4.0f} {p['cmf']:>+6.3f}"
+            f"  {i:>2} {p.get('symbol',''):<8} {up:>7.1f} "
+            f"${p.get('price',0):>6.2f} {p.get('change_1d',0):>+6.1f}% "
+            f"{p.get('volume_ratio',0):>5.1f}x {p.get('rsi',50):>4.0f} {p.get('cmf',0):>+6.3f}"
         )
 
     print(f"\n  Saved {len(output['predictions'])} predictions to {PREDICTIONS_PATH}")

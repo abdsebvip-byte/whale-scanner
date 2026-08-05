@@ -176,6 +176,16 @@ def generate_signals_from_predictions(predictions, source_scan_id=None):
     return saved
 
 
+def clear_signals_for_scan(source_scan_id):
+    conn = init_signals_db()
+    c = conn.cursor()
+    try:
+        c.execute("DELETE FROM signals WHERE source_scan_id = ?", (source_scan_id,))
+        conn.commit()
+    finally:
+        conn.close()
+
+
 def get_active_signals(limit=30, min_level="WATCH"):
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
