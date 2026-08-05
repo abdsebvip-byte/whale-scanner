@@ -172,7 +172,7 @@ def run_tests() -> tuple[int, int, list[str]]:
                 scan_time TEXT, session_type TEXT, symbol TEXT, price REAL,
                 volume REAL, volume_ratio REAL, z_score REAL, change_pct REAL,
                 rsi REAL, cmf REAL, obv_above INTEGER, bollinger_squeeze INTEGER,
-                anomaly_score REAL, gap_pct REAL, float_shares REAL,
+                explosion_score REAL, gap_pct REAL, float_shares REAL,
                 short_percent REAL, next_session_change REAL, exploded INTEGER
             )
             """
@@ -210,7 +210,7 @@ def run_tests() -> tuple[int, int, list[str]]:
             check_condition("session_data columns align with predictive_scanner schema",
                  set(cols_s) >= {"scan_time", "session_type", "symbol", "price", "volume",
                                  "volume_ratio", "z_score", "change_pct", "rsi", "cmf",
-                                 "obv_above", "bollinger_squeeze", "anomaly_score", "gap_pct",
+                                 "obv_above", "bollinger_squeeze", "explosion_score", "gap_pct",
                                  "float_shares", "short_percent", "next_session_change", "exploded"})
         if ot is not None:
             row_o = conn.execute("SELECT * FROM outcome_tracking WHERE prediction_id=?", (pred_id,)).fetchone()

@@ -47,6 +47,13 @@ def init_tracking_db():
         last_checked TEXT,
         FOREIGN KEY (prediction_id) REFERENCES session_data(id)
     )''')
+    # ترحيل القواعد القديمة: إعادة تسمية anomaly_score -> explosion_score (آمن إن لم يوجد)
+    try:
+        cols = [r[1] for r in c.execute("PRAGMA table_info(session_data)").fetchall()]
+        if 'anomaly_score' in cols and 'explosion_score' not in cols:
+            c.execute("ALTER TABLE session_data RENAME COLUMN anomaly_score TO explosion_score")
+    except Exception:
+        pass
     conn.commit()
     return conn
 

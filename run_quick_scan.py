@@ -112,7 +112,7 @@ def _insert_prediction(
         INSERT INTO session_data (
             scan_time, session_type, symbol, price, volume, volume_ratio,
             z_score, change_pct, rsi, cmf, obv_above, bollinger_squeeze,
-            anomaly_score, gap_pct, float_shares, short_percent,
+            explosion_score, gap_pct, float_shares, short_percent,
             next_session_change, exploded
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
