@@ -1,8 +1,8 @@
 {
-  "scan_time": "2026-08-05T17:22:34.691128-04:00",
-  "session": "afterhours",
-  "session_name": "الجلسة المسائية",
-  "total_analyzed": 492,
+  "scan_time": "2026-08-05T23:29:14.628297-04:00",
+  "session": "closed",
+  "session_name": "السوق مغلق",
+  "total_analyzed": 496,
   "predictions": [
     {
       "symbol": "VYX",
@@ -357,20 +357,20 @@
       "ml_prob": 0.766409
     },
     {
-      "symbol": "NTCPF",
-      "price": 2.78,
+      "symbol": "IVPAF",
+      "price": 8.15,
       "explosion_probability": 77,
-      "volume_ratio": 0.26,
-      "z_score": -1.03,
-      "rsi": 72.8,
-      "cmf": 0.1824,
+      "volume_ratio": 0.14,
+      "z_score": -1.36,
+      "rsi": 59.6,
+      "cmf": -0.0943,
       "bollinger_squeeze": false,
       "obv_above_sma": true,
-      "change_1d": 5.3,
-      "change_5d": 17.8,
-      "atr_ratio": 0.0542,
-      "macd_diff": 0.0558,
-      "ml_prob": 0.773513
+      "change_1d": 5.84,
+      "change_5d": 8.05,
+      "atr_ratio": 0.0484,
+      "macd_diff": 0.0837,
+      "ml_prob": 0.773169
     },
     {
       "symbol": "HOVR",
