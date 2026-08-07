@@ -1,8 +1,8 @@
 {
-  "scan_time": "2026-08-06T20:55:29.331205-04:00",
+  "scan_time": "2026-08-06T23:12:45.681311-04:00",
   "session": "closed",
   "session_name": "السوق مغلق",
-  "total_analyzed": 495,
+  "total_analyzed": 496,
   "predictions": [
     {
       "symbol": "AREC",
@@ -38,19 +38,19 @@
     },
     {
       "symbol": "FMCC",
-      "price": 5.39,
+      "price": 5.37,
       "explosion_probability": 83,
       "volume_ratio": 0.42,
       "z_score": -1.37,
-      "rsi": 45.5,
-      "cmf": 0.0961,
+      "rsi": 45.0,
+      "cmf": 0.094,
       "bollinger_squeeze": false,
       "obv_above_sma": false,
-      "change_1d": 5.69,
-      "change_5d": -2.18,
-      "atr_ratio": 0.0618,
-      "macd_diff": -0.0172,
-      "ml_prob": 0.827961
+      "change_1d": 5.29,
+      "change_5d": -2.54,
+      "atr_ratio": 0.0621,
+      "macd_diff": -0.0185,
+      "ml_prob": 0.826847
     },
     {
       "symbol": "AMPY",
