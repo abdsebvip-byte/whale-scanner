@@ -11,6 +11,8 @@ import yfinance as yf
 import sqlite3
 import os
 
+from outcome_tracker import generate_accuracy_report
+
 st.set_page_config(page_title="ماسح الحيتان - Whale Scanner", page_icon=" whale", layout="wide", initial_sidebar_state="collapsed")
 
 st.markdown("""
@@ -553,25 +555,20 @@ def page_outcomes():
         conn = sqlite3.connect(db_path)
         c = conn.cursor()
 
-        c.execute("SELECT COUNT(*) FROM outcome_tracking")
-        total = c.fetchone()[0]
-        c.execute("SELECT COUNT(*) FROM outcome_tracking WHERE exploded = 1")
-        hits = c.fetchone()[0]
-        c.execute("SELECT ROUND(AVG(change_1d),2) FROM outcome_tracking WHERE change_1d IS NOT NULL")
-        avg1d = c.fetchone()[0] or 0
-        c.execute("SELECT ROUND(AVG(change_5d),2) FROM outcome_tracking WHERE change_5d IS NOT NULL")
-        avg5d = c.fetchone()[0] or 0
-        c.execute("SELECT ROUND(AVG(max_change_5d),2) FROM outcome_tracking WHERE max_change_5d IS NOT NULL")
-        avg_max = c.fetchone()[0] or 0
-        c.execute("SELECT ROUND(AVG(min_change_5d),2) FROM outcome_tracking WHERE min_change_5d IS NOT NULL")
-        avg_min = c.fetchone()[0] or 0
+        report = generate_accuracy_report()
+        total = report.get('total_tracked', 0)
+        hits = report.get('hits', 0)
+        acc = report.get('accuracy', 0)
+        avg1d = report.get('avg_return_1d', 0)
+        avg5d = report.get('avg_return_5d', 0)
+        avg_max = report.get('avg_max_upside', 0)
+        avg_min = report.get('avg_max_drawdown', 0)
         c.execute("SELECT COUNT(*) FROM outcome_tracking WHERE touched_stop = 1")
         stopped = c.fetchone()[0]
 
         c1, c2, c3, c4 = st.columns(4)
         with c1:
-            acc = round(hits/total*100, 1) if total > 0 else 0
-            st.markdown(f'<div class="metric-card"><div class="metric-label">الدقة</div><div class="metric-value" style="color:{"#34d399" if acc>=20 else "#f59e0b" if acc>=10 else "#f87171"};">{acc}%</div><div class="metric-label">{hits}/{total} توقعات</div></div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="metric-card"><div class="metric-label">الدقة (ناضجة فقط)</div><div class="metric-value" style="color:{"#34d399" if acc>=20 else "#f59e0b" if acc>=10 else "#f87171"};">{acc}%</div><div class="metric-label">{hits}/{total} توقعات ناضجة</div></div>', unsafe_allow_html=True)
         with c2:
             st.markdown(f'<div class="metric-card"><div class="metric-label">متوسط العائد يوم</div><div class="metric-value" style="color:{"#34d399" if avg1d>=0 else "#f87171"};">{avg1d:+.1f}%</div></div>', unsafe_allow_html=True)
         with c3:

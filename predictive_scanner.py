@@ -58,6 +58,9 @@ def init_db():
         float_shares REAL,
         short_percent REAL,
         next_session_change REAL,
+        macd REAL,
+        vol_build INTEGER,
+        price_pos REAL,
         exploded INTEGER
     )''')
     # ترحيل القواعد القديمة: إعادة تسمية anomaly_score -> explosion_score (آمن إن لم يوجد)
@@ -65,6 +68,13 @@ def init_db():
         cols = [r[1] for r in c.execute("PRAGMA table_info(session_data)").fetchall()]
         if 'anomaly_score' in cols and 'explosion_score' not in cols:
             c.execute("ALTER TABLE session_data RENAME COLUMN anomaly_score TO explosion_score")
+        # ترحيل إضافي: أعمدة المكوّنات الثمانية المتبقية (macd / vol_build / price_pos)
+        if 'macd' not in cols:
+            c.execute("ALTER TABLE session_data ADD COLUMN macd REAL")
+        if 'vol_build' not in cols:
+            c.execute("ALTER TABLE session_data ADD COLUMN vol_build INTEGER")
+        if 'price_pos' not in cols:
+            c.execute("ALTER TABLE session_data ADD COLUMN price_pos REAL")
     except Exception:
         pass
     conn.commit()
@@ -115,7 +125,7 @@ def get_stock_list(min_volume=100000):
     return []
 
 
-def analyze_stock(symbol):
+def analyze_stock(symbol, live=None):
     """تحليل سهم واحد — استخراج ميزات حقيقية"""
     try:
         df = yf.download(symbol, period="6mo", progress=False)
@@ -227,6 +237,21 @@ def analyze_stock(symbol):
         features['price'] = float(close.iloc[-1])
         features['volume'] = today_vol
 
+        if live and live.get('price'):
+            try:
+                live_price = float(live['price'])
+                if live_price > 0:
+                    features['price'] = live_price
+            except (TypeError, ValueError):
+                pass
+            if live.get('change') is not None:
+                try:
+                    live_change = float(live['change'])
+                    if live_change == live_change:
+                        features['change_1d'] = live_change
+                except (TypeError, ValueError):
+                    pass
+
         try:
             from feature_pipeline import extract_features
 
@@ -252,14 +277,25 @@ def analyze_stock(symbol):
 
 def calculate_explosion_score(stock):
     """
-    حساب احتمالية الانفجار — الإصدار المحسّن v2.0
+    حساب احتمالية الانفجار — الإصدار المحسّن v2.1
     الأوزان مبنية على نتائج التعلّم الذاتي الفعلية في scanner_memory.json (592 تنبؤ).
+    ml_prob (إن توفّر) أصبح مكوّناً مرجّحاً في مزيج مع درجة القاعدة،
+    ولم يعد يحل محل القاعدة بالكامل (كان يحجب نتائج المكوّنات الثمانية).
     """
+    score = _calculate_rules_score(stock)
+
     ml_prob = _predict_with_ensemble(stock)
     if ml_prob is not None:
         stock['ml_prob'] = ml_prob
-        return max(0, min(99, int(round(ml_prob * 100))))
+        # مزيج مرجّح: القاعدة هي المرساة (0.75) والنموذج مكوّن تأكيد ثانوي (0.25)
+        ml_score = max(0, min(99, int(round(ml_prob * 100))))
+        score = int(round(0.75 * score + 0.25 * ml_score))
+        score = max(0, min(99, score))
+    return score
 
+
+def _calculate_rules_score(stock):
+    """درجة القاعدة — المكوّنات الثمانية المعتمدة على نتائج التعلّم الذاتي."""
     score = 0
 
     change_1d = abs(stock.get('change_1d', 0))
@@ -420,11 +456,9 @@ def run_post_session_scan():
     for i, stock in enumerate(candidates):
         if i % 50 == 0 and i > 0:
             print(f"  ... {i}/{len(candidates)}")
-        features = analyze_stock(stock['symbol'])
+        features = analyze_stock(stock['symbol'], live=stock)
         if features:
-            # فلترة ثانية — إزالة اللي تحرك بعدين
-            if abs(features.get('change_1d', 0)) <= MAX_CHANGE_1D:
-                analyzed.append(features)
+            analyzed.append(features)
         time.sleep(0.1)
 
     print(f"[+] {len(analyzed)} سهم محلل")
@@ -443,8 +477,8 @@ def run_post_session_scan():
                 (scan_time, session_type, symbol, price, volume, volume_ratio,
                  z_score, change_pct, rsi, cmf, obv_above, bollinger_squeeze,
                  explosion_score, gap_pct, float_shares, short_percent,
-                 next_session_change, exploded)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+                 macd, vol_build, price_pos, next_session_change, exploded)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
                 (now.isoformat(), session, p.get('symbol', ''),
                  p.get('price', 0), p.get('volume', 0),
                  p.get('volume_ratio', 0), p.get('volume_z_score', 0),
@@ -453,6 +487,7 @@ def run_post_session_scan():
                  p.get('bollinger_squeeze', 0),
                  p.get('explosion_probability', 0),
                  None, p.get('float', 0), None,
+                 p.get('macd_diff', 0), p.get('volume_build_days', 0), p.get('price_position', 0.5),
                  None, 0))
         except Exception:
             continue

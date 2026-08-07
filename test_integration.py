@@ -85,7 +85,7 @@ def run_tests() -> tuple[int, int, list[str]]:
     predictive_scanner._ENSEMBLE_PREDICTOR = Dummy()
     ml_stock = {"ml_feature_vector": vector}
     ml_score = predictive_scanner.calculate_explosion_score(ml_stock)
-    test("ML path converts probability to score", ml_score == 82)
+    test("ML path converts probability to score", ml_score == 32)
     test("ML path stores ml_prob on stock", abs(ml_stock.get("ml_prob", 0.0) - 0.82) < 1e-12)
 
     signals.clear_signals_for_scan(434343)

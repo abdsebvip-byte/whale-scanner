@@ -1,9 +1,26 @@
 # whale-scanner2 — Charterji Clone — Design
 
 **Date:** 2026-08-05
-**Status:** Draft for approval (HARD-GATE: no implementation before design approval)
+**Status:** Approved (MVP scope confirmed) — implementation in progress
 **Target repo:** `whale-scanner2` (new repo/project — sibling of `whale-scanner`, which stays untouched)
 **Future:** merge into `whale-scannerpro` later
+
+### 1.2 Approved decisions (2026-08-05)
+1. **MVP scope as in §6** — confirmed, build starts.
+2. **Data:** free alternative first (Yahoo Finance via an abstraction layer),
+   designed so **FMP** can be swapped in later without touching the UI.
+3. **UI language:** Arabic only (RTL).
+4. **Sharia lists** (Al-Rajhi / Al-Bilad / Al-Osaimi): **deferred**, labeled
+   `[assumed]` in docs — no data source is documented for them.
+
+### 1.3 Scope revision (2026-08-05, post-approval)
+1. **Markets:** **US only** for this MVP — Saudi (Tadawul) support removed
+   from the code (`^TASI`, `.SR` normalization, `SAR` currency). Approved by
+   the owner after implementation.
+2. **Theme:** **light** (slate palette: `#f1f5f9` background, `#ffffff` cards,
+   text `#334155`/`#64748b`; green/red for up/down). Dark theme removed.
+3. **Indices:** `^GSPC` (S&P 500), `^IXIC` (NASDAQ), `^DJI` (Dow Jones).
+4. **Default watchlist:** `AAPL, MSFT, NVDA, TSLA, AMZN, ^GSPC`.
 
 ## 1. Objective
 
