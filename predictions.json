@@ -1,7 +1,7 @@
 {
-  "scan_time": "2026-08-07T16:53:34.761478-04:00",
-  "session": "afterhours",
-  "session_name": "الجلسة المسائية",
+  "scan_time": "2026-08-07T22:12:55.345344-04:00",
+  "session": "closed",
+  "session_name": "السوق مغلق",
   "total_analyzed": 497,
   "predictions": [
     {
@@ -18,23 +18,23 @@
       "change_5d": -0.48,
       "atr_ratio": 0.0641,
       "macd_diff": 0.0599,
-      "ml_prob": 0.209304
+      "ml_prob": 0.209307
     },
     {
       "symbol": "WVE",
       "price": 6.1,
       "explosion_probability": 78,
-      "volume_ratio": 1.95,
-      "z_score": 2.93,
+      "volume_ratio": 1.97,
+      "z_score": 2.96,
       "rsi": 55.1,
-      "cmf": 0.1482,
+      "cmf": 0.1488,
       "bollinger_squeeze": true,
       "obv_above_sma": true,
       "change_1d": 1.33,
       "change_5d": 6.27,
       "atr_ratio": 0.0466,
       "macd_diff": 0.0436,
-      "ml_prob": 0.246631
+      "ml_prob": 0.246547
     },
     {
       "symbol": "VTGN",
@@ -82,7 +82,7 @@
       "change_5d": 0.41,
       "atr_ratio": 0.026,
       "macd_diff": 0.0281,
-      "ml_prob": 0.160703
+      "ml_prob": 0.160697
     },
     {
       "symbol": "SGMOQ",
@@ -136,8 +136,8 @@
       "symbol": "RILY",
       "price": 7.18,
       "explosion_probability": 60,
-      "volume_ratio": 1.81,
-      "z_score": 2.69,
+      "volume_ratio": 1.83,
+      "z_score": 2.73,
       "rsi": 46.9,
       "cmf": -0.0679,
       "bollinger_squeeze": true,
@@ -146,7 +146,7 @@
       "change_5d": -4.14,
       "atr_ratio": 0.0631,
       "macd_diff": 0.1056,
-      "ml_prob": 0.195203
+      "ml_prob": 0.195204
     },
     {
       "symbol": "WEN",
@@ -194,7 +194,7 @@
       "change_5d": 2.73,
       "atr_ratio": 0.1146,
       "macd_diff": 0.1356,
-      "ml_prob": 0.496569
+      "ml_prob": 0.496572
     },
     {
       "symbol": "BBDC",
@@ -217,16 +217,16 @@
       "price": 3.61,
       "explosion_probability": 53,
       "volume_ratio": 0.85,
-      "z_score": -0.47,
+      "z_score": -0.45,
       "rsi": 58.6,
-      "cmf": 0.0529,
+      "cmf": 0.0532,
       "bollinger_squeeze": true,
       "obv_above_sma": true,
       "change_1d": 1.98,
       "change_5d": 5.87,
       "atr_ratio": 0.0551,
       "macd_diff": 0.0262,
-      "ml_prob": 0.266534
+      "ml_prob": 0.26656
     },
     {
       "symbol": "ALEC",
@@ -235,14 +235,14 @@
       "volume_ratio": 1.61,
       "z_score": 0.4,
       "rsi": 57.8,
-      "cmf": 0.029,
+      "cmf": 0.0289,
       "bollinger_squeeze": true,
       "obv_above_sma": true,
       "change_1d": -2.73,
       "change_5d": 17.88,
       "atr_ratio": 0.0887,
       "macd_diff": 0.0418,
-      "ml_prob": 0.407646
+      "ml_prob": 0.407638
     },
     {
       "symbol": "PERF",
@@ -259,22 +259,6 @@
       "atr_ratio": 0.0109,
       "macd_diff": -0.0096,
       "ml_prob": 0.048331
-    },
-    {
-      "symbol": "ACHV",
-      "price": 6.65,
-      "explosion_probability": 53,
-      "volume_ratio": 0.63,
-      "z_score": -1.18,
-      "rsi": 61.5,
-      "cmf": 0.1794,
-      "bollinger_squeeze": true,
-      "obv_above_sma": true,
-      "change_1d": 1.53,
-      "change_5d": 5.22,
-      "atr_ratio": 0.0547,
-      "macd_diff": 0.0112,
-      "ml_prob": 0.11839
     },
     {
       "symbol": "SAGT",
@@ -357,6 +341,22 @@
       "ml_prob": 0.542897
     },
     {
+      "symbol": "CCTG",
+      "price": 0.7,
+      "explosion_probability": 51,
+      "volume_ratio": 5.42,
+      "z_score": 1.62,
+      "rsi": 46.6,
+      "cmf": -0.3554,
+      "bollinger_squeeze": false,
+      "obv_above_sma": true,
+      "change_1d": 1.21,
+      "change_5d": 2.68,
+      "atr_ratio": 0.1899,
+      "macd_diff": -0.0077,
+      "ml_prob": 0.251513
+    },
+    {
       "symbol": "KDK",
       "price": 4.48,
       "explosion_probability": 51,
@@ -377,7 +377,7 @@
       "price": 0.54,
       "explosion_probability": 50,
       "volume_ratio": 2.04,
-      "z_score": 2.08,
+      "z_score": 2.09,
       "rsi": 38.5,
       "cmf": -0.3851,
       "bollinger_squeeze": false,
@@ -386,7 +386,7 @@
       "change_5d": -12.14,
       "atr_ratio": 0.0826,
       "macd_diff": 0.0029,
-      "ml_prob": 0.630217
+      "ml_prob": 0.630215
     },
     {
       "symbol": "FRMI",
