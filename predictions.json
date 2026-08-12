@@ -1,7 +1,7 @@
 {
-  "scan_time": "2026-08-11T16:59:38.168096-04:00",
-  "session": "afterhours",
-  "session_name": "الجلسة المسائية",
+  "scan_time": "2026-08-11T22:37:06.628801-04:00",
+  "session": "closed",
+  "session_name": "السوق مغلق",
   "total_analyzed": 498,
   "predictions": [
     {
@@ -35,22 +35,6 @@
       "atr_ratio": 0.0624,
       "macd_diff": 0.0884,
       "ml_prob": 0.454173
-    },
-    {
-      "symbol": "QSEP",
-      "price": 0.15,
-      "explosion_probability": 74,
-      "volume_ratio": 1.57,
-      "z_score": 1.43,
-      "rsi": 52.2,
-      "cmf": 0.6577,
-      "bollinger_squeeze": true,
-      "obv_above_sma": true,
-      "change_1d": 0.53,
-      "change_5d": 6.07,
-      "atr_ratio": 0.1456,
-      "macd_diff": 0.0006,
-      "ml_prob": 0.122481
     },
     {
       "symbol": "VTGN",
@@ -392,10 +376,10 @@
       "symbol": "GTEC",
       "price": 0.55,
       "explosion_probability": 52,
-      "volume_ratio": 17.72,
+      "volume_ratio": 18.54,
       "z_score": 4.25,
       "rsi": 52.1,
-      "cmf": 0.8773,
+      "cmf": 1.4184,
       "bollinger_squeeze": false,
       "obv_above_sma": true,
       "change_1d": 2.72,
@@ -424,10 +408,10 @@
       "symbol": "HXHX",
       "price": 0.48,
       "explosion_probability": 51,
-      "volume_ratio": 18.86,
+      "volume_ratio": 18.91,
       "z_score": 4.25,
       "rsi": 49.0,
-      "cmf": -11.6327,
+      "cmf": -12.1549,
       "bollinger_squeeze": false,
       "obv_above_sma": true,
       "change_1d": 0.89,
@@ -467,6 +451,22 @@
       "atr_ratio": 0.0651,
       "macd_diff": 0.0534,
       "ml_prob": 0.6364
+    },
+    {
+      "symbol": "BAOS",
+      "price": 0.73,
+      "explosion_probability": 50,
+      "volume_ratio": 4.29,
+      "z_score": 1.51,
+      "rsi": 25.8,
+      "cmf": 0.2165,
+      "bollinger_squeeze": false,
+      "obv_above_sma": true,
+      "change_1d": 3.15,
+      "change_5d": 26.43,
+      "atr_ratio": 0.2872,
+      "macd_diff": 0.0154,
+      "ml_prob": 0.598251
     },
     {
       "symbol": "EOSE",
