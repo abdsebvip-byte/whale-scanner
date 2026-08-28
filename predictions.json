@@ -1,7 +1,7 @@
 {
-  "scan_time": "2026-08-28T00:21:15.157741-04:00",
-  "session": "closed",
-  "session_name": "السوق مغلق",
+  "scan_time": "2026-08-28T07:14:27.096894-04:00",
+  "session": "premarket",
+  "session_name": "ما قبل التداول",
   "total_analyzed": 500,
   "predictions": [
     {
