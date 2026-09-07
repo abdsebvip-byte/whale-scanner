@@ -1,8 +1,8 @@
 {
-  "scan_time": "2026-09-05T00:16:13.586676-04:00",
-  "session": "closed",
-  "session_name": "السوق مغلق",
-  "total_analyzed": 496,
+  "scan_time": "2026-09-07T11:41:14.274011-04:00",
+  "session": "regular",
+  "session_name": "الجلسة الرسمية",
+  "total_analyzed": 499,
   "predictions": [
     {
       "symbol": "ATER",
@@ -19,6 +19,22 @@
       "atr_ratio": 0.1438,
       "macd_diff": 0.0417,
       "ml_prob": 0.367908
+    },
+    {
+      "symbol": "SIREF",
+      "price": 0.14,
+      "explosion_probability": 72,
+      "volume_ratio": 8.07,
+      "z_score": 4.02,
+      "rsi": 62.6,
+      "cmf": 0.1949,
+      "bollinger_squeeze": false,
+      "obv_above_sma": true,
+      "change_1d": 0.94,
+      "change_5d": 2.92,
+      "atr_ratio": 0.0584,
+      "macd_diff": 0.0001,
+      "ml_prob": 0.168772
     },
     {
       "symbol": "ANPA",
@@ -467,22 +483,6 @@
       "atr_ratio": 0.0936,
       "macd_diff": 0.0626,
       "ml_prob": 0.652757
-    },
-    {
-      "symbol": "AGEN",
-      "price": 8.24,
-      "explosion_probability": 53,
-      "volume_ratio": 0.92,
-      "z_score": -0.2,
-      "rsi": 60.8,
-      "cmf": 0.1793,
-      "bollinger_squeeze": true,
-      "obv_above_sma": true,
-      "change_1d": 0.0,
-      "change_5d": 8.28,
-      "atr_ratio": 0.071,
-      "macd_diff": -0.0584,
-      "ml_prob": 0.066094
     }
   ],
   "model_trained": true
