@@ -1,7 +1,7 @@
 {
-  "scan_time": "2026-09-07T18:46:59.022477-04:00",
-  "session": "afterhours",
-  "session_name": "الجلسة المسائية",
+  "scan_time": "2026-09-08T00:24:49.236241-04:00",
+  "session": "closed",
+  "session_name": "السوق مغلق",
   "total_analyzed": 499,
   "predictions": [
     {
@@ -21,22 +21,6 @@
       "ml_prob": 0.367908
     },
     {
-      "symbol": "SIREF",
-      "price": 0.14,
-      "explosion_probability": 72,
-      "volume_ratio": 8.07,
-      "z_score": 4.02,
-      "rsi": 62.6,
-      "cmf": 0.1949,
-      "bollinger_squeeze": false,
-      "obv_above_sma": true,
-      "change_1d": 0.94,
-      "change_5d": 2.92,
-      "atr_ratio": 0.0584,
-      "macd_diff": 0.0001,
-      "ml_prob": 0.168772
-    },
-    {
       "symbol": "ANPA",
       "price": 3.97,
       "explosion_probability": 68,
@@ -51,6 +35,22 @@
       "atr_ratio": 0.1114,
       "macd_diff": -0.0066,
       "ml_prob": 0.648555
+    },
+    {
+      "symbol": "SIREF",
+      "price": 0.14,
+      "explosion_probability": 67,
+      "volume_ratio": 2.76,
+      "z_score": 1.13,
+      "rsi": 62.6,
+      "cmf": 0.1754,
+      "bollinger_squeeze": false,
+      "obv_above_sma": true,
+      "change_1d": 0.94,
+      "change_5d": 4.35,
+      "atr_ratio": 0.0579,
+      "macd_diff": 0.0001,
+      "ml_prob": 0.222907
     },
     {
       "symbol": "CVRX",
@@ -341,22 +341,6 @@
       "ml_prob": 0.540616
     },
     {
-      "symbol": "PHGE",
-      "price": 0.15,
-      "explosion_probability": 56,
-      "volume_ratio": 1.33,
-      "z_score": 0.42,
-      "rsi": 37.8,
-      "cmf": 0.2542,
-      "bollinger_squeeze": true,
-      "obv_above_sma": true,
-      "change_1d": 3.94,
-      "change_5d": 8.03,
-      "atr_ratio": 0.1129,
-      "macd_diff": 0.0091,
-      "ml_prob": 0.602855
-    },
-    {
       "symbol": "NABL",
       "price": 4.06,
       "explosion_probability": 56,
@@ -483,6 +467,22 @@
       "atr_ratio": 0.0936,
       "macd_diff": 0.0626,
       "ml_prob": 0.652757
+    },
+    {
+      "symbol": "AGEN",
+      "price": 8.24,
+      "explosion_probability": 53,
+      "volume_ratio": 0.92,
+      "z_score": -0.2,
+      "rsi": 60.8,
+      "cmf": 0.1793,
+      "bollinger_squeeze": true,
+      "obv_above_sma": true,
+      "change_1d": 0.0,
+      "change_5d": 8.28,
+      "atr_ratio": 0.071,
+      "macd_diff": -0.0584,
+      "ml_prob": 0.066094
     }
   ],
   "model_trained": true
