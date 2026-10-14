@@ -1,9 +1,25 @@
 {
-  "scan_time": "2026-10-13T19:43:03.464087-04:00",
-  "session": "afterhours",
-  "session_name": "الجلسة المسائية",
-  "total_analyzed": 498,
+  "scan_time": "2026-10-14T00:43:17.705112-04:00",
+  "session": "closed",
+  "session_name": "السوق مغلق",
+  "total_analyzed": 499,
   "predictions": [
+    {
+      "symbol": "FMCKM",
+      "price": 5.45,
+      "explosion_probability": 83,
+      "volume_ratio": 12.39,
+      "z_score": 4.14,
+      "rsi": 35.0,
+      "cmf": 0.9139,
+      "bollinger_squeeze": true,
+      "obv_above_sma": true,
+      "change_1d": 0.93,
+      "change_5d": 7.5,
+      "atr_ratio": 0.0425,
+      "macd_diff": 0.0609,
+      "ml_prob": 0.34334
+    },
     {
       "symbol": "HCAT",
       "price": 1.74,
@@ -11,30 +27,14 @@
       "volume_ratio": 2.76,
       "z_score": 2.71,
       "rsi": 48.1,
-      "cmf": 0.3774,
+      "cmf": 0.3346,
       "bollinger_squeeze": true,
       "obv_above_sma": false,
       "change_1d": -0.57,
       "change_5d": -1.14,
-      "atr_ratio": 0.0499,
+      "atr_ratio": 0.0509,
       "macd_diff": 0.0013,
-      "ml_prob": 0.11694
-    },
-    {
-      "symbol": "NWBO",
-      "price": 0.16,
-      "explosion_probability": 60,
-      "volume_ratio": 3.93,
-      "z_score": 2.74,
-      "rsi": 50.7,
-      "cmf": -0.2262,
-      "bollinger_squeeze": false,
-      "obv_above_sma": true,
-      "change_1d": 0.3,
-      "change_5d": 6.67,
-      "atr_ratio": 0.0727,
-      "macd_diff": 0.0011,
-      "ml_prob": 0.388161
+      "ml_prob": 0.117073
     },
     {
       "symbol": "CXM",
@@ -66,7 +66,7 @@
       "change_5d": 7.24,
       "atr_ratio": 0.0454,
       "macd_diff": 0.1205,
-      "ml_prob": 0.364187
+      "ml_prob": 0.364168
     },
     {
       "symbol": "PTON",
@@ -82,7 +82,7 @@
       "change_5d": 7.63,
       "atr_ratio": 0.0363,
       "macd_diff": 0.0562,
-      "ml_prob": 0.193317
+      "ml_prob": 0.193318
     },
     {
       "symbol": "GNSS",
@@ -91,21 +91,21 @@
       "volume_ratio": 7.8,
       "z_score": 4.17,
       "rsi": 31.1,
-      "cmf": -0.0377,
+      "cmf": -0.0815,
       "bollinger_squeeze": false,
       "obv_above_sma": true,
       "change_1d": 0.0,
       "change_5d": -6.94,
-      "atr_ratio": 0.0585,
+      "atr_ratio": 0.0582,
       "macd_diff": -0.008,
-      "ml_prob": 0.194075
+      "ml_prob": 0.195625
     },
     {
       "symbol": "NXDR",
       "price": 2.66,
       "explosion_probability": 54,
       "volume_ratio": 1.15,
-      "z_score": 0.37,
+      "z_score": 0.36,
       "rsi": 64.3,
       "cmf": 0.2216,
       "bollinger_squeeze": true,
@@ -123,30 +123,14 @@
       "volume_ratio": 0.71,
       "z_score": -0.62,
       "rsi": 42.0,
-      "cmf": -0.0713,
+      "cmf": -0.0709,
       "bollinger_squeeze": true,
       "obv_above_sma": true,
       "change_1d": 0.4,
       "change_5d": -0.8,
-      "atr_ratio": 0.0321,
+      "atr_ratio": 0.0322,
       "macd_diff": 0.0266,
-      "ml_prob": 0.223289
-    },
-    {
-      "symbol": "VYX",
-      "price": 7.2,
-      "explosion_probability": 54,
-      "volume_ratio": 0.54,
-      "z_score": -1.45,
-      "rsi": 48.5,
-      "cmf": -0.098,
-      "bollinger_squeeze": true,
-      "obv_above_sma": true,
-      "change_1d": 0.42,
-      "change_5d": 7.3,
-      "atr_ratio": 0.0514,
-      "macd_diff": 0.0803,
-      "ml_prob": 0.454774
+      "ml_prob": 0.222473
     },
     {
       "symbol": "PLX",
@@ -155,14 +139,14 @@
       "volume_ratio": 1.14,
       "z_score": 0.38,
       "rsi": 55.9,
-      "cmf": 0.2117,
+      "cmf": 0.1963,
       "bollinger_squeeze": true,
       "obv_above_sma": true,
       "change_1d": -1.08,
       "change_5d": 1.48,
-      "atr_ratio": 0.0347,
+      "atr_ratio": 0.035,
       "macd_diff": -0.0062,
-      "ml_prob": 0.075506
+      "ml_prob": 0.075101
     },
     {
       "symbol": "OABI",
@@ -171,30 +155,30 @@
       "volume_ratio": 0.62,
       "z_score": -1.21,
       "rsi": 54.0,
-      "cmf": 0.2039,
+      "cmf": 0.204,
       "bollinger_squeeze": true,
       "obv_above_sma": true,
       "change_1d": -1.47,
       "change_5d": 3.07,
       "atr_ratio": 0.0687,
       "macd_diff": -0.0462,
-      "ml_prob": 0.090654
+      "ml_prob": 0.090825
     },
     {
       "symbol": "NB",
       "price": 3.34,
       "explosion_probability": 52,
-      "volume_ratio": 1.96,
-      "z_score": 3.23,
+      "volume_ratio": 1.97,
+      "z_score": 3.24,
       "rsi": 36.3,
-      "cmf": -0.1909,
+      "cmf": -0.1911,
       "bollinger_squeeze": true,
       "obv_above_sma": false,
       "change_1d": 1.83,
       "change_5d": -3.19,
       "atr_ratio": 0.0548,
       "macd_diff": 0.0135,
-      "ml_prob": 0.572816
+      "ml_prob": 0.572852
     },
     {
       "symbol": "GENI",
@@ -203,30 +187,46 @@
       "volume_ratio": 0.51,
       "z_score": -1.29,
       "rsi": 50.9,
-      "cmf": 0.0448,
+      "cmf": 0.0447,
       "bollinger_squeeze": true,
       "obv_above_sma": true,
       "change_1d": -1.21,
       "change_5d": 3.0,
       "atr_ratio": 0.0626,
       "macd_diff": 0.1155,
-      "ml_prob": 0.237999
+      "ml_prob": 0.237927
+    },
+    {
+      "symbol": "CRMD",
+      "price": 7.39,
+      "explosion_probability": 50,
+      "volume_ratio": 1.47,
+      "z_score": 1.28,
+      "rsi": 40.5,
+      "cmf": 0.0803,
+      "bollinger_squeeze": false,
+      "obv_above_sma": true,
+      "change_1d": -0.94,
+      "change_5d": 1.51,
+      "atr_ratio": 0.0347,
+      "macd_diff": -0.009,
+      "ml_prob": 0.146157
     },
     {
       "symbol": "BURU",
       "price": 0.99,
       "explosion_probability": 50,
       "volume_ratio": 0.49,
-      "z_score": -0.36,
-      "rsi": 53.8,
-      "cmf": 0.2972,
+      "z_score": -0.37,
+      "rsi": 54.0,
+      "cmf": 0.2973,
       "bollinger_squeeze": true,
       "obv_above_sma": false,
       "change_1d": -0.71,
       "change_5d": -3.88,
-      "atr_ratio": 0.1951,
-      "macd_diff": -0.0315,
-      "ml_prob": 0.194188
+      "atr_ratio": 0.1904,
+      "macd_diff": -0.0319,
+      "ml_prob": 0.18933
     },
     {
       "symbol": "BMGL",
@@ -235,14 +235,14 @@
       "volume_ratio": 8.93,
       "z_score": 3.88,
       "rsi": 47.9,
-      "cmf": -0.5041,
+      "cmf": -0.5466,
       "bollinger_squeeze": true,
       "obv_above_sma": true,
       "change_1d": 3.77,
       "change_5d": 17.38,
-      "atr_ratio": 0.1496,
+      "atr_ratio": 0.1505,
       "macd_diff": 0.0937,
-      "ml_prob": 0.641195
+      "ml_prob": 0.641081
     },
     {
       "symbol": "TGB",
@@ -251,14 +251,14 @@
       "volume_ratio": 0.73,
       "z_score": -0.85,
       "rsi": 48.9,
-      "cmf": 0.2584,
+      "cmf": 0.2575,
       "bollinger_squeeze": true,
       "obv_above_sma": false,
       "change_1d": -1.72,
       "change_5d": 0.47,
-      "atr_ratio": 0.0542,
+      "atr_ratio": 0.0543,
       "macd_diff": -0.0315,
-      "ml_prob": 0.140327
+      "ml_prob": 0.136029
     },
     {
       "symbol": "PHAT",
@@ -275,22 +275,6 @@
       "atr_ratio": 0.0572,
       "macd_diff": 0.0676,
       "ml_prob": 0.124308
-    },
-    {
-      "symbol": "FMCKM",
-      "price": 5.45,
-      "explosion_probability": 49,
-      "volume_ratio": 6.83,
-      "z_score": 3.48,
-      "rsi": 32.9,
-      "cmf": -0.26,
-      "bollinger_squeeze": false,
-      "obv_above_sma": true,
-      "change_1d": 0.93,
-      "change_5d": 7.14,
-      "atr_ratio": 0.0445,
-      "macd_diff": 0.0374,
-      "ml_prob": 0.293202
     },
     {
       "symbol": "DCH",
@@ -363,14 +347,30 @@
       "volume_ratio": 0.85,
       "z_score": -0.45,
       "rsi": 47.9,
-      "cmf": -0.0108,
+      "cmf": -0.0147,
       "bollinger_squeeze": true,
       "obv_above_sma": true,
       "change_1d": -0.67,
       "change_5d": -4.23,
       "atr_ratio": 0.044,
       "macd_diff": 0.0298,
-      "ml_prob": 0.217745
+      "ml_prob": 0.228796
+    },
+    {
+      "symbol": "FBGL",
+      "price": 3.51,
+      "explosion_probability": 47,
+      "volume_ratio": 4.47,
+      "z_score": 1.38,
+      "rsi": 42.7,
+      "cmf": -0.1595,
+      "bollinger_squeeze": false,
+      "obv_above_sma": true,
+      "change_1d": 1.45,
+      "change_5d": -1.96,
+      "atr_ratio": 0.1321,
+      "macd_diff": -0.0203,
+      "ml_prob": 0.268198
     },
     {
       "symbol": "AQN",
@@ -379,14 +379,14 @@
       "volume_ratio": 0.87,
       "z_score": -0.46,
       "rsi": 44.1,
-      "cmf": -0.0617,
+      "cmf": -0.0646,
       "bollinger_squeeze": true,
       "obv_above_sma": true,
       "change_1d": 0.39,
       "change_5d": 1.38,
-      "atr_ratio": 0.0183,
+      "atr_ratio": 0.0184,
       "macd_diff": 0.0304,
-      "ml_prob": 0.132119
+      "ml_prob": 0.131997
     },
     {
       "symbol": "NWL",
@@ -395,14 +395,14 @@
       "volume_ratio": 0.74,
       "z_score": -0.79,
       "rsi": 48.6,
-      "cmf": -0.0119,
+      "cmf": -0.0108,
       "bollinger_squeeze": true,
       "obv_above_sma": true,
       "change_1d": 0.18,
       "change_5d": -2.27,
-      "atr_ratio": 0.0385,
+      "atr_ratio": 0.0386,
       "macd_diff": 0.0262,
-      "ml_prob": 0.139015
+      "ml_prob": 0.139359
     },
     {
       "symbol": "RES",
@@ -453,22 +453,6 @@
       "ml_prob": 0.361877
     },
     {
-      "symbol": "CRMD",
-      "price": 7.39,
-      "explosion_probability": 46,
-      "volume_ratio": 1.46,
-      "z_score": 1.27,
-      "rsi": 40.5,
-      "cmf": 0.0676,
-      "bollinger_squeeze": false,
-      "obv_above_sma": true,
-      "change_1d": -0.94,
-      "change_5d": 1.51,
-      "atr_ratio": 0.0344,
-      "macd_diff": -0.009,
-      "ml_prob": 0.146617
-    },
-    {
       "symbol": "STFS",
       "price": 3.66,
       "explosion_probability": 46,
@@ -483,6 +467,22 @@
       "atr_ratio": 0.1267,
       "macd_diff": 0.0694,
       "ml_prob": 0.283182
+    },
+    {
+      "symbol": "HLLY",
+      "price": 2.54,
+      "explosion_probability": 46,
+      "volume_ratio": 0.61,
+      "z_score": -0.61,
+      "rsi": 50.0,
+      "cmf": 0.0621,
+      "bollinger_squeeze": true,
+      "obv_above_sma": true,
+      "change_1d": 3.25,
+      "change_5d": 7.63,
+      "atr_ratio": 0.0504,
+      "macd_diff": 0.0271,
+      "ml_prob": 0.646262
     }
   ],
   "model_trained": true
