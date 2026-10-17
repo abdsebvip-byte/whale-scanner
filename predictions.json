@@ -1,7 +1,7 @@
 {
-  "scan_time": "2026-10-16T18:46:38.298148-04:00",
-  "session": "afterhours",
-  "session_name": "الجلسة المسائية",
+  "scan_time": "2026-10-17T00:13:11.943457-04:00",
+  "session": "closed",
+  "session_name": "السوق مغلق",
   "total_analyzed": 498,
   "predictions": [
     {
@@ -27,14 +27,30 @@
       "volume_ratio": 2.88,
       "z_score": 3.88,
       "rsi": 55.5,
-      "cmf": 0.2348,
+      "cmf": 0.2482,
       "bollinger_squeeze": true,
       "obv_above_sma": true,
       "change_1d": 1.52,
       "change_5d": 3.66,
-      "atr_ratio": 0.031,
+      "atr_ratio": 0.0314,
       "macd_diff": 0.0698,
-      "ml_prob": 0.163091
+      "ml_prob": 0.163935
+    },
+    {
+      "symbol": "AFMJF",
+      "price": 1.02,
+      "explosion_probability": 66,
+      "volume_ratio": 8.78,
+      "z_score": 4.17,
+      "rsi": 51.4,
+      "cmf": -0.8279,
+      "bollinger_squeeze": true,
+      "obv_above_sma": true,
+      "change_1d": 1.48,
+      "change_5d": -0.97,
+      "atr_ratio": 0.0382,
+      "macd_diff": 0.0047,
+      "ml_prob": 0.074016
     },
     {
       "symbol": "SPRY",
@@ -50,7 +66,7 @@
       "change_5d": -3.83,
       "atr_ratio": 0.0677,
       "macd_diff": 0.0334,
-      "ml_prob": 0.149986
+      "ml_prob": 0.149982
     },
     {
       "symbol": "ALLT",
@@ -66,39 +82,71 @@
       "change_5d": 3.08,
       "atr_ratio": 0.0427,
       "macd_diff": 0.0488,
-      "ml_prob": 0.10728
+      "ml_prob": 0.107278
     },
     {
       "symbol": "CXM",
       "price": 5.83,
       "explosion_probability": 59,
-      "volume_ratio": 1.09,
-      "z_score": 0.3,
+      "volume_ratio": 1.1,
+      "z_score": 0.31,
       "rsi": 57.1,
-      "cmf": 0.0842,
+      "cmf": 0.0834,
       "bollinger_squeeze": true,
       "obv_above_sma": true,
       "change_1d": -0.34,
       "change_5d": 5.42,
-      "atr_ratio": 0.0419,
+      "atr_ratio": 0.0421,
       "macd_diff": 0.1257,
-      "ml_prob": 0.361001
+      "ml_prob": 0.362801
+    },
+    {
+      "symbol": "CIGL",
+      "price": 0.26,
+      "explosion_probability": 58,
+      "volume_ratio": 5.41,
+      "z_score": 1.96,
+      "rsi": 23.1,
+      "cmf": -0.3586,
+      "bollinger_squeeze": false,
+      "obv_above_sma": true,
+      "change_1d": 1.19,
+      "change_5d": -18.75,
+      "atr_ratio": 0.2044,
+      "macd_diff": -0.0098,
+      "ml_prob": 0.683456
+    },
+    {
+      "symbol": "BYRN",
+      "price": 4.84,
+      "explosion_probability": 55,
+      "volume_ratio": 2.43,
+      "z_score": 1.52,
+      "rsi": 72.4,
+      "cmf": 0.5135,
+      "bollinger_squeeze": false,
+      "obv_above_sma": true,
+      "change_1d": 1.26,
+      "change_5d": 6.14,
+      "atr_ratio": 0.0635,
+      "macd_diff": 0.1322,
+      "ml_prob": 0.134133
     },
     {
       "symbol": "NFGC",
       "price": 1.61,
-      "explosion_probability": 56,
-      "volume_ratio": 1.66,
-      "z_score": 1.74,
+      "explosion_probability": 55,
+      "volume_ratio": 1.72,
+      "z_score": 1.88,
       "rsi": 48.8,
-      "cmf": -0.0788,
+      "cmf": -0.079,
       "bollinger_squeeze": false,
       "obv_above_sma": true,
       "change_1d": 1.9,
       "change_5d": 4.55,
       "atr_ratio": 0.0563,
       "macd_diff": -0.0036,
-      "ml_prob": 0.595411
+      "ml_prob": 0.59473
     },
     {
       "symbol": "CTKB",
@@ -117,22 +165,6 @@
       "ml_prob": 0.115821
     },
     {
-      "symbol": "CIGL",
-      "price": 0.26,
-      "explosion_probability": 54,
-      "volume_ratio": 5.35,
-      "z_score": 1.93,
-      "rsi": 21.0,
-      "cmf": -0.4453,
-      "bollinger_squeeze": false,
-      "obv_above_sma": true,
-      "change_1d": 1.19,
-      "change_5d": -20.31,
-      "atr_ratio": 0.2101,
-      "macd_diff": -0.0101,
-      "ml_prob": 0.493924
-    },
-    {
       "symbol": "VYX",
       "price": 7.58,
       "explosion_probability": 54,
@@ -146,7 +178,7 @@
       "change_5d": 5.72,
       "atr_ratio": 0.0525,
       "macd_diff": 0.1238,
-      "ml_prob": 0.316817
+      "ml_prob": 0.316834
     },
     {
       "symbol": "XIFR",
@@ -165,20 +197,20 @@
       "ml_prob": 0.338982
     },
     {
-      "symbol": "BYRN",
-      "price": 4.84,
-      "explosion_probability": 54,
-      "volume_ratio": 2.43,
-      "z_score": 1.52,
-      "rsi": 72.4,
-      "cmf": 0.5312,
-      "bollinger_squeeze": false,
+      "symbol": "DEI",
+      "price": 9.76,
+      "explosion_probability": 52,
+      "volume_ratio": 0.94,
+      "z_score": -0.28,
+      "rsi": 44.7,
+      "cmf": -0.058,
+      "bollinger_squeeze": true,
       "obv_above_sma": true,
-      "change_1d": 1.26,
-      "change_5d": 6.14,
-      "atr_ratio": 0.0631,
-      "macd_diff": 0.1322,
-      "ml_prob": 0.106234
+      "change_1d": 1.67,
+      "change_5d": -1.11,
+      "atr_ratio": 0.0329,
+      "macd_diff": 0.0511,
+      "ml_prob": 0.390495
     },
     {
       "symbol": "AMBP",
@@ -232,17 +264,17 @@
       "symbol": "BHC",
       "price": 6.3,
       "explosion_probability": 50,
-      "volume_ratio": 1.18,
-      "z_score": 0.55,
+      "volume_ratio": 1.19,
+      "z_score": 0.6,
       "rsi": 61.3,
-      "cmf": 0.0893,
+      "cmf": 0.0877,
       "bollinger_squeeze": true,
       "obv_above_sma": true,
       "change_1d": -0.16,
       "change_5d": 6.24,
-      "atr_ratio": 0.0418,
+      "atr_ratio": 0.0419,
       "macd_diff": 0.0544,
-      "ml_prob": 0.138729
+      "ml_prob": 0.139337
     },
     {
       "symbol": "PSIG",
@@ -258,39 +290,39 @@
       "change_5d": 14.99,
       "atr_ratio": 0.0991,
       "macd_diff": -0.1271,
-      "ml_prob": 0.582515
+      "ml_prob": 0.582516
     },
     {
       "symbol": "BATL",
       "price": 1.05,
       "explosion_probability": 49,
-      "volume_ratio": 1.08,
-      "z_score": 0.18,
+      "volume_ratio": 1.1,
+      "z_score": 0.24,
       "rsi": 41.1,
-      "cmf": -0.3431,
+      "cmf": -0.3423,
       "bollinger_squeeze": true,
       "obv_above_sma": true,
       "change_1d": 1.94,
       "change_5d": 2.94,
       "atr_ratio": 0.0533,
       "macd_diff": 0.011,
-      "ml_prob": 0.474944
+      "ml_prob": 0.455788
     },
     {
       "symbol": "PPCB",
       "price": 0.34,
       "explosion_probability": 49,
-      "volume_ratio": 5.55,
-      "z_score": 3.68,
+      "volume_ratio": 5.59,
+      "z_score": 3.7,
       "rsi": 26.5,
-      "cmf": -0.4908,
+      "cmf": -0.4928,
       "bollinger_squeeze": false,
       "obv_above_sma": true,
       "change_1d": 0.15,
       "change_5d": -22.27,
       "atr_ratio": 0.2634,
       "macd_diff": 0.0049,
-      "ml_prob": 0.269366
+      "ml_prob": 0.26923
     },
     {
       "symbol": "CDZI",
@@ -307,22 +339,6 @@
       "atr_ratio": 0.0765,
       "macd_diff": 0.0158,
       "ml_prob": 0.290157
-    },
-    {
-      "symbol": "DEI",
-      "price": 9.76,
-      "explosion_probability": 48,
-      "volume_ratio": 0.94,
-      "z_score": -0.28,
-      "rsi": 44.7,
-      "cmf": -0.0617,
-      "bollinger_squeeze": true,
-      "obv_above_sma": true,
-      "change_1d": 1.67,
-      "change_5d": -1.11,
-      "atr_ratio": 0.0326,
-      "macd_diff": 0.0511,
-      "ml_prob": 0.200565
     },
     {
       "symbol": "FVRR",
@@ -354,7 +370,23 @@
       "change_5d": 6.18,
       "atr_ratio": 0.0382,
       "macd_diff": 0.1045,
-      "ml_prob": 0.167897
+      "ml_prob": 0.167898
+    },
+    {
+      "symbol": "WTI",
+      "price": 3.8,
+      "explosion_probability": 47,
+      "volume_ratio": 1.28,
+      "z_score": 1.43,
+      "rsi": 53.7,
+      "cmf": -0.0522,
+      "bollinger_squeeze": true,
+      "obv_above_sma": true,
+      "change_1d": 3.83,
+      "change_5d": 1.33,
+      "atr_ratio": 0.0487,
+      "macd_diff": 0.0161,
+      "ml_prob": 0.590596
     },
     {
       "symbol": "MBC",
@@ -373,36 +405,20 @@
       "ml_prob": 0.227611
     },
     {
-      "symbol": "WTI",
-      "price": 3.8,
-      "explosion_probability": 46,
-      "volume_ratio": 1.28,
-      "z_score": 1.43,
-      "rsi": 53.7,
-      "cmf": -0.0491,
-      "bollinger_squeeze": true,
+      "symbol": "GDRZF",
+      "price": 5.12,
+      "explosion_probability": 47,
+      "volume_ratio": 11.57,
+      "z_score": 4.15,
+      "rsi": 58.4,
+      "cmf": -0.4265,
+      "bollinger_squeeze": false,
       "obv_above_sma": true,
-      "change_1d": 3.83,
-      "change_5d": 1.33,
-      "atr_ratio": 0.0486,
-      "macd_diff": 0.0161,
-      "ml_prob": 0.535591
-    },
-    {
-      "symbol": "AFMJF",
-      "price": 1.02,
-      "explosion_probability": 46,
-      "volume_ratio": 0.34,
-      "z_score": -1.02,
-      "rsi": 51.4,
-      "cmf": -0.0971,
-      "bollinger_squeeze": true,
-      "obv_above_sma": true,
-      "change_1d": 1.48,
-      "change_5d": -0.97,
-      "atr_ratio": 0.0382,
-      "macd_diff": 0.0047,
-      "ml_prob": 0.107629
+      "change_1d": 0.69,
+      "change_5d": -1.54,
+      "atr_ratio": 0.0271,
+      "macd_diff": 0.0008,
+      "ml_prob": 0.067631
     },
     {
       "symbol": "RES",
@@ -411,14 +427,14 @@
       "volume_ratio": 0.9,
       "z_score": -0.45,
       "rsi": 52.6,
-      "cmf": 0.0392,
+      "cmf": 0.038,
       "bollinger_squeeze": true,
       "obv_above_sma": true,
       "change_1d": 2.2,
       "change_5d": 1.51,
-      "atr_ratio": 0.0328,
+      "atr_ratio": 0.0329,
       "macd_diff": 0.0273,
-      "ml_prob": 0.184227
+      "ml_prob": 0.185076
     },
     {
       "symbol": "BRBS",
@@ -427,14 +443,14 @@
       "volume_ratio": 0.91,
       "z_score": -0.16,
       "rsi": 59.2,
-      "cmf": 0.0034,
+      "cmf": -0.0002,
       "bollinger_squeeze": true,
       "obv_above_sma": true,
       "change_1d": 0.76,
       "change_5d": 2.58,
-      "atr_ratio": 0.021,
+      "atr_ratio": 0.0211,
       "macd_diff": 0.0058,
-      "ml_prob": 0.14394
+      "ml_prob": 0.149985
     },
     {
       "symbol": "GEVO",
@@ -467,22 +483,6 @@
       "atr_ratio": 0.0373,
       "macd_diff": 0.0889,
       "ml_prob": 0.097553
-    },
-    {
-      "symbol": "ARI",
-      "price": 6.38,
-      "explosion_probability": 45,
-      "volume_ratio": 0.68,
-      "z_score": -1.2,
-      "rsi": 49.3,
-      "cmf": -0.0355,
-      "bollinger_squeeze": true,
-      "obv_above_sma": true,
-      "change_1d": -0.47,
-      "change_5d": 1.27,
-      "atr_ratio": 0.0183,
-      "macd_diff": 0.0366,
-      "ml_prob": 0.093545
     }
   ],
   "model_trained": true
