@@ -1,25 +1,9 @@
 {
-  "scan_time": "2026-11-09T21:41:03.604265-05:00",
+  "scan_time": "2026-11-10T02:05:49.665284-05:00",
   "session": "closed",
   "session_name": "السوق مغلق",
   "total_analyzed": 498,
   "predictions": [
-    {
-      "symbol": "GGLDF",
-      "price": 0.17,
-      "explosion_probability": 80,
-      "volume_ratio": 5.0,
-      "z_score": 3.44,
-      "rsi": 49.1,
-      "cmf": 0.1326,
-      "bollinger_squeeze": false,
-      "obv_above_sma": true,
-      "change_1d": 1.94,
-      "change_5d": 8.49,
-      "atr_ratio": 0.0785,
-      "macd_diff": 0.0008,
-      "ml_prob": 0.435004
-    },
     {
       "symbol": "VTEX",
       "price": 3.94,
@@ -165,6 +149,22 @@
       "ml_prob": 0.192947
     },
     {
+      "symbol": "OCGSF",
+      "price": 0.19,
+      "explosion_probability": 60,
+      "volume_ratio": 2.27,
+      "z_score": 2.42,
+      "rsi": 48.1,
+      "cmf": 0.0883,
+      "bollinger_squeeze": true,
+      "obv_above_sma": true,
+      "change_1d": 4.08,
+      "change_5d": 11.76,
+      "atr_ratio": 0.0847,
+      "macd_diff": 0.0019,
+      "ml_prob": 0.529191
+    },
+    {
       "symbol": "ADGM",
       "price": 1.92,
       "explosion_probability": 60,
@@ -195,6 +195,22 @@
       "atr_ratio": 0.0681,
       "macd_diff": 0.0293,
       "ml_prob": 0.055193
+    },
+    {
+      "symbol": "GGLDF",
+      "price": 0.17,
+      "explosion_probability": 59,
+      "volume_ratio": 8.72,
+      "z_score": 4.09,
+      "rsi": 48.2,
+      "cmf": -0.1134,
+      "bollinger_squeeze": false,
+      "obv_above_sma": true,
+      "change_1d": 1.94,
+      "change_5d": 7.55,
+      "atr_ratio": 0.0813,
+      "macd_diff": 0.0007,
+      "ml_prob": 0.336037
     },
     {
       "symbol": "GSBD",
@@ -467,22 +483,6 @@
       "atr_ratio": 0.0785,
       "macd_diff": -0.2399,
       "ml_prob": 0.328061
-    },
-    {
-      "symbol": "HLMN",
-      "price": 8.38,
-      "explosion_probability": 49,
-      "volume_ratio": 1.63,
-      "z_score": 1.32,
-      "rsi": 65.6,
-      "cmf": 0.1418,
-      "bollinger_squeeze": false,
-      "obv_above_sma": true,
-      "change_1d": 0.72,
-      "change_5d": 0.36,
-      "atr_ratio": 0.0429,
-      "macd_diff": 0.111,
-      "ml_prob": 0.167916
     }
   ],
   "model_trained": true
