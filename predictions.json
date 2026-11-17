@@ -1,9 +1,25 @@
 {
-  "scan_time": "2026-11-16T21:53:26.393786-05:00",
+  "scan_time": "2026-11-17T02:45:37.618470-05:00",
   "session": "closed",
   "session_name": "السوق مغلق",
-  "total_analyzed": 499,
+  "total_analyzed": 498,
   "predictions": [
+    {
+      "symbol": "FFMGF",
+      "price": 0.46,
+      "explosion_probability": 84,
+      "volume_ratio": 2.52,
+      "z_score": 2.54,
+      "rsi": 48.9,
+      "cmf": 0.0034,
+      "bollinger_squeeze": true,
+      "obv_above_sma": true,
+      "change_1d": 1.8,
+      "change_5d": 0.0,
+      "atr_ratio": 0.09,
+      "macd_diff": 0.0075,
+      "ml_prob": 0.502569
+    },
     {
       "symbol": "LRMR",
       "price": 3.0,
@@ -40,16 +56,32 @@
       "symbol": "RREV",
       "price": 9.93,
       "explosion_probability": 78,
-      "volume_ratio": 13.4,
-      "z_score": 4.14,
+      "volume_ratio": 13.75,
+      "z_score": 4.16,
       "rsi": 69.1,
-      "cmf": 1.2299,
+      "cmf": 1.376,
       "bollinger_squeeze": false,
       "obv_above_sma": true,
       "change_1d": 0.1,
       "change_5d": 0.3,
-      "atr_ratio": 0.0008,
+      "atr_ratio": 0.0009,
       "macd_diff": 0.0032
+    },
+    {
+      "symbol": "SVRSF",
+      "price": 0.27,
+      "explosion_probability": 72,
+      "volume_ratio": 2.22,
+      "z_score": 1.83,
+      "rsi": 42.1,
+      "cmf": -0.1102,
+      "bollinger_squeeze": true,
+      "obv_above_sma": true,
+      "change_1d": -0.26,
+      "change_5d": -6.9,
+      "atr_ratio": 0.1024,
+      "macd_diff": 0.0018,
+      "ml_prob": 0.347899
     },
     {
       "symbol": "YCBD",
@@ -356,22 +388,6 @@
       "ml_prob": 0.260357
     },
     {
-      "symbol": "FFMGF",
-      "price": 0.46,
-      "explosion_probability": 48,
-      "volume_ratio": 0.55,
-      "z_score": -0.83,
-      "rsi": 48.6,
-      "cmf": -0.1084,
-      "bollinger_squeeze": true,
-      "obv_above_sma": true,
-      "change_1d": 1.8,
-      "change_5d": -0.24,
-      "atr_ratio": 0.0899,
-      "macd_diff": 0.0074,
-      "ml_prob": 0.679333
-    },
-    {
       "symbol": "VTGN",
       "price": 0.18,
       "explosion_probability": 48,
@@ -466,22 +482,6 @@
       "atr_ratio": 0.0718,
       "macd_diff": 0.0106,
       "ml_prob": 0.227121
-    },
-    {
-      "symbol": "ONFO",
-      "price": 0.81,
-      "explosion_probability": 46,
-      "volume_ratio": 0.48,
-      "z_score": -0.12,
-      "rsi": 63.1,
-      "cmf": -0.0405,
-      "bollinger_squeeze": true,
-      "obv_above_sma": true,
-      "change_1d": 4.45,
-      "change_5d": 125.98,
-      "atr_ratio": 0.1741,
-      "macd_diff": 0.067,
-      "ml_prob": 0.794716
     }
   ],
   "model_trained": true
