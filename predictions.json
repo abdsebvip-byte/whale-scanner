@@ -1,7 +1,7 @@
 {
-  "scan_time": "2026-11-23T23:42:56.897443-05:00",
-  "session": "closed",
-  "session_name": "السوق مغلق",
+  "scan_time": "2026-11-24T04:42:52.726986-05:00",
+  "session": "premarket",
+  "session_name": "ما قبل التداول",
   "total_analyzed": 498,
   "predictions": [
     {
@@ -35,6 +35,22 @@
       "atr_ratio": 0.009,
       "macd_diff": -0.0277,
       "ml_prob": 0.075788
+    },
+    {
+      "symbol": "METOF",
+      "price": 0.14,
+      "explosion_probability": 68,
+      "volume_ratio": 2.53,
+      "z_score": 2.34,
+      "rsi": 44.2,
+      "cmf": 0.3512,
+      "bollinger_squeeze": false,
+      "obv_above_sma": true,
+      "change_1d": 1.07,
+      "change_5d": 1.8,
+      "atr_ratio": 0.0854,
+      "macd_diff": -0.0017,
+      "ml_prob": 0.159809
     },
     {
       "symbol": "IRD",
@@ -136,17 +152,17 @@
       "symbol": "SGMOQ",
       "price": 0.1,
       "explosion_probability": 48,
-      "volume_ratio": 0.93,
-      "z_score": -0.12,
+      "volume_ratio": 1.08,
+      "z_score": 0.14,
       "rsi": 29.9,
-      "cmf": 0.392,
+      "cmf": 0.3987,
       "bollinger_squeeze": true,
       "obv_above_sma": true,
       "change_1d": -1.89,
       "change_5d": -9.09,
-      "atr_ratio": 0.2183,
+      "atr_ratio": 0.1826,
       "macd_diff": -0.0,
-      "ml_prob": 0.069972
+      "ml_prob": 0.06954
     },
     {
       "symbol": "TTI",
@@ -245,6 +261,22 @@
       "ml_prob": 0.207909
     },
     {
+      "symbol": "TNEYF",
+      "price": 8.16,
+      "explosion_probability": 42,
+      "volume_ratio": 5.71,
+      "z_score": 2.38,
+      "rsi": 38.8,
+      "cmf": -0.5535,
+      "bollinger_squeeze": false,
+      "obv_above_sma": false,
+      "change_1d": -0.3,
+      "change_5d": 0.74,
+      "atr_ratio": 0.038,
+      "macd_diff": -0.0103,
+      "ml_prob": 0.281105
+    },
+    {
       "symbol": "ACRS",
       "price": 3.53,
       "explosion_probability": 42,
@@ -323,6 +355,22 @@
       "atr_ratio": 0.1099,
       "macd_diff": -0.0091,
       "ml_prob": 0.176576
+    },
+    {
+      "symbol": "LUCMF",
+      "price": 0.55,
+      "explosion_probability": 41,
+      "volume_ratio": 2.37,
+      "z_score": 2.09,
+      "rsi": 25.6,
+      "cmf": -0.1544,
+      "bollinger_squeeze": false,
+      "obv_above_sma": false,
+      "change_1d": 0.11,
+      "change_5d": -17.83,
+      "atr_ratio": 0.1032,
+      "macd_diff": -0.0154,
+      "ml_prob": 0.241812
     },
     {
       "symbol": "PSIG",
@@ -405,22 +453,6 @@
       "ml_prob": 0.282813
     },
     {
-      "symbol": "METOF",
-      "price": 0.14,
-      "explosion_probability": 38,
-      "volume_ratio": 1.01,
-      "z_score": 0.01,
-      "rsi": 42.9,
-      "cmf": 0.3503,
-      "bollinger_squeeze": false,
-      "obv_above_sma": true,
-      "change_1d": 1.07,
-      "change_5d": -4.5,
-      "atr_ratio": 0.0871,
-      "macd_diff": -0.0018,
-      "ml_prob": 0.092923
-    },
-    {
       "symbol": "ORGO",
       "price": 0.79,
       "explosion_probability": 37,
@@ -451,38 +483,6 @@
       "atr_ratio": 0.1194,
       "macd_diff": 0.039,
       "ml_prob": 0.140248
-    },
-    {
-      "symbol": "BIOA",
-      "price": 4.26,
-      "explosion_probability": 36,
-      "volume_ratio": 1.9,
-      "z_score": 2.36,
-      "rsi": 26.7,
-      "cmf": 0.0187,
-      "bollinger_squeeze": false,
-      "obv_above_sma": false,
-      "change_1d": -0.47,
-      "change_5d": -16.47,
-      "atr_ratio": 0.1036,
-      "macd_diff": -0.0808,
-      "ml_prob": 0.22424
-    },
-    {
-      "symbol": "GORO",
-      "price": 2.92,
-      "explosion_probability": 36,
-      "volume_ratio": 0.99,
-      "z_score": -0.01,
-      "rsi": 40.5,
-      "cmf": 0.1231,
-      "bollinger_squeeze": false,
-      "obv_above_sma": true,
-      "change_1d": 0.0,
-      "change_5d": -9.03,
-      "atr_ratio": 0.085,
-      "macd_diff": -0.0304,
-      "ml_prob": 0.285992
     }
   ],
   "model_trained": true
