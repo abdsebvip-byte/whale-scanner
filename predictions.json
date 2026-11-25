@@ -1,5 +1,5 @@
 {
-  "scan_time": "2026-11-24T22:30:15.370569-05:00",
+  "scan_time": "2026-11-25T03:16:57.684416-05:00",
   "session": "closed",
   "session_name": "السوق مغلق",
   "total_analyzed": 499,
@@ -325,6 +325,22 @@
       "ml_prob": 0.628991
     },
     {
+      "symbol": "XTRAF",
+      "price": 0.23,
+      "explosion_probability": 44,
+      "volume_ratio": 2.14,
+      "z_score": 1.32,
+      "rsi": 29.3,
+      "cmf": -0.2691,
+      "bollinger_squeeze": false,
+      "obv_above_sma": true,
+      "change_1d": -0.07,
+      "change_5d": -5.46,
+      "atr_ratio": 0.0963,
+      "macd_diff": -0.0039,
+      "ml_prob": 0.266113
+    },
+    {
       "symbol": "RPID",
       "price": 0.74,
       "explosion_probability": 43,
@@ -467,22 +483,6 @@
       "atr_ratio": 0.0498,
       "macd_diff": 0.0006,
       "ml_prob": 0.161824
-    },
-    {
-      "symbol": "LBTYK",
-      "price": 9.92,
-      "explosion_probability": 38,
-      "volume_ratio": 0.68,
-      "z_score": -0.88,
-      "rsi": 60.1,
-      "cmf": 0.2153,
-      "bollinger_squeeze": false,
-      "obv_above_sma": true,
-      "change_1d": 1.22,
-      "change_5d": -1.78,
-      "atr_ratio": 0.0388,
-      "macd_diff": 0.0061,
-      "ml_prob": 0.114344
     }
   ],
   "model_trained": true
