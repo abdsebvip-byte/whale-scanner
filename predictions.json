@@ -1,8 +1,8 @@
 {
-  "scan_time": "2026-11-25T21:45:31.297166-05:00",
+  "scan_time": "2026-11-26T03:02:15.106165-05:00",
   "session": "closed",
   "session_name": "السوق مغلق",
-  "total_analyzed": 499,
+  "total_analyzed": 498,
   "predictions": [
     {
       "symbol": "ZNB",
@@ -19,6 +19,22 @@
       "atr_ratio": 0.5744,
       "macd_diff": -0.0288,
       "ml_prob": 0.599297
+    },
+    {
+      "symbol": "NWBO",
+      "price": 0.18,
+      "explosion_probability": 62,
+      "volume_ratio": 2.22,
+      "z_score": 2.14,
+      "rsi": 60.2,
+      "cmf": 0.3173,
+      "bollinger_squeeze": false,
+      "obv_above_sma": true,
+      "change_1d": 4.97,
+      "change_5d": 28.57,
+      "atr_ratio": 0.0845,
+      "macd_diff": 0.0009,
+      "ml_prob": 0.843312
     },
     {
       "symbol": "ARCO",
@@ -467,22 +483,6 @@
       "atr_ratio": 0.0793,
       "macd_diff": 0.0137,
       "ml_prob": 0.180799
-    },
-    {
-      "symbol": "AIV",
-      "price": 1.46,
-      "explosion_probability": 44,
-      "volume_ratio": 1.64,
-      "z_score": 1.5,
-      "rsi": 40.9,
-      "cmf": -0.1519,
-      "bollinger_squeeze": false,
-      "obv_above_sma": true,
-      "change_1d": 2.1,
-      "change_5d": 1.39,
-      "atr_ratio": 0.0511,
-      "macd_diff": 0.0138,
-      "ml_prob": 0.449805
     }
   ],
   "model_trained": true
