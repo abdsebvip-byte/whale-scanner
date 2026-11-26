@@ -1,8 +1,8 @@
 {
-  "scan_time": "2026-11-26T03:02:15.106165-05:00",
-  "session": "closed",
-  "session_name": "السوق مغلق",
-  "total_analyzed": 498,
+  "scan_time": "2026-11-26T14:28:29.678698-05:00",
+  "session": "regular",
+  "session_name": "الجلسة الرسمية",
+  "total_analyzed": 499,
   "predictions": [
     {
       "symbol": "ZNB",
@@ -163,6 +163,22 @@
       "atr_ratio": 0.1748,
       "macd_diff": 0.0453,
       "ml_prob": 0.619877
+    },
+    {
+      "symbol": "FNMAS",
+      "price": 6.5,
+      "explosion_probability": 54,
+      "volume_ratio": 3.37,
+      "z_score": 2.33,
+      "rsi": 28.6,
+      "cmf": 0.1175,
+      "bollinger_squeeze": false,
+      "obv_above_sma": false,
+      "change_1d": -0.61,
+      "change_5d": -7.14,
+      "atr_ratio": 0.0685,
+      "macd_diff": -0.1076,
+      "ml_prob": 0.141028
     },
     {
       "symbol": "PDM",
@@ -467,22 +483,6 @@
       "atr_ratio": 0.0201,
       "macd_diff": 0.0047,
       "ml_prob": 0.066784
-    },
-    {
-      "symbol": "ALEC",
-      "price": 2.73,
-      "explosion_probability": 44,
-      "volume_ratio": 1.62,
-      "z_score": 1.33,
-      "rsi": 64.0,
-      "cmf": 0.0288,
-      "bollinger_squeeze": false,
-      "obv_above_sma": true,
-      "change_1d": 0.74,
-      "change_5d": 18.7,
-      "atr_ratio": 0.0793,
-      "macd_diff": 0.0137,
-      "ml_prob": 0.180799
     }
   ],
   "model_trained": true
