@@ -1,5 +1,5 @@
 {
-  "scan_time": "2026-11-27T21:37:11.482400-05:00",
+  "scan_time": "2026-11-28T02:34:16.972056-05:00",
   "session": "closed",
   "session_name": "السوق مغلق",
   "total_analyzed": 498,
@@ -19,6 +19,22 @@
       "atr_ratio": 0.6003,
       "macd_diff": 0.0813,
       "ml_prob": 0.398984
+    },
+    {
+      "symbol": "NSANF",
+      "price": 1.65,
+      "explosion_probability": 76,
+      "volume_ratio": 12.05,
+      "z_score": 3.95,
+      "rsi": 42.2,
+      "cmf": 0.425,
+      "bollinger_squeeze": false,
+      "obv_above_sma": false,
+      "change_1d": -0.6,
+      "change_5d": -5.71,
+      "atr_ratio": 0.032,
+      "macd_diff": 0.0018,
+      "ml_prob": 0.30401
     },
     {
       "symbol": "PLAG",
@@ -67,22 +83,6 @@
       "atr_ratio": 0.0826,
       "macd_diff": 0.1154,
       "ml_prob": 0.632053
-    },
-    {
-      "symbol": "NSANF",
-      "price": 1.65,
-      "explosion_probability": 58,
-      "volume_ratio": 0.01,
-      "z_score": -0.38,
-      "rsi": 42.2,
-      "cmf": 0.425,
-      "bollinger_squeeze": false,
-      "obv_above_sma": true,
-      "change_1d": -0.6,
-      "change_5d": -5.71,
-      "atr_ratio": 0.032,
-      "macd_diff": 0.0018,
-      "ml_prob": 0.511737
     },
     {
       "symbol": "BGLC",
